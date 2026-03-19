@@ -12,7 +12,9 @@
       "Bash(npm uninstall:*)",
       "Bash(node -e \"import\\(''youtubei.js''\\).then\\(m => console.log\\(''OK'', Object.keys\\(m\\)\\)\\)\")",
       "Bash(node -e \"const pkg = require\\(''./node_modules/youtubei.js/package.json''\\); console.log\\(pkg.version\\);\")",
-      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\(''''exports'''',{}\\), indent=2\\)\\)\")"
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\(''''exports'''',{}\\), indent=2\\)\\)\")",
+      "Bash(node -e \"const p = require\\(''/Users/tharushakulasinghe/Documents/GitHub/My projects/tik-tok video downloader/package.json''\\); console.log\\(''next:'', p.dependencies?.next || p.devDependencies?.next\\)\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\(''''scripts'''',{}\\), indent=2\\)\\)\")"
     ]
   }
 }

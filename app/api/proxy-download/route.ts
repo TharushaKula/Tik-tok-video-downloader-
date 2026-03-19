@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
-import vm from "node:vm";
+import vm from "vm"; // bare specifier — safer across all webpack/Vercel versions
+
+// Force Node.js runtime so that:
+//   1. node:vm (required to decipher YouTube URLs) is available
+//   2. Edge Runtime is never chosen by Vercel
+export const runtime = "nodejs";
+
+// Extend the Vercel function timeout well past the default 10 s.
+// Hobby tier max is 60 s; Pro/Enterprise can go up to 300 s.
+// Streaming a typical 720 p video (~150 MB) finishes comfortably in 60 s.
+export const maxDuration = 60;
 
 /** Pull the 11-character video ID out of any standard YouTube URL. */
 function extractYouTubeId(url: string): string | null {
