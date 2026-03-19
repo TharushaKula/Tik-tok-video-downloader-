@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
-import vm from "vm"; // bare specifier — safer across all webpack/Vercel versions
 
-// Force Node.js runtime so that:
-//   1. node:vm (required to decipher YouTube URLs) is available
-//   2. Edge Runtime is never chosen by Vercel
+// Force Node.js runtime — Edge Runtime has no vm / crypto / fs.
 export const runtime = "nodejs";
 
-// Extend the Vercel function timeout well past the default 10 s.
-// Hobby tier max is 60 s; Pro/Enterprise can go up to 300 s.
-// Streaming a typical 720 p video (~150 MB) finishes comfortably in 60 s.
+// Extend timeout: Hobby = 60 s max, Pro/Enterprise = 300 s.
 export const maxDuration = 60;
 
 /** Pull the 11-character video ID out of any standard YouTube URL. */
@@ -48,29 +43,29 @@ export async function GET(req: NextRequest) {
         );
       }
 
-      // Dynamic import keeps the large package out of the main bundle.
-      // We also grab Platform so we can patch its eval shim with node:vm —
-      // the default stub unconditionally throws in Next.js's webpack bundle.
-      const { Innertube, Platform } = await import("youtubei.js");
+      // Dynamic import keeps youtubei.js out of the main bundle.
+      const { Innertube, Platform, ClientType } = await import("youtubei.js");
 
-      // Replace the stub evaluator with a real node:vm sandbox.
-      // data.output is YouTube's player JS + a generated process() call;
-      // the return value is { sig?, n? } that deciphers the streaming URL.
-      // Replace the default stub with a real node:vm evaluator.
-      // YouTube's player JS ends with a bare `return process(...)` which is
-      // illegal in a plain Script context — wrapping in an IIFE fixes that.
+      // Patch the default stub evaluator with new Function() — a pure-JS
+      // construct that requires no Node module and works in every environment.
+      // YouTube's generated script ends with a bare `return`, so we wrap it
+      // in an IIFE to make that legal.
+      // eslint-disable-next-line no-new-func
       (Platform.shim as unknown as Record<string, unknown>).eval = async (
         data: { output: string }
-      ) => {
-        const wrapped = `(function(){\n${data.output}\n})()`;
-        const script = new vm.Script(wrapped);
-        const context = vm.createContext({ console, setTimeout, clearTimeout });
-        return script.runInContext(context);
-      };
+      ) => new Function(`return (function(){\n${data.output}\n})()`)();
 
-      // generate_session_locally avoids an extra round-trip to YouTube for
-      // the challenge token — faster cold start, same download capability.
-      const yt = await Innertube.create({ generate_session_locally: true });
+      // TV_EMBEDDED = YouTube's own embedded-player client.
+      //   • Much less bot-detection scrutiny than the default WEB client.
+      //   • Returns many formats as plain URLs → eval above is often skipped.
+      // generate_session_locally  → no network call for the visitor/session token.
+      // retrieve_innertube_config → skip POST /youtubei/v1/config which is
+      //   frequently rate-limited or blocked from Vercel / AWS Lambda IPs.
+      const yt = await Innertube.create({
+        client_type: ClientType.TV_EMBEDDED,
+        generate_session_locally: true,
+        retrieve_innertube_config: false,
+      });
       const info = await yt.getInfo(videoId);
 
       const isAudio = type === "audio";
