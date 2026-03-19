@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isValidTikTokUrl } from "@/lib/validators";
+import { detectPlatform } from "@/lib/validators";
 import { fetchTikTokData } from "@/lib/tikwm";
+import { fetchYouTubeData } from "@/lib/youtube";
 
 export async function POST(req: NextRequest) {
   try {
@@ -8,22 +9,26 @@ export async function POST(req: NextRequest) {
     const { url } = body;
 
     if (!url || typeof url !== "string") {
-      return NextResponse.json(
-        { error: "URL is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "URL is required" }, { status: 400 });
     }
 
     const trimmedUrl = url.trim();
+    const platform = detectPlatform(trimmedUrl);
 
-    if (!isValidTikTokUrl(trimmedUrl)) {
+    if (!platform) {
       return NextResponse.json(
-        { error: "Invalid TikTok URL. Please enter a valid tiktok.com link." },
+        {
+          error:
+            "Invalid URL. Please enter a valid TikTok or YouTube link.",
+        },
         { status: 400 }
       );
     }
 
-    const data = await fetchTikTokData(trimmedUrl);
+    const data =
+      platform === "youtube"
+        ? await fetchYouTubeData(trimmedUrl)
+        : await fetchTikTokData(trimmedUrl);
 
     return NextResponse.json({ success: true, data });
   } catch (err: unknown) {

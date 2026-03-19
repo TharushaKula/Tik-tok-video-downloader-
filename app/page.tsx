@@ -13,7 +13,7 @@ const STEPS = [
   {
     icon: ClipboardList,
     title: "Paste URL",
-    desc: "Copy the TikTok video link and paste it into the input field above.",
+    desc: "Copy a TikTok or YouTube video link and paste it into the input field above.",
   },
   {
     icon: Download,
@@ -23,7 +23,7 @@ const STEPS = [
   {
     icon: Save,
     title: "Save Video",
-    desc: "Choose HD video or MP3 audio and save it directly to your device.",
+    desc: "Choose HD video or audio and save it directly to your device.",
   },
 ];
 
@@ -36,7 +36,7 @@ export default function HomePage() {
   async function handleDownload() {
     const trimmed = url.trim();
     if (!trimmed) {
-      toast.error("Please enter a TikTok URL");
+      toast.error("Please enter a TikTok or YouTube URL");
       return;
     }
 
@@ -89,7 +89,7 @@ export default function HomePage() {
         >
           <div className="inline-flex items-center gap-2 bg-violet-500/10 border border-violet-500/30 rounded-full px-4 py-1.5 text-violet-300 text-xs font-medium mb-2">
             <Sparkles size={12} />
-            100% Free · No Watermark · No Sign-up
+            TikTok &amp; YouTube · No Watermark · Free
           </div>
 
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight">
@@ -99,10 +99,11 @@ export default function HomePage() {
           </h1>
 
           <p className="text-slate-400 text-base sm:text-lg leading-relaxed">
-            Download TikTok videos,{" "}
-            <span className="text-violet-300 font-medium">watermark-free</span>
+            Download{" "}
+            <span className="text-violet-300 font-medium">TikTok</span> &amp;{" "}
+            <span className="text-red-400 font-medium">YouTube</span> videos in HD
             .<br className="hidden sm:block" />
-            HD quality &amp; audio extraction — in seconds.
+            No watermarks. No sign-up. Just paste &amp; save.
           </p>
         </motion.section>
 
@@ -117,7 +118,7 @@ export default function HomePage() {
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-violet-300 text-sm font-medium">
               <Zap size={14} />
-              Enter TikTok URL
+              Enter TikTok or YouTube URL
             </div>
             <UrlInput
               value={url}
@@ -195,6 +196,8 @@ export default function HomePage() {
       <footer className="text-center py-6 text-slate-600 text-xs border-t border-white/5">
         Powered by{" "}
         <span className="text-violet-400 font-medium">TikWM API</span>
+        {" & "}
+        <span className="text-red-400 font-medium">ytdl-core</span>
         {" · "}
         <span>SnapTok &copy; {new Date().getFullYear()}</span>
       </footer>

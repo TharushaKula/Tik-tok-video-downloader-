@@ -6,7 +6,13 @@
       "Bash(mv tiktok-downloader/* tiktok-downloader/.* .)",
       "Bash(rmdir tiktok-downloader:*)",
       "Bash(npm install:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(node -e \"require\\(''@distube/ytdl-core''\\); console.log\\(''OK''\\)\")",
+      "Bash(npx tsc:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(node -e \"import\\(''youtubei.js''\\).then\\(m => console.log\\(''OK'', Object.keys\\(m\\)\\)\\)\")",
+      "Bash(node -e \"const pkg = require\\(''./node_modules/youtubei.js/package.json''\\); console.log\\(pkg.version\\);\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\(''''exports'''',{}\\), indent=2\\)\\)\")"
     ]
   }
 }

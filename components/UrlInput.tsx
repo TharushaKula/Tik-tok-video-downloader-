@@ -62,10 +62,10 @@ export default function UrlInput({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           onKeyDown={handleKeyDown}
-          placeholder="Paste TikTok URL here…"
+          placeholder="Paste TikTok or YouTube URL here…"
           disabled={loading}
           className="flex-1 bg-transparent text-slate-200 placeholder-slate-500 outline-none text-sm min-w-0"
-          aria-label="TikTok URL"
+          aria-label="TikTok or YouTube URL"
         />
 
         {value && (

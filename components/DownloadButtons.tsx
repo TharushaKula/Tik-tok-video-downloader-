@@ -7,23 +7,47 @@ import toast from "react-hot-toast";
 interface DownloadButtonsProps {
   hdUrl: string;
   musicUrl: string;
+  platform: "tiktok" | "youtube";
 }
 
-function triggerProxyDownload(url: string, type: "video" | "audio") {
-  const proxyUrl = `/api/proxy-download?url=${encodeURIComponent(url)}&type=${type}`;
+function triggerProxyDownload(
+  url: string,
+  type: "video" | "audio",
+  platform: "tiktok" | "youtube"
+) {
+  const isYT = platform === "youtube";
+  const params = new URLSearchParams({ url, type });
+  if (isYT) params.set("platform", "youtube");
+
+  const proxyUrl = `/api/proxy-download?${params.toString()}`;
+  const filename =
+    type === "audio"
+      ? isYT
+        ? "youtube-audio.m4a"
+        : "tiktok-audio.mp3"
+      : isYT
+        ? "youtube-video.mp4"
+        : "tiktok-video.mp4";
+
   const a = document.createElement("a");
   a.href = proxyUrl;
-  a.download = type === "audio" ? "tiktok-audio.mp3" : "tiktok-video.mp4";
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
 }
 
-export default function DownloadButtons({ hdUrl, musicUrl }: DownloadButtonsProps) {
+export default function DownloadButtons({
+  hdUrl,
+  musicUrl,
+  platform,
+}: DownloadButtonsProps) {
+  const isYT = platform === "youtube";
+
   function handleHD() {
     try {
-      triggerProxyDownload(hdUrl, "video");
-      toast.success("HD video download started!");
+      triggerProxyDownload(hdUrl, "video", platform);
+      toast.success("Video download started!");
     } catch {
       toast.error("Failed to start download");
     }
@@ -31,7 +55,7 @@ export default function DownloadButtons({ hdUrl, musicUrl }: DownloadButtonsProp
 
   function handleAudio() {
     try {
-      triggerProxyDownload(musicUrl, "audio");
+      triggerProxyDownload(musicUrl, "audio", platform);
       toast.success("Audio download started!");
     } catch {
       toast.error("Failed to start download");
@@ -63,7 +87,7 @@ export default function DownloadButtons({ hdUrl, musicUrl }: DownloadButtonsProp
           text-white font-semibold text-sm shadow-lg shadow-fuchsia-900/40 transition-all"
       >
         <Music size={16} />
-        Download MP3
+        {isYT ? "Download Audio" : "Download MP3"}
       </motion.button>
     </div>
   );

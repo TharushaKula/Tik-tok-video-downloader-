@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export interface TikWMResponse {
+  platform: "tiktok" | "youtube";
   play: string;
   hdplay: string;
   music: string;
@@ -37,6 +38,7 @@ export async function fetchTikTokData(url: string): Promise<TikWMResponse> {
   const video = data.data;
 
   return {
+    platform: "tiktok",
     play: video.play,
     hdplay: video.hdplay || video.play,
     music: video.music,

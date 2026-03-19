@@ -22,7 +22,27 @@ function formatDuration(sec: number): string {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
+// Stat items — YouTube may have 0 for likes/shares/comments; hide them if so.
+const STATS = [
+  { icon: Heart, label: "Likes", key: "digg_count" as const, color: "text-pink-400" },
+  { icon: Eye, label: "Views", key: "play_count" as const, color: "text-sky-400" },
+  { icon: Share2, label: "Shares", key: "share_count" as const, color: "text-emerald-400" },
+  { icon: MessageCircle, label: "Comments", key: "comment_count" as const, color: "text-amber-400" },
+];
+
+// Platform badge colours & labels
+const PLATFORM_META = {
+  tiktok: { label: "TikTok", bg: "bg-black/60 border-white/10", dot: "bg-white" },
+  youtube: { label: "YouTube", bg: "bg-red-950/60 border-red-500/30", dot: "bg-red-500" },
+};
+
 export default function VideoCard({ data }: VideoCardProps) {
+  const isYT = data.platform === "youtube";
+  const visibleStats = isYT
+    ? STATS.filter((s) => data[s.key] > 0) // hide zero-stats for YouTube
+    : STATS;
+  const platformMeta = PLATFORM_META[data.platform];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -45,6 +65,15 @@ export default function VideoCard({ data }: VideoCardProps) {
             <span className="text-slate-500 text-sm">No preview available</span>
           </div>
         )}
+
+        {/* Platform badge */}
+        <span
+          className={`absolute top-2 left-2 flex items-center gap-1.5 border text-white text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm ${platformMeta.bg}`}
+        >
+          <span className={`w-1.5 h-1.5 rounded-full ${platformMeta.dot}`} />
+          {platformMeta.label}
+        </span>
+
         {data.duration > 0 && (
           <span className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/70 text-white text-xs px-2 py-0.5 rounded-md">
             <Clock size={10} />
@@ -75,29 +104,33 @@ export default function VideoCard({ data }: VideoCardProps) {
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-4 gap-2">
-          {[
-            { icon: Heart, label: "Likes", value: data.digg_count, color: "text-pink-400" },
-            { icon: Eye, label: "Views", value: data.play_count, color: "text-sky-400" },
-            { icon: Share2, label: "Shares", value: data.share_count, color: "text-emerald-400" },
-            { icon: MessageCircle, label: "Comments", value: data.comment_count, color: "text-amber-400" },
-          ].map(({ icon: Icon, label, value, color }) => (
-            <div
-              key={label}
-              className="flex flex-col items-center gap-1 bg-white/5 rounded-xl py-2 px-1"
-            >
-              <Icon size={14} className={color} />
-              <span className="text-slate-200 text-xs font-semibold">
-                {formatCount(value)}
-              </span>
-              <span className="text-slate-500 text-[10px]">{label}</span>
-            </div>
-          ))}
-        </div>
+        {/* Stats — only render if there's at least one visible stat */}
+        {visibleStats.length > 0 && (
+          <div
+            className="grid gap-2"
+            style={{ gridTemplateColumns: `repeat(${visibleStats.length}, minmax(0, 1fr))` }}
+          >
+            {visibleStats.map(({ icon: Icon, label, key, color }) => (
+              <div
+                key={label}
+                className="flex flex-col items-center gap-1 bg-white/5 rounded-xl py-2 px-1"
+              >
+                <Icon size={14} className={color} />
+                <span className="text-slate-200 text-xs font-semibold">
+                  {formatCount(data[key])}
+                </span>
+                <span className="text-slate-500 text-[10px]">{label}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Download buttons */}
-        <DownloadButtons hdUrl={data.hdplay} musicUrl={data.music} />
+        <DownloadButtons
+          hdUrl={data.hdplay}
+          musicUrl={data.music}
+          platform={data.platform}
+        />
       </div>
     </motion.div>
   );
