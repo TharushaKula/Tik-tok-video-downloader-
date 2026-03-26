@@ -6,10 +6,18 @@ import ToastProvider from "@/components/ToastProvider";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "SnapTok – Download TikTok Videos Without Watermark",
+  title: "SnapLoad - Free TikTok Video Downloader",
   description:
-    "Free TikTok video downloader. Save HD videos and audio without watermarks in seconds.",
-  keywords: ["tiktok", "downloader", "no watermark", "mp4", "mp3"],
+    "Download TikTok videos without watermark for free. HD quality, no sign-up required.",
+  keywords: [
+    "tiktok downloader",
+    "tiktok video downloader",
+    "no watermark",
+    "free",
+    "hd",
+    "mp4",
+    "mp3",
+  ],
 };
 
 export default function RootLayout({
@@ -17,7 +25,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased bg-[#08080f] text-slate-200`}>
+      <body
+        className={`${inter.variable} font-sans antialiased bg-[#080810] text-slate-200`}
+      >
         <ToastProvider />
         {children}
       </body>

@@ -1,24 +1,7 @@
 import axios from "axios";
+import type { VideoInfo } from "./types";
 
-export interface TikWMResponse {
-  platform: "tiktok" | "youtube";
-  play: string;
-  hdplay: string;
-  music: string;
-  cover: string;
-  title: string;
-  author: {
-    nickname: string;
-    avatar: string;
-  };
-  digg_count: number;
-  play_count: number;
-  share_count: number;
-  comment_count: number;
-  duration: number;
-}
-
-export async function fetchTikTokData(url: string): Promise<TikWMResponse> {
+export async function fetchTikTokData(url: string): Promise<VideoInfo> {
   const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}&hd=1`;
 
   const response = await axios.get(apiUrl, {
@@ -39,19 +22,41 @@ export async function fetchTikTokData(url: string): Promise<TikWMResponse> {
 
   return {
     platform: "tiktok",
-    play: video.play,
-    hdplay: video.hdplay || video.play,
-    music: video.music,
-    cover: video.cover,
     title: video.title || "TikTok Video",
-    author: {
-      nickname: video.author?.nickname || "Unknown",
-      avatar: video.author?.avatar || "",
-    },
-    digg_count: video.digg_count || 0,
-    play_count: video.play_count || 0,
-    share_count: video.share_count || 0,
-    comment_count: video.comment_count || 0,
+    author: video.author?.nickname || "Unknown",
+    authorAvatar: video.author?.avatar || "",
+    thumbnail: video.cover || "",
     duration: video.duration || 0,
+    downloads: [
+      {
+        label: "Download HD",
+        url: video.hdplay || video.play,
+        format: "mp4",
+        quality: "HD",
+        isAudio: false,
+        isProxy: true,
+      },
+      {
+        label: "Download SD",
+        url: video.play,
+        format: "mp4",
+        quality: "SD",
+        isAudio: false,
+        isProxy: true,
+      },
+      {
+        label: "Download Audio",
+        url: video.music,
+        format: "mp3",
+        isAudio: true,
+        isProxy: true,
+      },
+    ],
+    stats: {
+      views: video.play_count || 0,
+      likes: video.digg_count || 0,
+      comments: video.comment_count || 0,
+      shares: video.share_count || 0,
+    },
   };
 }
