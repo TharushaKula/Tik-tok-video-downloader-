@@ -16,10 +16,29 @@ export function isValidTikTokUrl(url: string): boolean {
   }
 }
 
-export type Platform = "tiktok" | null;
+export function isValidInstagramUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    const validHosts = [
+      "instagram.com",
+      "www.instagram.com",
+      "m.instagram.com",
+    ];
+    const hostOk = validHosts.some(
+      (host) => parsed.hostname === host || parsed.hostname.endsWith("." + host)
+    );
+    if (!hostOk) return false;
+    return /\/(reel|reels|p|tv)\/[A-Za-z0-9_-]+/.test(parsed.pathname);
+  } catch {
+    return false;
+  }
+}
+
+export type Platform = "tiktok" | "instagram" | null;
 
 export function detectPlatform(url: string): Platform {
   if (isValidTikTokUrl(url)) return "tiktok";
+  if (isValidInstagramUrl(url)) return "instagram";
   return null;
 }
 

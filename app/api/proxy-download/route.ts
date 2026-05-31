@@ -4,10 +4,34 @@ import axios from "axios";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
+const TIKTOK_HOSTS = [
+  "tikwm.com",
+  "tiktok.com",
+  "tiktokcdn.com",
+  "tiktokcdn-us.com",
+  "tiktokv.com",
+];
+
+const INSTAGRAM_HOSTS = [
+  "cdninstagram.com",
+  "fbcdn.net",
+  "instagram.com",
+  "rapidcdn.app",
+  "snapsave.app",
+];
+
+function matchHost(hostname: string, suffixes: string[]): boolean {
+  return suffixes.some(
+    (suffix) => hostname === suffix || hostname.endsWith("." + suffix)
+  );
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const videoUrl = searchParams.get("url");
   const type = searchParams.get("type") || "video";
+  // const platform = searchParams.get("platform") || "tiktok";
+  const format = searchParams.get("format") || "";
 
   if (!videoUrl) {
     return NextResponse.json({ error: "Missing url parameter" }, { status: 400 });
@@ -20,21 +44,31 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Invalid URL" }, { status: 400 });
   }
 
-  const allowedSuffixes = [
-    "tikwm.com",
-    "tiktok.com",
-    "tiktokcdn.com",
-    "tiktokcdn-us.com",
-    "tiktokv.com",
-  ];
-  const isAllowed = allowedSuffixes.some(
-    (suffix) =>
-      parsedUrl.hostname === suffix ||
-      parsedUrl.hostname.endsWith("." + suffix)
-  );
-  if (!isAllowed) {
+  const isTikTok = matchHost(parsedUrl.hostname, TIKTOK_HOSTS);
+  const isInstagram = matchHost(parsedUrl.hostname, INSTAGRAM_HOSTS);
+
+  if (!isTikTok && !isInstagram) {
     return NextResponse.json({ error: "URL not allowed" }, { status: 403 });
   }
+
+  const referer = isInstagram
+    ? "https://www.instagram.com/"
+    : "https://www.tiktok.com/";
+
+  const platformLabel = isInstagram ? "instagram" : "tiktok";
+  let ext: string;
+  let defaultContentType: string;
+  if (type === "audio") {
+    ext = "mp3";
+    defaultContentType = "audio/mpeg";
+  } else if (format === "jpg" || type === "image") {
+    ext = "jpg";
+    defaultContentType = "image/jpeg";
+  } else {
+    ext = "mp4";
+    defaultContentType = "video/mp4";
+  }
+  const filename = `${platformLabel}-${type}.${ext}`;
 
   try {
     const upstream = await axios.get(videoUrl, {
@@ -43,15 +77,11 @@ export async function GET(req: NextRequest) {
       headers: {
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        Referer: "https://www.tiktok.com/",
+        Referer: referer,
       },
     });
 
-    const contentType =
-      upstream.headers["content-type"] ||
-      (type === "audio" ? "audio/mpeg" : "video/mp4");
-    const filename =
-      type === "audio" ? "tiktok-audio.mp3" : "tiktok-video.mp4";
+    const contentType = upstream.headers["content-type"] || defaultContentType;
 
     const nodeStream: NodeJS.ReadableStream = upstream.data;
     const webStream = new ReadableStream({

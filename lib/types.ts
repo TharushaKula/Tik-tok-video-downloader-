@@ -8,7 +8,7 @@ export interface DownloadOption {
 }
 
 export interface VideoInfo {
-  platform: 'tiktok';
+  platform: 'tiktok' | 'instagram';
   title: string;
   author: string;
   authorAvatar?: string;

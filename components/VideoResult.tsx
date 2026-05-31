@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import type { VideoInfo, DownloadOption } from "@/lib/types";
+import PlatformBadge from "./PlatformBadge";
 
 function formatCount(n: number): string {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -32,11 +33,16 @@ function formatDuration(sec: number): string {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-function triggerProxyDownload(url: string, type: "video" | "audio", format: string) {
-  const params = new URLSearchParams({ url, type });
+function triggerProxyDownload(
+  url: string,
+  type: "video" | "audio" | "image",
+  format: string,
+  platform: "tiktok" | "instagram"
+) {
+  const params = new URLSearchParams({ url, type, format, platform });
   const proxyUrl = `/api/proxy-download?${params.toString()}`;
-  const ext = format === "mp3" ? "mp3" : "mp4";
-  const filename = `tiktok-${type}.${ext}`;
+  const ext = format === "mp3" ? "mp3" : format === "jpg" ? "jpg" : "mp4";
+  const filename = `${platform}-${type}.${ext}`;
 
   const a = document.createElement("a");
   a.href = proxyUrl;
@@ -46,7 +52,13 @@ function triggerProxyDownload(url: string, type: "video" | "audio", format: stri
   document.body.removeChild(a);
 }
 
-function DownloadButton({ option }: { option: DownloadOption }) {
+function DownloadButton({
+  option,
+  platform,
+}: {
+  option: DownloadOption;
+  platform: "tiktok" | "instagram";
+}) {
   const [downloading, setDownloading] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -54,13 +66,23 @@ function DownloadButton({ option }: { option: DownloadOption }) {
     if (downloading) return;
     try {
       setDownloading(true);
-      const type = option.isAudio ? "audio" : "video";
+      const type: "audio" | "video" | "image" = option.isAudio
+        ? "audio"
+        : option.format === "jpg"
+        ? "image"
+        : "video";
       if (option.isProxy) {
-        triggerProxyDownload(option.url, type, option.format);
+        triggerProxyDownload(option.url, type, option.format, platform);
       } else {
         window.open(option.url, "_blank", "noopener,noreferrer");
       }
-      toast.success(option.isAudio ? "Audio download started!" : "Video download started!");
+      toast.success(
+        type === "audio"
+          ? "Audio download started!"
+          : type === "image"
+          ? "Image download started!"
+          : "Video download started!"
+      );
       setTimeout(() => {
         setDownloading(false);
         setDone(true);
@@ -175,12 +197,9 @@ export default function VideoResult({ info }: { info: VideoInfo }) {
 
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 to-transparent" />
 
-        {/* TikTok badge */}
+        {/* Platform badge */}
         <div className="absolute left-3 top-3">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-pink-500/30 bg-pink-900/20 px-2.5 py-0.5 text-xs font-semibold text-pink-300 backdrop-blur-sm">
-            <span className="h-2 w-2 rounded-full bg-pink-400" />
-            TikTok
-          </span>
+          <PlatformBadge platform={info.platform} size="md" />
         </div>
 
         {info.duration && info.duration > 0 && (
@@ -195,7 +214,13 @@ export default function VideoResult({ info }: { info: VideoInfo }) {
         {/* Author + title */}
         <div className="flex items-start gap-3">
           {info.authorAvatar && (
-            <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 border-pink-500/40">
+            <div
+              className={`relative h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 ${
+                info.platform === "instagram"
+                  ? "border-fuchsia-500/40"
+                  : "border-pink-500/40"
+              }`}
+            >
               <Image
                 src={info.authorAvatar}
                 alt={info.author}
@@ -243,7 +268,7 @@ export default function VideoResult({ info }: { info: VideoInfo }) {
           </p>
           <div className="flex flex-col gap-2">
             {info.downloads.map((option, i) => (
-              <DownloadButton key={i} option={option} />
+              <DownloadButton key={i} option={option} platform={info.platform} />
             ))}
           </div>
         </div>

@@ -2,9 +2,9 @@
 
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { Clipboard, X, Download, Music2, Link2 } from "lucide-react";
+import { Clipboard, X, Download, Music2, Link2, Instagram } from "lucide-react";
 import toast from "react-hot-toast";
-import { isValidTikTokUrl } from "@/lib/validators";
+import { detectPlatform } from "@/lib/validators";
 
 interface UrlInputProps {
   value: string;
@@ -22,7 +22,9 @@ export default function UrlInput({
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const isTikTok = value.trim() ? isValidTikTokUrl(value.trim()) : false;
+  const platform = value.trim() ? detectPlatform(value.trim()) : null;
+  const isTikTok = platform === "tiktok";
+  const isInstagram = platform === "instagram";
 
   async function handlePaste() {
     try {
@@ -44,7 +46,11 @@ export default function UrlInput({
     if (e.key === "Enter" && !loading) onSubmit();
   }
 
-  const glowColor = isTikTok ? "rgba(236,72,153,0.5)" : "rgba(139,92,246,0.5)";
+  const glowColor = isTikTok
+    ? "rgba(236,72,153,0.5)"
+    : isInstagram
+    ? "rgba(217,70,239,0.5)"
+    : "rgba(139,92,246,0.5)";
 
   return (
     <div className="w-full space-y-3">
@@ -60,6 +66,8 @@ export default function UrlInput({
       >
         {isTikTok ? (
           <Music2 size={18} className="text-pink-400 shrink-0" />
+        ) : isInstagram ? (
+          <Instagram size={18} className="text-fuchsia-400 shrink-0" />
         ) : (
           <Link2 size={18} className="text-slate-500 shrink-0" />
         )}
@@ -72,10 +80,10 @@ export default function UrlInput({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           onKeyDown={handleKeyDown}
-          placeholder="Paste a TikTok video URL..."
+          placeholder="Paste a TikTok or Instagram URL..."
           disabled={loading}
           className="flex-1 bg-transparent text-slate-200 placeholder-slate-500 outline-none text-sm min-w-0"
-          aria-label="TikTok Video URL"
+          aria-label="Video URL"
         />
 
         {value && (
