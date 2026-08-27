@@ -43,6 +43,7 @@ Check items off as they ship: `[x]`
 - [x] Collections & tags on the Saved list + QR phone handoff
 - [x] Hardening: 55-test vitest suite (validators/parsers/favorites/templates/hosts), resolver health-check script (`npm run health`), axios security patch, tightened TikTok URL validation
 - [x] YouTube audio formats (M4A/WAV/FLAC), private usage tally, CI + scheduled health-check Actions
+- [x] Public /status page with live resolver health + TXT/CSV link-list import
 
 ---
 
@@ -80,7 +81,7 @@ Check items off as they ship: `[x]`
 - [~] Bulk download by username/profile (investigated 2026-08: tikwm's
       user/posts endpoint is Cloudflare-gated like its search API; not
       shippable. YouTube channels DO work, see below)
-- [ ] TXT/CSV link-list import
+- [x] TXT/CSV link-list import (Import file button in batch mode, or drop the file anywhere)
 - [ ] Download queue with per-item progress and pause/cancel
 - [x] Real progress bars for YouTube conversions (live percent + progress track)
 - [ ] Real progress bars for direct downloads (streamed progress, file size shown up-front)
@@ -99,7 +100,9 @@ Check items off as they ship: `[x]`
 - [ ] Trim/clip by time range before downloading (download only a section)
 - [ ] Video → GIF converter
 - [x] Audio format choices beyond MP3 (YouTube: M4A, WAV, lossless FLAC)
-- [ ] Audio bitrate picker (128/192/320 kbps)
+- [~] Audio bitrate picker (investigated 2026-08: loader.to ignores bitrate
+      params and always converts at 320kbps  already max quality, so the
+      MP3 option is labeled 320kbps instead)
 - [ ] Video compressor (target file size)
 - [ ] Format converter (MP4 ↔ WebM/MKV/MOV)
 - [x] Smart filenames  downloads named after the video title (sanitized, unicode-safe)
@@ -158,8 +161,8 @@ Check items off as they ship: `[x]`
 - [ ] Fallback resolvers for the remaining platforms (investigated 2026-08: fdown, getfvid, snapinsta, snapins, getmyfb, and oceansaver are all dead or bot-walled from server contexts  revisit when a viable candidate appears)
 - [ ] Server-side caching of recently resolved links
 - [x] Background job queue for long YouTube conversions (client polls with live progress)
-- [~] Health monitoring: `npm run health` probes every resolver and exits
-      non-zero if any is down (ready to wire to CI/cron; alerting TBD)
+- [x] Health monitoring: `npm run health` script + scheduled GitHub Action +
+      public /status page (ISR-cached live probes, refreshed every 10 min)
 - [x] Automated test suite (vitest) over validators, parsers, and stores
 - [x] GitHub Actions: CI gate (lint/types/tests/build) + scheduled resolver health check
 - [ ] Smart link cleanup (strip tracking params, resolve shortlinks client-side)
@@ -168,15 +171,14 @@ Check items off as they ship: `[x]`
 
 ## 🎯 Suggested quick wins
 
-Ten rounds shipped. Next highest-impact candidates:
+Eleven rounds shipped. Next highest-impact candidates:
 
 1. Multi-language UI (i18n)  its own dedicated pass
 2. Next.js 14 -> 16 upgrade (clears remaining audit items)  its own migration
 3. Blog + how-to guides (organic traffic)
 4. Browser extension (one-click from the video page)
-5. Status page / uptime badge (surface the health check publicly)
-6. Audio bitrate picker for MP3 (128/192/320)
-7. Trim/clip a section before downloading
+5. Trim/clip a section before downloading
+6. Sound/haptic feedback on completion
 
 ---
 

@@ -33,6 +33,16 @@ export default function ErrorCard({
             <li>· Check that the link opens in your browser</li>
             <li>· Private, age-restricted, or region-locked posts can&apos;t be fetched</li>
             <li>· Try copying the link again from the app&apos;s share button</li>
+            <li>
+              · Keeps happening?{" "}
+              <a
+                href="/status"
+                className="focus-ring rounded font-medium text-ink-2 underline decoration-veil/30 underline-offset-2 transition-colors hover:text-ink-1"
+              >
+                Check the status page
+              </a>{" "}
+              to see if the platform is down
+            </li>
           </ul>
           <div className="mt-4 flex items-center gap-2">
             <button

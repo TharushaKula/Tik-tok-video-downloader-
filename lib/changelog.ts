@@ -8,6 +8,15 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-08-27",
+    title: "A status page, and link lists",
+    items: [
+      "New status page shows live health for every platform, so you can tell if a problem is on our side",
+      "Import a .txt or .csv of links into a batch, or just drop the file anywhere on the page",
+      "YouTube MP3s are confirmed max-quality 320kbps, now labeled as such",
+    ],
+  },
+  {
+    date: "2026-08-27",
     title: "More audio formats, and a personal tally",
     items: [
       "YouTube audio now downloads as MP3, M4A, WAV, or lossless FLAC",

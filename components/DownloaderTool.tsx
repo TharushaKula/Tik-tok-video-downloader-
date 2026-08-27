@@ -29,6 +29,7 @@ import {
   extractSupportedUrls,
   extractYouTubePlaylistId,
   isYouTubeChannelUrl,
+  normalizeLinkFileText,
   MAX_BATCH_SIZE,
 } from "@/lib/validators";
 import {
@@ -203,33 +204,53 @@ export default function DownloaderTool() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  // Drag-and-drop a link anywhere on the page
+  // Drag-and-drop a link (or a .txt/.csv of links) anywhere on the page
   const [dragging, setDragging] = useState(false);
   const dragDepth = useRef(0);
   useEffect(() => {
-    const hasText = (e: DragEvent) =>
+    const accepts = (e: DragEvent) =>
       Array.from(e.dataTransfer?.types ?? []).some(
-        (t) => t === "text/plain" || t === "text/uri-list"
+        (t) => t === "text/plain" || t === "text/uri-list" || t === "Files"
       );
+    const isLinkFile = (f: File) =>
+      /\.(txt|csv)$/i.test(f.name) ||
+      f.type === "text/plain" ||
+      f.type === "text/csv";
     function onDragEnter(e: DragEvent) {
-      if (!hasText(e)) return;
+      if (!accepts(e)) return;
       e.preventDefault();
       dragDepth.current += 1;
       setDragging(true);
     }
     function onDragOver(e: DragEvent) {
-      if (hasText(e)) e.preventDefault();
+      if (accepts(e)) e.preventDefault();
     }
     function onDragLeave(e: DragEvent) {
-      if (!hasText(e)) return;
+      if (!accepts(e)) return;
       dragDepth.current = Math.max(0, dragDepth.current - 1);
       if (dragDepth.current === 0) setDragging(false);
     }
     function onDrop(e: DragEvent) {
       dragDepth.current = 0;
       setDragging(false);
-      if (!hasText(e)) return;
+      if (!accepts(e)) return;
       e.preventDefault();
+      const file = e.dataTransfer?.files?.[0];
+      if (file) {
+        if (!isLinkFile(file)) {
+          toast("Drop a link, or a .txt/.csv file of links");
+          return;
+        }
+        void file
+          .text()
+          .then((content) => {
+            if (!routeRef.current(normalizeLinkFileText(content))) {
+              toast("No supported links found in that file");
+            }
+          })
+          .catch(() => toast.error("Couldn't read that file"));
+        return;
+      }
       const text =
         e.dataTransfer?.getData("text/uri-list") ||
         e.dataTransfer?.getData("text/plain") ||
@@ -531,10 +552,10 @@ export default function DownloaderTool() {
         >
           <div className="rounded-2xl border-2 border-dashed border-accent/60 bg-accent/[0.06] px-10 py-8 text-center">
             <p className="text-lg font-semibold text-ink-hi">
-              Drop your link anywhere
+              Drop a link, or a .txt/.csv of links
             </p>
             <p className="mt-1 text-sm text-ink-2">
-              We&apos;ll detect the platform and fetch it right away
+              We&apos;ll detect the platform and fetch everything right away
             </p>
           </div>
         </div>

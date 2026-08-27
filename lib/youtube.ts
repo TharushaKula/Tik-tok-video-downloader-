@@ -172,6 +172,8 @@ export async function fetchYouTubeData(url: string): Promise<VideoInfo> {
         label: "Download MP3",
         url,
         format: "mp3",
+        // loader.to always converts MP3 at max quality (verified 320kbps)
+        quality: "320kbps",
         isAudio: true,
         isProxy: true,
       },

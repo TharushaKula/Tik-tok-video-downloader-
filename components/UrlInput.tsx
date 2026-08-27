@@ -7,6 +7,7 @@ import {
   Bot,
   Clipboard,
   Facebook,
+  FileUp,
   Instagram,
   Link2,
   ListPlus,
@@ -25,6 +26,7 @@ import {
   extractSupportedUrls,
   isYouTubePlaylistUrl,
   isYouTubeChannelUrl,
+  normalizeLinkFileText,
   MAX_BATCH_SIZE,
 } from "@/lib/validators";
 import { PLATFORMS, PLATFORM_IDS } from "@/lib/platforms";
@@ -70,6 +72,30 @@ export default function UrlInput({
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  /** Import a .txt/.csv of links into the batch box (appends, dedupes later). */
+  async function handleImportFile(file: File | null) {
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const { urls } = extractSupportedUrls(normalizeLinkFileText(text));
+      if (urls.length === 0) {
+        toast.error("No supported links found in that file");
+        return;
+      }
+      const block = urls.join("\n");
+      onBatchTextChange(
+        batchText.trim() ? `${batchText.trimEnd()}\n${block}` : block
+      );
+      toast.success(
+        `Imported ${urls.length} ${urls.length === 1 ? "link" : "links"} from ${file.name}`
+      );
+      textareaRef.current?.focus();
+    } catch {
+      toast.error("Couldn't read that file");
+    }
+  }
 
   const trimmed = value.trim();
   const isPlaylist = trimmed ? isYouTubePlaylistUrl(trimmed) : false;
@@ -245,6 +271,27 @@ export default function UrlInput({
                 >
                   <Clipboard size={12} />
                   Paste
+                </button>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept=".txt,.csv,text/plain,text/csv"
+                  className="hidden"
+                  onChange={(e) => {
+                    void handleImportFile(e.target.files?.[0] ?? null);
+                    e.target.value = "";
+                  }}
+                  aria-hidden
+                  tabIndex={-1}
+                />
+                <button
+                  onClick={() => fileRef.current?.click()}
+                  disabled={loading}
+                  className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-veil/[0.08] px-2.5 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1 disabled:opacity-50"
+                  aria-label="Import links from a .txt or .csv file"
+                >
+                  <FileUp size={12} />
+                  Import file
                 </button>
                 <button
                   onClick={exitBatchMode}

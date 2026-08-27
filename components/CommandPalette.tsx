@@ -15,6 +15,7 @@ import {
   Monitor,
   Moon,
   Search,
+  Activity,
   Sparkles,
   Star,
   Sun,
@@ -182,6 +183,14 @@ export default function CommandPalette({
         keywords: "changelog updates new whats",
         icon: Sparkles,
         run: go("/changelog"),
+      },
+      {
+        id: "go-status",
+        label: "Status  is SnapLoad working?",
+        group: "Go to",
+        keywords: "status up down outage broken working health",
+        icon: Activity,
+        run: go("/status"),
       }
     );
 

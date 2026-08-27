@@ -291,6 +291,14 @@ export interface ExtractedUrls {
  * Pull every supported video link out of a blob of text  pasted lists,
  * share-sheet text, chat messages. Links are deduped and capped at `max`.
  */
+/**
+ * Normalize the text of an imported .txt/.csv link list so the URL extractor
+ * can pick links out of it: CSV separators and quoting become line breaks.
+ */
+export function normalizeLinkFileText(text: string): string {
+  return text.replace(/["';,\t]+/g, "\n");
+}
+
 export function extractSupportedUrls(
   text: string,
   max = MAX_BATCH_SIZE

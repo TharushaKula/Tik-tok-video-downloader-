@@ -6,6 +6,7 @@ import {
   isYouTubePlaylistUrl,
   isYouTubeChannelUrl,
   extractYouTubeChannelRef,
+  normalizeLinkFileText,
   MAX_BATCH_SIZE,
 } from "../validators";
 
@@ -83,6 +84,25 @@ describe("extractSupportedUrls", () => {
   it("handles a single link and empty input", () => {
     expect(extractSupportedUrls("https://youtu.be/aqz-KE-bpKQ").urls).toHaveLength(1);
     expect(extractSupportedUrls("no links here").urls).toHaveLength(0);
+  });
+});
+
+describe("normalizeLinkFileText + extraction (file import)", () => {
+  it("extracts links from a quoted CSV row", () => {
+    const csv = `name,link,notes
+"first","https://youtu.be/aqz-KE-bpKQ","fun"
+second;https://www.tiktok.com/@u/video/7106594312292453674;great`;
+    const r = extractSupportedUrls(normalizeLinkFileText(csv));
+    expect(r.urls).toEqual([
+      "https://youtu.be/aqz-KE-bpKQ",
+      "https://www.tiktok.com/@u/video/7106594312292453674",
+    ]);
+  });
+
+  it("passes plain txt link lists through unchanged", () => {
+    const txt = "https://youtu.be/aqz-KE-bpKQ\nhttps://pin.it/4hVjrgWzq\n";
+    const r = extractSupportedUrls(normalizeLinkFileText(txt));
+    expect(r.urls).toHaveLength(2);
   });
 });
 

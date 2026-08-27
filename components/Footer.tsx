@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/#how-it-works", label: "How it works" },
   { href: "/#faq", label: "FAQ" },
   { href: "/changelog", label: "What's new" },
+  { href: "/status", label: "Status" },
 ];
 
 const LEGAL_LINKS = [
