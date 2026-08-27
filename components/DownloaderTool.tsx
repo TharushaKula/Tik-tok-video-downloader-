@@ -128,6 +128,155 @@ export default function DownloaderTool() {
     }
   }, [state.kind, reduce]);
 
+  // Refs so window-level listeners never see stale state
+  const busyRef = useRef(busy);
+  busyRef.current = busy;
+  const recentRef = useRef(recent);
+  recentRef.current = recent;
+
+  // Route any incoming text (drop, page-level paste, clipboard detection):
+  // several links start a batch, one link fetches directly.
+  // Returns false when no supported link was found.
+  function routeIncomingText(text: string): boolean {
+    const found = extractSupportedUrls(text);
+    if (found.urls.length >= 2 && !busyRef.current) {
+      setBatchMode(true);
+      setBatchText(found.urls.join("\n"));
+      void handleBatchSubmit(found.urls);
+      toast.success(`${found.urls.length} links detected  fetching all`);
+      return true;
+    }
+    if (found.urls.length === 1 && !busyRef.current) {
+      setUrl(found.urls[0]);
+      void handleSubmit(found.urls[0]);
+      return true;
+    }
+    return false;
+  }
+  const routeRef = useRef(routeIncomingText);
+  routeRef.current = routeIncomingText;
+
+  // Drag-and-drop a link anywhere on the page
+  const [dragging, setDragging] = useState(false);
+  const dragDepth = useRef(0);
+  useEffect(() => {
+    const hasText = (e: DragEvent) =>
+      Array.from(e.dataTransfer?.types ?? []).some(
+        (t) => t === "text/plain" || t === "text/uri-list"
+      );
+    function onDragEnter(e: DragEvent) {
+      if (!hasText(e)) return;
+      e.preventDefault();
+      dragDepth.current += 1;
+      setDragging(true);
+    }
+    function onDragOver(e: DragEvent) {
+      if (hasText(e)) e.preventDefault();
+    }
+    function onDragLeave(e: DragEvent) {
+      if (!hasText(e)) return;
+      dragDepth.current = Math.max(0, dragDepth.current - 1);
+      if (dragDepth.current === 0) setDragging(false);
+    }
+    function onDrop(e: DragEvent) {
+      dragDepth.current = 0;
+      setDragging(false);
+      if (!hasText(e)) return;
+      e.preventDefault();
+      const text =
+        e.dataTransfer?.getData("text/uri-list") ||
+        e.dataTransfer?.getData("text/plain") ||
+        "";
+      if (text.trim() && !routeRef.current(text.trim())) {
+        setUrl(text.trim().split(/\s+/)[0]);
+        toast("That doesn't look like a supported link");
+      }
+    }
+    window.addEventListener("dragenter", onDragEnter);
+    window.addEventListener("dragover", onDragOver);
+    window.addEventListener("dragleave", onDragLeave);
+    window.addEventListener("drop", onDrop);
+    return () => {
+      window.removeEventListener("dragenter", onDragEnter);
+      window.removeEventListener("dragover", onDragOver);
+      window.removeEventListener("dragleave", onDragLeave);
+      window.removeEventListener("drop", onDrop);
+    };
+  }, []);
+
+  // Paste anywhere on the page (outside the inputs) to fetch immediately
+  useEffect(() => {
+    function onPaste(e: ClipboardEvent) {
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      ) {
+        return; // the inputs have their own paste handling
+      }
+      const text = e.clipboardData?.getData("text")?.trim() ?? "";
+      if (!text) return;
+      if (routeRef.current(text)) {
+        e.preventDefault();
+      } else {
+        setUrl(text.split(/\s+/)[0].slice(0, 500));
+      }
+    }
+    document.addEventListener("paste", onPaste);
+    return () => document.removeEventListener("paste", onPaste);
+  }, []);
+
+  // Clipboard detection on tab focus: if the clipboard holds a fresh
+  // supported link, offer to fetch it. Reading silently fails until the
+  // user has granted clipboard permission (e.g. via the Paste button).
+  const lastClipboard = useRef("");
+  useEffect(() => {
+    async function onFocus() {
+      if (busyRef.current) return;
+      let text = "";
+      try {
+        text = (await navigator.clipboard.readText()).trim();
+      } catch {
+        return; // permission not granted  stay quiet
+      }
+      if (!text || text === lastClipboard.current) return;
+      lastClipboard.current = text;
+      const { urls } = extractSupportedUrls(text);
+      if (urls.length === 0) return;
+      // Don't re-offer something that was just fetched
+      if (
+        urls.length === 1 &&
+        recentRef.current.some((r) => r.url === urls[0])
+      ) {
+        return;
+      }
+      const label =
+        urls.length > 1 ? `${urls.length} links` : "a link";
+      toast(
+        (t) => (
+          <span className="flex items-center gap-3">
+            <span className="text-[13px]">
+              We noticed {label} in your clipboard
+            </span>
+            <button
+              onClick={() => {
+                toast.dismiss(t.id);
+                routeRef.current(text);
+              }}
+              className="shrink-0 rounded-lg bg-btn px-2.5 py-1 text-xs font-semibold text-btn-ink"
+            >
+              Fetch
+            </button>
+          </span>
+        ),
+        { duration: 8000, id: "clipboard-offer" }
+      );
+    }
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, []);
+
   function rememberDownload(target: string, info: VideoInfo) {
     setRecent(
       saveRecent({
@@ -323,6 +472,23 @@ export default function DownloaderTool() {
 
   return (
     <div className="flex w-full flex-col items-center gap-8">
+      {/* Full-page drop target while dragging a link */}
+      {dragging && (
+        <div
+          className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center bg-base/80 backdrop-blur-sm"
+          aria-hidden
+        >
+          <div className="rounded-2xl border-2 border-dashed border-accent/60 bg-accent/[0.06] px-10 py-8 text-center">
+            <p className="text-lg font-semibold text-ink-hi">
+              Drop your link anywhere
+            </p>
+            <p className="mt-1 text-sm text-ink-2">
+              We&apos;ll detect the platform and fetch it right away
+            </p>
+          </div>
+        </div>
+      )}
+
       <OnboardingHint
         visible={showHint}
         onDismiss={() => {

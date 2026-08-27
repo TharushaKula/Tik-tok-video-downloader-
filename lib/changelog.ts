@@ -8,6 +8,15 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-08-27",
+    title: "Paste, drop, or just switch tabs",
+    items: [
+      "Drag a link from any window and drop it anywhere on the page",
+      "Paste anywhere on the page, no need to click the link box first",
+      "Copied a link elsewhere? We offer to fetch it the moment you return",
+    ],
+  },
+  {
+    date: "2026-08-27",
     title: "Whole channels & custom filenames",
     items: [
       "Paste a YouTube channel or @handle to grab its latest uploads as a batch",

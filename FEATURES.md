@@ -38,6 +38,7 @@ Check items off as they ship: `[x]`
 - [x] Twitch clips + SoundCloud tracks (9 platforms total)
 - [x] Favorites  star videos to a persistent Saved list
 - [x] YouTube full-channel downloads, custom filename templates, first-visit hint
+- [x] Zero-friction input funnel: drag-and-drop, paste-anywhere, clipboard detection on focus
 
 ---
 
@@ -54,7 +55,8 @@ Check items off as they ship: `[x]`
 - [ ] Snapchat Spotlight downloads
 - [ ] Threads video downloads
 - [ ] LinkedIn video downloads
-- [ ] Dailymotion downloads
+- [~] Dailymotion (investigated 2026-08: metadata is public but media is
+      HLS-only behind session-bound 403 tokens; needs remuxing, not shippable)
 - [ ] Bilibili downloads
 - [x] TikTok photo slideshows → all slides as images + soundtrack MP3
 - [ ] TikTok slideshow auto-merge → single MP4 with music (needs server-side rendering)
@@ -79,9 +81,11 @@ Check items off as they ship: `[x]`
 - [ ] Format/quality picker with codec + estimated file-size table
 - [ ] 4K / 8K / 60fps quality tiers
 - [ ] Resumable / retryable downloads
-- [ ] Subtitle downloads (SRT/VTT, language picker, burned-in option)
+- [~] Subtitle downloads (investigated 2026-08: YouTube caption URLs are now
+      POT-token-gated; signed baseUrls return empty even off-datacenter. Not
+      shippable server-side; revisit if a viable path appears)
 - [x] Thumbnail & cover-image download button
-- [ ] Clipboard auto-detection on page focus ("We noticed a link  download it?")
+- [x] Clipboard auto-detection on page focus ("We noticed a link" prompt, dedupes offers)
 - [ ] Concurrent-download limit control
 
 ## 🎬 Media processing (post-download tools)
@@ -104,10 +108,11 @@ Check items off as they ship: `[x]`
 - [x] Android share-target ("Share to SnapLoad" straight from the TikTok app)
 - [ ] Browser extension (one-click download from the video page)
 - [x] Video preview player in the result card (watch before saving)
-- [ ] Drag-and-drop a link anywhere on the page
+- [x] Drag-and-drop a link anywhere on the page (full-page drop target)
 - [ ] QR code handoff (scan to continue the download on your phone)
 - [ ] Command palette (⌘K) for power users
-- [ ] Full keyboard shortcut set
+- [x] Paste anywhere on the page to fetch (no need to focus the input)
+- [ ] Full keyboard shortcut set (command palette level)
 - [x] Light theme + system theme toggle (semantic design tokens, no-flicker init, per-theme platform colors)
 - [ ] Multi-language UI (i18n) with localized SEO pages
 - [x] First-visit onboarding hint (dismissible, auto-hides after first download)
@@ -154,15 +159,15 @@ Check items off as they ship: `[x]`
 
 ## 🎯 Suggested quick wins
 
-Six full rounds of quick wins have shipped. Next highest-impact candidates:
+Seven full rounds of quick wins have shipped. Next highest-impact candidates:
 
 1. Collections & tags on top of the Saved list
-2. Subtitle downloads for YouTube
-3. Multi-language UI (i18n)
-4. Bulk download by username/profile (other platforms)
-5. Snapchat / Threads / Dailymotion support
-6. Command palette (Cmd+K) for power users
-7. QR handoff to continue a download on your phone
+2. Multi-language UI (i18n)
+3. Command palette (Cmd+K) for power users
+4. QR handoff to continue a download on your phone
+5. Bulk download by username/profile (other platforms)
+6. DMCA / Terms / Privacy pages
+7. Usage stats dashboard
 
 ---
 
