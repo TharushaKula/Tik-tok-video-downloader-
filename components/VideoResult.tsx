@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import {
   Clock,
@@ -7,12 +8,15 @@ import {
   Film,
   Heart,
   MessageCircle,
+  Play,
   RotateCcw,
   Share2,
+  X,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import type { VideoInfo } from "@/lib/types";
 import PlatformBadge from "./PlatformBadge";
-import DownloadOptionRow from "./DownloadOptionRow";
+import DownloadOptionRow, { proxyUrlFor } from "./DownloadOptionRow";
 
 function formatCount(n: number): string {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -36,6 +40,8 @@ interface VideoResultProps {
 }
 
 export default function VideoResult({ info, onReset }: VideoResultProps) {
+  const [previewing, setPreviewing] = useState(false);
+
   const statItems = [
     { icon: Eye, label: "views", value: info.stats?.views },
     { icon: Heart, label: "likes", value: info.stats?.likes },
@@ -43,33 +49,76 @@ export default function VideoResult({ info, onReset }: VideoResultProps) {
     { icon: Share2, label: "shares", value: info.stats?.shares },
   ].filter((s) => (s.value ?? 0) > 0);
 
+  // In-page preview streams through our proxy. YouTube is excluded — it
+  // would kick off a full conversion just to peek.
+  const previewOption =
+    info.platform !== "youtube"
+      ? info.downloads.find((d) => !d.isAudio && d.format === "mp4" && d.isProxy)
+      : undefined;
+
   return (
     <div className="card w-full overflow-hidden">
       {/* Media + meta */}
       <div className="flex flex-col gap-4 p-4 sm:flex-row sm:p-5">
         <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-xl border border-white/[0.06] bg-black/50 sm:w-56">
-          {info.thumbnail ? (
-            <Image
-              src={info.thumbnail}
-              alt=""
-              fill
-              className="object-cover"
-              unoptimized
-            />
+          {previewing && previewOption ? (
+            <>
+              <video
+                src={proxyUrlFor(previewOption, info.platform, true)}
+                className="absolute inset-0 h-full w-full bg-black object-contain"
+                controls
+                autoPlay
+                playsInline
+                onError={() => {
+                  setPreviewing(false);
+                  toast.error("Preview isn't available for this video");
+                }}
+              />
+              <button
+                onClick={() => setPreviewing(false)}
+                className="focus-ring absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-black/70 text-white backdrop-blur-sm transition-colors hover:bg-black/90"
+                aria-label="Close preview"
+              >
+                <X size={13} />
+              </button>
+            </>
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Film size={20} className="text-slate-600" />
-            </div>
+            <>
+              {info.thumbnail ? (
+                <Image
+                  src={info.thumbnail}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Film size={20} className="text-slate-600" />
+                </div>
+              )}
+              {previewOption && (
+                <button
+                  onClick={() => setPreviewing(true)}
+                  className="focus-ring group/play absolute inset-0 flex items-center justify-center"
+                  aria-label="Preview video"
+                >
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/60 backdrop-blur-sm transition-transform group-hover/play:scale-110">
+                    <Play size={16} className="ml-0.5 text-white" fill="white" />
+                  </span>
+                </button>
+              )}
+              <div className="pointer-events-none absolute left-2 top-2">
+                <PlatformBadge platform={info.platform} />
+              </div>
+              {info.duration && info.duration > 0 ? (
+                <span className="pointer-events-none absolute bottom-2 right-2 flex items-center gap-1 rounded-md bg-black/70 px-1.5 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
+                  <Clock size={9} />
+                  {formatDuration(info.duration)}
+                </span>
+              ) : null}
+            </>
           )}
-          <div className="absolute left-2 top-2">
-            <PlatformBadge platform={info.platform} />
-          </div>
-          {info.duration && info.duration > 0 ? (
-            <span className="absolute bottom-2 right-2 flex items-center gap-1 rounded-md bg-black/70 px-1.5 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
-              <Clock size={9} />
-              {formatDuration(info.duration)}
-            </span>
-          ) : null}
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col gap-2">
@@ -133,7 +182,7 @@ export default function VideoResult({ info, onReset }: VideoResultProps) {
         </div>
         <p className="mt-3 text-xs leading-relaxed text-slate-600">
           {info.platform === "youtube"
-            ? "YouTube files are converted on the fly — HD can take up to a minute before the download appears."
+            ? "YouTube files are converted on the fly — you'll see live progress, and the download starts automatically when it's ready."
             : "Files are fetched through our server, so nothing is installed and no app is needed."}
         </p>
       </div>

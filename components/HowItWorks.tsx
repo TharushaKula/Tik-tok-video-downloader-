@@ -8,7 +8,7 @@ const STEPS = [
     number: "01",
     icon: Link2,
     title: "Copy a link",
-    desc: "Use the share button in TikTok, Instagram, Facebook, or YouTube and copy the video link.",
+    desc: "Use the share button in any supported app — TikTok, Instagram, Facebook, YouTube, or X — and copy the video link.",
   },
   {
     number: "02",

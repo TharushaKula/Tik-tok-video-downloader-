@@ -7,7 +7,7 @@ import { ChevronDown } from "lucide-react";
 const FAQS = [
   {
     q: "Which platforms and formats are supported?",
-    a: "TikTok videos (watermark-free, with MP3 audio), Instagram Reels and posts, Facebook videos and Reels — including fb.watch and share links — and YouTube videos and Shorts as MP4 up to 1080p or MP3 audio.",
+    a: "TikTok videos (watermark-free, with MP3 audio), Instagram Reels and posts, Facebook videos and Reels — including fb.watch and share links — YouTube videos and Shorts as MP4 up to 1080p or MP3 audio, and X (Twitter) videos and GIFs.",
   },
   {
     q: "Can I download several videos at once?",
@@ -75,7 +75,12 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   );
 }
 
-export default function FaqSection() {
+interface FaqSectionProps {
+  /** Override the default FAQ list (used by platform landing pages) */
+  faqs?: { q: string; a: string }[];
+}
+
+export default function FaqSection({ faqs = FAQS }: FaqSectionProps) {
   const reduce = useReducedMotion();
 
   return (
@@ -102,7 +107,7 @@ export default function FaqSection() {
         transition={{ duration: 0.5, delay: 0.08 }}
         className="card divide-y divide-white/[0.06] overflow-hidden"
       >
-        {FAQS.map((faq) => (
+        {faqs.map((faq) => (
           <FaqItem key={faq.q} q={faq.q} a={faq.a} />
         ))}
       </motion.div>

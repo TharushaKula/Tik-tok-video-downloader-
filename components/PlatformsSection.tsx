@@ -1,7 +1,14 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { Check, Facebook, Instagram, Music2, Youtube } from "lucide-react";
+import {
+  Check,
+  Facebook,
+  Instagram,
+  Music2,
+  Twitter,
+  Youtube,
+} from "lucide-react";
 import { PLATFORMS, PLATFORM_IDS } from "@/lib/platforms";
 import type { PlatformId } from "@/lib/types";
 
@@ -10,6 +17,7 @@ const ICONS: Record<PlatformId, typeof Music2> = {
   instagram: Instagram,
   facebook: Facebook,
   youtube: Youtube,
+  twitter: Twitter,
 };
 
 export default function PlatformsSection() {
@@ -36,7 +44,7 @@ export default function PlatformsSection() {
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {PLATFORM_IDS.map((id, i) => {
           const meta = PLATFORMS[id];
           const Icon = ICONS[id];

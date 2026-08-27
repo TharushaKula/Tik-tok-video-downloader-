@@ -1,9 +1,12 @@
+import Link from "next/link";
 import { Download } from "lucide-react";
+import { LANDING_PAGES, LANDING_SLUGS } from "@/lib/landing";
+import { PLATFORMS } from "@/lib/platforms";
 
 const LINKS = [
-  { href: "#platforms", label: "Platforms" },
-  { href: "#how-it-works", label: "How it works" },
-  { href: "#faq", label: "FAQ" },
+  { href: "/#platforms", label: "Platforms" },
+  { href: "/#how-it-works", label: "How it works" },
+  { href: "/#faq", label: "FAQ" },
 ];
 
 export default function Footer() {
@@ -39,10 +42,27 @@ export default function Footer() {
           </nav>
         </div>
 
+        {/* Per-platform downloader pages */}
+        <nav
+          className="mt-8 flex flex-wrap items-center justify-center gap-x-1 gap-y-1 border-t border-white/[0.05] pt-6 sm:justify-start"
+          aria-label="Downloaders"
+        >
+          {LANDING_SLUGS.map((slug) => (
+            <Link
+              key={slug}
+              href={`/${slug}`}
+              className="focus-ring rounded-lg px-2.5 py-1 text-xs text-slate-600 transition-colors hover:text-slate-300"
+            >
+              {PLATFORMS[LANDING_PAGES[slug].platform].name} Downloader
+            </Link>
+          ))}
+        </nav>
+
         <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-white/[0.05] pt-6 text-center sm:flex-row sm:text-left">
           <p className="max-w-lg text-xs leading-relaxed text-slate-600">
-            SnapLoad isn&apos;t affiliated with TikTok, Instagram, Facebook, or
-            YouTube. Download only content you own or have permission to save.
+            SnapLoad isn&apos;t affiliated with TikTok, Instagram, Facebook,
+            YouTube, or X. Download only content you own or have permission to
+            save.
           </p>
           <p className="shrink-0 text-xs text-slate-600">
             © {year} SnapLoad

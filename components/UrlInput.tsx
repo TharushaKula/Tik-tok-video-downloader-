@@ -11,6 +11,7 @@ import {
   ListX,
   Loader2,
   Music2,
+  Twitter,
   X,
   Youtube,
 } from "lucide-react";
@@ -28,6 +29,7 @@ const PLATFORM_ICONS: Record<PlatformId, typeof Music2> = {
   instagram: Instagram,
   facebook: Facebook,
   youtube: Youtube,
+  twitter: Twitter,
 };
 
 interface UrlInputProps {

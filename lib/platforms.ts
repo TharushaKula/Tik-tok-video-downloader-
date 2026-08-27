@@ -55,6 +55,15 @@ export const PLATFORMS: Record<PlatformId, PlatformMeta> = {
     glow: "rgba(248, 113, 113, 0.18)",
     supports: ["Videos & Shorts", "MP4 up to 1080p", "MP3 audio"],
   },
+  twitter: {
+    name: "X (Twitter)",
+    dot: "bg-sky-400",
+    text: "text-sky-400",
+    activeChip: "border-sky-400/40 bg-sky-400/10 text-sky-300",
+    hoverBorder: "hover:border-sky-400/30",
+    glow: "rgba(56, 189, 248, 0.18)",
+    supports: ["Tweet videos", "GIFs as MP4", "HD quality"],
+  },
 };
 
 export const PLATFORM_IDS: PlatformId[] = [
@@ -62,4 +71,5 @@ export const PLATFORM_IDS: PlatformId[] = [
   "instagram",
   "facebook",
   "youtube",
+  "twitter",
 ];

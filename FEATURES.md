@@ -21,12 +21,18 @@ Check items off as they ship: `[x]`
 - [x] Recent downloads history (localStorage, re-fetch in one click)
 - [x] Responsive design, reduced-motion support, focus-visible states
 - [x] Batch mode — multi-link paste with parallel fetch queue, per-item status/retry, and Save all
+- [x] X (Twitter) videos & GIFs
+- [x] TikTok photo slideshows (all slides + soundtrack MP3)
+- [x] Live YouTube conversion progress (client-side job polling, no held server connections)
+- [x] In-card video preview with seeking (streamed inline through the proxy)
+- [x] PWA — installable app with Android share-target ("Share to SnapLoad")
+- [x] SEO landing pages per platform + sitemap + robots + FAQ structured data
 
 ---
 
 ## 🌍 Platform & content expansion
 
-- [ ] Twitter/X video & GIF downloads
+- [x] Twitter/X video & GIF downloads
 - [ ] Reddit video downloads
 - [ ] Pinterest video/idea-pin downloads
 - [ ] Snapchat Spotlight downloads
@@ -37,7 +43,8 @@ Check items off as they ship: `[x]`
 - [ ] Twitch clips & VOD downloads
 - [ ] SoundCloud audio downloads
 - [ ] Bilibili downloads
-- [ ] TikTok photo slideshows → auto-merged MP4 with music
+- [x] TikTok photo slideshows → all slides as images + soundtrack MP3
+- [ ] TikTok slideshow auto-merge → single MP4 with music (needs server-side rendering)
 - [ ] TikTok Stories downloads
 - [ ] Instagram Stories & Highlights downloads
 - [ ] Instagram carousel downloads (all slides, zipped)
@@ -54,7 +61,8 @@ Check items off as they ship: `[x]`
 - [ ] Bulk download by username/profile (all videos from an account)
 - [ ] TXT/CSV link-list import
 - [ ] Download queue with per-item progress and pause/cancel
-- [ ] Real progress bars (streamed progress, file size shown up-front)
+- [x] Real progress bars for YouTube conversions (live percent + progress track)
+- [ ] Real progress bars for direct downloads (streamed progress, file size shown up-front)
 - [ ] Format/quality picker with codec + estimated file-size table
 - [ ] 4K / 8K / 60fps quality tiers
 - [ ] Resumable / retryable downloads
@@ -78,10 +86,10 @@ Check items off as they ship: `[x]`
 
 ## ✨ UX & convenience
 
-- [ ] PWA install (add to home screen)
-- [ ] Android share-target ("Share to SnapLoad" straight from the TikTok app)
+- [x] PWA install (add to home screen)
+- [x] Android share-target ("Share to SnapLoad" straight from the TikTok app)
 - [ ] Browser extension (one-click download from the video page)
-- [ ] Video preview player in the result card (watch before saving)
+- [x] Video preview player in the result card (watch before saving)
 - [ ] Drag-and-drop a link anywhere on the page
 - [ ] QR code handoff (scan to continue the download on your phone)
 - [ ] Command palette (⌘K) for power users
@@ -107,7 +115,7 @@ Check items off as they ship: `[x]`
 
 ## 📈 Growth, trust & monetization
 
-- [ ] Per-platform SEO landing pages (/tiktok-downloader, /youtube-to-mp3, …)
+- [x] Per-platform SEO landing pages (/tiktok-downloader, /youtube-downloader, …) with canonical URLs, FAQ JSON-LD, sitemap.xml, and robots.txt
 - [ ] Blog + how-to guides (organic traffic engine for this category)
 - [ ] Premium tier (batch, 4K/8K, faster conversions, no queue)
 - [ ] Donation/tip option
@@ -122,7 +130,7 @@ Check items off as they ship: `[x]`
 
 - [ ] Multi-resolver fallback chains per platform (auto-failover when one API dies)
 - [ ] Server-side caching of recently resolved links
-- [ ] Background job queue for long YouTube conversions (client polls with live progress)
+- [x] Background job queue for long YouTube conversions (client polls with live progress)
 - [ ] Health monitoring + alerting when a platform resolver breaks
 - [ ] Smart link cleanup (strip tracking params, resolve shortlinks client-side)
 
@@ -130,16 +138,15 @@ Check items off as they ship: `[x]`
 
 ## 🎯 Suggested quick wins
 
-The highest impact for SnapLoad specifically, closing the biggest gaps against
-SnapTik/Cobalt while fitting the existing architecture:
+~~All seven original quick wins have shipped~~ ✅ Next highest-impact candidates:
 
-1. Batch/multi-link paste
-2. Twitter/X support
-3. TikTok photo slideshows
-4. Real progress for YouTube conversions (job queue + polling)
-5. PWA + Android share-target
-6. Video preview in the result card
-7. Per-platform SEO landing pages
+1. Reddit + Pinterest support (same resolver pattern)
+2. Instagram Stories & Highlights
+3. YouTube playlist batch downloads
+4. Download-complete browser notifications
+5. Light theme + system theme toggle
+6. Multi-resolver fallback chains (reliability)
+7. Privacy-friendly analytics
 
 ---
 

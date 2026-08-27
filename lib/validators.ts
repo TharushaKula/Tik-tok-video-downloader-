@@ -91,13 +91,41 @@ export function isValidYouTubeUrl(url: string): boolean {
   }
 }
 
-export type Platform = "tiktok" | "instagram" | "facebook" | "youtube" | null;
+export function isValidTwitterUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    const validHosts = [
+      "twitter.com",
+      "www.twitter.com",
+      "mobile.twitter.com",
+      "x.com",
+      "www.x.com",
+      "mobile.x.com",
+    ];
+    const hostOk = validHosts.some((host) => parsed.hostname === host);
+    if (!hostOk) return false;
+    return /^\/(?:[A-Za-z0-9_]+|i\/web)\/status(?:es)?\/\d+/.test(
+      parsed.pathname
+    );
+  } catch {
+    return false;
+  }
+}
+
+export type Platform =
+  | "tiktok"
+  | "instagram"
+  | "facebook"
+  | "youtube"
+  | "twitter"
+  | null;
 
 export function detectPlatform(url: string): Platform {
   if (isValidTikTokUrl(url)) return "tiktok";
   if (isValidInstagramUrl(url)) return "instagram";
   if (isValidFacebookUrl(url)) return "facebook";
   if (isValidYouTubeUrl(url)) return "youtube";
+  if (isValidTwitterUrl(url)) return "twitter";
   return null;
 }
 

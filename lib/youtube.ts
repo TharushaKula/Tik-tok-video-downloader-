@@ -159,13 +159,14 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function resolveYouTubeDownload(
+/**
+ * Kick off a conversion job and return the resolver's progress URL.
+ * The caller polls it (server- or client-side) until download_url appears.
+ */
+export async function startLoaderJob(
   url: string,
-  format: YouTubeFormat,
-  budgetMs = 270000
+  format: YouTubeFormat
 ): Promise<string> {
-  const started = Date.now();
-
   let job: LoaderJobResponse;
   try {
     const res = await axios.get<LoaderJobResponse>(
@@ -191,9 +192,18 @@ export async function resolveYouTubeDownload(
     );
   }
 
-  const progressUrl = assertSafeProgressUrl(
+  return assertSafeProgressUrl(
     job.progress_url || `https://p.oceansaver.in/ajax/progress.php?id=${job.id}`
-  );
+  ).toString();
+}
+
+export async function resolveYouTubeDownload(
+  url: string,
+  format: YouTubeFormat,
+  budgetMs = 270000
+): Promise<string> {
+  const started = Date.now();
+  const progressUrl = new URL(await startLoaderJob(url, format));
 
   while (Date.now() - started < budgetMs) {
     await sleep(3000);

@@ -16,8 +16,9 @@ const TIKTOK_HOSTS = [
   "tiktokv.com",
 ];
 
-// Instagram and Facebook downloads both resolve through Snapsave, so they
-// share the same set of CDN hosts (fbcdn.net serves both platforms).
+// Instagram, Facebook, and X downloads all resolve through the Snapsave
+// family of services, so they share one set of CDN hosts (fbcdn.net serves
+// both Meta platforms; rapidcdn tokens front the rest).
 const SNAP_MEDIA_HOSTS = [
   "cdninstagram.com",
   "fbcdn.net",
@@ -26,6 +27,7 @@ const SNAP_MEDIA_HOSTS = [
   "rapidcdn.app",
   "snapcdn.app",
   "snapsave.app",
+  "twimg.com",
 ];
 
 function matchHost(hostname: string, suffixes: string[]): boolean {
@@ -41,6 +43,8 @@ export async function GET(req: NextRequest) {
   const requestedPlatform = searchParams.get("platform");
   const format = searchParams.get("format") || "";
   const quality = searchParams.get("quality") || "";
+  // inline=1 serves the file for in-page playback instead of download
+  const inline = searchParams.get("inline") === "1";
 
   if (!videoUrl) {
     return NextResponse.json({ error: "Missing url parameter" }, { status: 400 });
@@ -87,17 +91,20 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "URL not allowed" }, { status: 403 });
   }
 
-  // The shared CDN hosts can't distinguish Instagram from Facebook, so trust
-  // the client's platform hint there (it only affects referer and filename).
+  // The shared CDN hosts can't distinguish the Snapsave-family platforms,
+  // so trust the client's platform hint there (it only affects referer and
+  // filename).
   const platformLabel = isTikTok
     ? "tiktok"
-    : requestedPlatform === "facebook"
-    ? "facebook"
+    : requestedPlatform === "facebook" || requestedPlatform === "twitter"
+    ? requestedPlatform
     : "instagram";
 
   const referer =
     platformLabel === "facebook"
       ? "https://www.facebook.com/"
+      : platformLabel === "twitter"
+      ? "https://x.com/"
       : platformLabel === "instagram"
       ? "https://www.instagram.com/"
       : "https://www.tiktok.com/";
@@ -116,6 +123,8 @@ export async function GET(req: NextRequest) {
   const filename = `${platformLabel}-${type}.${ext}`;
 
   try {
+    // Forward Range requests so in-page video previews can seek
+    const range = req.headers.get("range");
     const upstream = await axios.get(videoUrl, {
       responseType: "stream",
       timeout: 30000,
@@ -123,6 +132,7 @@ export async function GET(req: NextRequest) {
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         Referer: referer,
+        ...(range ? { Range: range } : {}),
       },
     });
 
@@ -137,13 +147,19 @@ export async function GET(req: NextRequest) {
       },
     });
 
+    const headers: Record<string, string> = {
+      "Content-Type": contentType,
+      "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${filename}"`,
+      "Cache-Control": "no-store",
+    };
+    for (const h of ["content-range", "accept-ranges", "content-length"]) {
+      const v = upstream.headers[h];
+      if (typeof v === "string" && v) headers[h] = v;
+    }
+
     return new NextResponse(webStream, {
-      status: 200,
-      headers: {
-        "Content-Type": contentType,
-        "Content-Disposition": `attachment; filename="${filename}"`,
-        "Cache-Control": "no-store",
-      },
+      status: upstream.status === 206 ? 206 : 200,
+      headers,
     });
   } catch (err: unknown) {
     const message =
