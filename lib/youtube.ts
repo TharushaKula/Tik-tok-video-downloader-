@@ -169,9 +169,30 @@ export async function fetchYouTubeData(url: string): Promise<VideoInfo> {
         isProxy: true,
       },
       {
-        label: "Download Audio",
+        label: "Download MP3",
         url,
         format: "mp3",
+        isAudio: true,
+        isProxy: true,
+      },
+      {
+        label: "Download M4A",
+        url,
+        format: "m4a",
+        isAudio: true,
+        isProxy: true,
+      },
+      {
+        label: "Download WAV",
+        url,
+        format: "wav",
+        isAudio: true,
+        isProxy: true,
+      },
+      {
+        label: "Download FLAC",
+        url,
+        format: "flac",
         isAudio: true,
         isProxy: true,
       },
@@ -200,7 +221,14 @@ interface LoaderProgressResponse {
   text?: string;
 }
 
-export type YouTubeFormat = "1080" | "720" | "360" | "mp3";
+export type YouTubeFormat =
+  | "1080"
+  | "720"
+  | "360"
+  | "mp3"
+  | "m4a"
+  | "wav"
+  | "flac";
 
 function assertSafeProgressUrl(raw: string): URL {
   const parsed = new URL(raw);

@@ -42,6 +42,7 @@ Check items off as they ship: `[x]`
 - [x] Command palette (⌘K) + real legal pages (Terms, Privacy, DMCA)
 - [x] Collections & tags on the Saved list + QR phone handoff
 - [x] Hardening: 55-test vitest suite (validators/parsers/favorites/templates/hosts), resolver health-check script (`npm run health`), axios security patch, tightened TikTok URL validation
+- [x] YouTube audio formats (M4A/WAV/FLAC), private usage tally, CI + scheduled health-check Actions
 
 ---
 
@@ -76,7 +77,9 @@ Check items off as they ship: `[x]`
 ## ⚡ Download power features
 
 - [x] Batch mode  paste multiple links at once (multi-line box)
-- [ ] Bulk download by username/profile (all videos from an account)
+- [~] Bulk download by username/profile (investigated 2026-08: tikwm's
+      user/posts endpoint is Cloudflare-gated like its search API; not
+      shippable. YouTube channels DO work, see below)
 - [ ] TXT/CSV link-list import
 - [ ] Download queue with per-item progress and pause/cancel
 - [x] Real progress bars for YouTube conversions (live percent + progress track)
@@ -95,7 +98,7 @@ Check items off as they ship: `[x]`
 
 - [ ] Trim/clip by time range before downloading (download only a section)
 - [ ] Video → GIF converter
-- [ ] Audio format choices beyond MP3 (M4A, WAV, OGG, FLAC)
+- [x] Audio format choices beyond MP3 (YouTube: M4A, WAV, lossless FLAC)
 - [ ] Audio bitrate picker (128/192/320 kbps)
 - [ ] Video compressor (target file size)
 - [ ] Format converter (MP4 ↔ WebM/MKV/MOV)
@@ -134,7 +137,7 @@ Check items off as they ship: `[x]`
 - [ ] Telegram/Discord bot version of the downloader
 - [ ] Public REST API with keys (developer tier)
 - [ ] Webhooks for finished conversions
-- [ ] Usage stats dashboard ("you've saved 42 videos this month")
+- [x] Usage tally (private, on-device "you've saved N videos, mostly from X")
 
 ## 📈 Growth, trust & monetization
 
@@ -158,21 +161,22 @@ Check items off as they ship: `[x]`
 - [~] Health monitoring: `npm run health` probes every resolver and exits
       non-zero if any is down (ready to wire to CI/cron; alerting TBD)
 - [x] Automated test suite (vitest) over validators, parsers, and stores
+- [x] GitHub Actions: CI gate (lint/types/tests/build) + scheduled resolver health check
 - [ ] Smart link cleanup (strip tracking params, resolve shortlinks client-side)
 
 ---
 
 ## 🎯 Suggested quick wins
 
-Nine full rounds of quick wins have shipped. Next highest-impact candidates:
+Ten rounds shipped. Next highest-impact candidates:
 
 1. Multi-language UI (i18n)  its own dedicated pass
-2. Usage stats ("you've saved N videos", by platform)
-3. Bulk download by username/profile (other platforms)
-4. Blog + how-to guides (organic traffic)
-5. Status page / uptime badge
-6. Browser extension (one-click from the video page)
-7. Audio format/bitrate choices (M4A, WAV, 320kbps)
+2. Next.js 14 -> 16 upgrade (clears remaining audit items)  its own migration
+3. Blog + how-to guides (organic traffic)
+4. Browser extension (one-click from the video page)
+5. Status page / uptime badge (surface the health check publicly)
+6. Audio bitrate picker for MP3 (128/192/320)
+7. Trim/clip a section before downloading
 
 ---
 

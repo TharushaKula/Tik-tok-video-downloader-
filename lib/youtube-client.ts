@@ -14,7 +14,8 @@ export class PollBlockedError extends Error {
 }
 
 export function youtubeFormatFor(option: DownloadOption): string {
-  if (option.isAudio) return "mp3";
+  // Audio: the option's format is already the loader.to format (mp3/m4a/wav/flac)
+  if (option.isAudio) return option.format;
   if (option.quality === "1080p") return "1080";
   if (option.quality === "720p") return "720";
   return "360";

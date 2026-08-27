@@ -13,6 +13,20 @@ import toast from "react-hot-toast";
 import type { DownloadOption, PlatformId } from "@/lib/types";
 import { downloadYouTubeOption, PollBlockedError } from "@/lib/youtube-client";
 import { applyTemplate, loadTemplate } from "@/lib/filename-template";
+import { recordDownload } from "@/lib/stats";
+
+// Fired once per started download so the page can refresh its usage tally.
+export const DOWNLOAD_EVENT = "snapload:download";
+
+/** Record one started download and notify listeners. Call once per action. */
+export function markDownload(platform: PlatformId) {
+  recordDownload(platform);
+  try {
+    window.dispatchEvent(new CustomEvent(DOWNLOAD_EVENT, { detail: platform }));
+  } catch {
+    // SSR / no window  ignore
+  }
+}
 
 /** Video identity used to build the download filename via the user's template. */
 export interface NameInfo {
@@ -67,8 +81,14 @@ function triggerProxyDownload(
   nameInfo?: NameInfo
 ) {
   const type = optionKind(option);
+  // Audio and image options carry their real extension in option.format;
+  // everything else is an mp4 video.
   const ext =
-    option.format === "mp3" ? "mp3" : option.format === "jpg" ? "jpg" : "mp4";
+    type === "audio"
+      ? option.format
+      : option.format === "jpg"
+      ? "jpg"
+      : "mp4";
   const base = filenameBaseFor(option, platform, nameInfo);
   const filename = `${base || `${platform}-${type}`}.${ext}`;
 
@@ -100,6 +120,7 @@ export function startOptionDownload(
   notify = true,
   nameInfo?: NameInfo
 ) {
+  markDownload(platform);
   if (platform === "youtube" && option.isProxy) {
     // Fire-and-forget client conversion; server redirect flow as fallback
     void downloadYouTubeOption(option).catch(() =>
@@ -192,6 +213,7 @@ export default function DownloadOptionRow({
 
   function handleClick() {
     if (status !== "idle") return;
+    markDownload(platform);
     if (isYouTube && option.isProxy) {
       void handleYouTubeClick();
       return;

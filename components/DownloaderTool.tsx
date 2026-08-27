@@ -16,10 +16,13 @@ import RecentDownloads, {
 } from "@/components/RecentDownloads";
 import Favorites from "@/components/Favorites";
 import CommandPalette from "@/components/CommandPalette";
+import UsageStats from "@/components/UsageStats";
+import { DOWNLOAD_EVENT } from "@/components/DownloadOptionRow";
 import OnboardingHint, {
   hasOnboarded,
   markOnboarded,
 } from "@/components/OnboardingHint";
+import { type UsageStats as Stats, loadStats } from "@/lib/stats";
 
 import {
   detectPlatform,
@@ -78,6 +81,7 @@ export default function DownloaderTool() {
   const [favorites, setFavorites] = useState<FavoriteEntry[]>([]);
   const [showHint, setShowHint] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [stats, setStats] = useState<Stats | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
 
@@ -91,8 +95,16 @@ export default function DownloaderTool() {
   useEffect(() => {
     setRecent(loadRecent());
     setFavorites(loadFavorites());
+    setStats(loadStats());
     // First-visit tip: only for users with no history at all
     setShowHint(!hasOnboarded() && loadRecent().length === 0);
+  }, []);
+
+  // Keep the usage tally live as downloads are started anywhere in the tool.
+  useEffect(() => {
+    const onDownload = () => setStats(loadStats());
+    window.addEventListener(DOWNLOAD_EVENT, onDownload);
+    return () => window.removeEventListener(DOWNLOAD_EVENT, onDownload);
   }, []);
 
   // PWA share target / deep link: links shared into the installed app land
@@ -651,6 +663,9 @@ export default function DownloaderTool() {
           disabled={busy}
         />
       )}
+
+      {/* Personal usage tally (appears after a few downloads) */}
+      {stats && <UsageStats stats={stats} />}
 
       {/* Trust row */}
       <p className="flex flex-wrap items-center justify-center gap-x-2 text-xs text-ink-4">

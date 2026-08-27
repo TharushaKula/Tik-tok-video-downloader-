@@ -1,0 +1,23 @@
+name: Resolver health
+
+# Pings every platform resolver on a schedule so we hear about breakage
+# before users do. Also runnable on demand from the Actions tab.
+on:
+  schedule:
+    # Every 6 hours
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Probe resolvers
+        run: npm run health

@@ -8,6 +8,14 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-08-27",
+    title: "More audio formats, and a personal tally",
+    items: [
+      "YouTube audio now downloads as MP3, M4A, WAV, or lossless FLAC",
+      "A quiet counter shows how many videos you've saved, and from where",
+    ],
+  },
+  {
+    date: "2026-08-27",
     title: "Organize your saves, and hop to your phone",
     items: [
       "Tag saved videos and filter your Saved list by tag",

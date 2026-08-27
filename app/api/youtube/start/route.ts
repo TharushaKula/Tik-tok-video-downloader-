@@ -5,7 +5,15 @@ import { startLoaderJob, type YouTubeFormat } from "@/lib/youtube";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-const VALID_FORMATS = new Set(["1080", "720", "360", "mp3"]);
+const VALID_FORMATS = new Set([
+  "1080",
+  "720",
+  "360",
+  "mp3",
+  "m4a",
+  "wav",
+  "flac",
+]);
 
 // Starts a YouTube conversion job and hands the resolver's progress URL to
 // the client, which polls it directly (the resolver is CORS-open). Keeps

@@ -41,9 +41,10 @@ export async function GET(req: NextRequest) {
     if (!isValidYouTubeUrl(videoUrl)) {
       return NextResponse.json({ error: "URL not allowed" }, { status: 403 });
     }
+    const AUDIO_FORMATS = new Set(["mp3", "m4a", "wav", "flac"]);
     const ytFormat: YouTubeFormat =
       type === "audio"
-        ? "mp3"
+        ? ((AUDIO_FORMATS.has(format) ? format : "mp3") as YouTubeFormat)
         : quality === "1080p"
         ? "1080"
         : quality === "720p"
@@ -83,11 +84,17 @@ export async function GET(req: NextRequest) {
     : "instagram";
 
   const referer = REFERERS[platformLabel] ?? "https://www.tiktok.com/";
+  const AUDIO_EXT_TYPES: Record<string, string> = {
+    mp3: "audio/mpeg",
+    m4a: "audio/mp4",
+    wav: "audio/wav",
+    flac: "audio/flac",
+  };
   let ext: string;
   let defaultContentType: string;
   if (type === "audio") {
-    ext = "mp3";
-    defaultContentType = "audio/mpeg";
+    ext = format in AUDIO_EXT_TYPES ? format : "mp3";
+    defaultContentType = AUDIO_EXT_TYPES[ext];
   } else if (format === "jpg" || type === "image") {
     ext = "jpg";
     defaultContentType = "image/jpeg";
