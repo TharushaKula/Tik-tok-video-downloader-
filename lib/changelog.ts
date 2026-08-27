@@ -8,6 +8,14 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-08-27",
+    title: "A command palette, and the fine print",
+    items: [
+      "Press Cmd/Ctrl+K to open a command palette: search, jump to saved and recent videos, switch theme, or navigate anywhere",
+      "Added proper Terms, Privacy, and Copyright/DMCA pages",
+    ],
+  },
+  {
+    date: "2026-08-27",
     title: "Paste, drop, or just switch tabs",
     items: [
       "Drag a link from any window and drop it anywhere on the page",

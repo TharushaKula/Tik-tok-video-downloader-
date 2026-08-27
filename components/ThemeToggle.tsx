@@ -2,26 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
+import {
+  type ThemePref,
+  applyThemePref,
+  loadThemePref,
+  resolveTheme,
+} from "@/lib/theme";
 
-export type ThemePref = "system" | "light" | "dark";
-
-const STORAGE_KEY = "snapload:theme";
 const ORDER: ThemePref[] = ["system", "light", "dark"];
 
-function resolve(pref: ThemePref): "light" | "dark" {
-  if (pref === "system") {
-    return window.matchMedia("(prefers-color-scheme: light)").matches
-      ? "light"
-      : "dark";
-  }
-  return pref;
+// Fired whenever the theme changes anywhere (toggle or command palette), so
+// every listener stays in sync.
+export const THEME_EVENT = "snapload:theme-change";
+
+export function setThemePref(pref: ThemePref) {
+  applyThemePref(pref);
+  window.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: pref }));
 }
 
-function apply(pref: ThemePref) {
-  document.documentElement.dataset.theme = resolve(pref);
-}
-
-// Cycles system → light → dark. The resolved theme is applied before paint
+// Cycles system -> light -> dark. The resolved theme is applied before paint
 // by the inline script in layout.tsx; this component only handles changes.
 export default function ThemeToggle() {
   const [pref, setPref] = useState<ThemePref>("system");
@@ -29,40 +28,28 @@ export default function ThemeToggle() {
 
   useEffect(() => {
     setMounted(true);
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored === "light" || stored === "dark" || stored === "system") {
-        setPref(stored);
-      }
-    } catch {
-      // private mode  stay on system
-    }
+    setPref(loadThemePref());
+    const onChange = (e: Event) => setPref((e as CustomEvent<ThemePref>).detail);
+    window.addEventListener(THEME_EVENT, onChange);
+    return () => window.removeEventListener(THEME_EVENT, onChange);
   }, []);
 
   // Follow OS changes live while in system mode
   useEffect(() => {
     if (pref !== "system") return;
     const mq = window.matchMedia("(prefers-color-scheme: light)");
-    const onChange = () => apply("system");
+    const onChange = () => resolveTheme("system") && applyThemePref("system");
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, [pref]);
 
   function cycle() {
-    const next = ORDER[(ORDER.indexOf(pref) + 1) % ORDER.length];
-    setPref(next);
-    apply(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, next);
-    } catch {
-      // ignore
-    }
+    setThemePref(ORDER[(ORDER.indexOf(pref) + 1) % ORDER.length]);
   }
 
-  const Icon = !mounted || pref === "system" ? Monitor : pref === "light" ? Sun : Moon;
-  const label = !mounted
-    ? "Theme"
-    : `Theme: ${pref}  click to change`;
+  const Icon =
+    !mounted || pref === "system" ? Monitor : pref === "light" ? Sun : Moon;
+  const label = !mounted ? "Theme" : `Theme: ${pref}, click to change`;
 
   return (
     <button

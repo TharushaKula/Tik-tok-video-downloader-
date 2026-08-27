@@ -39,6 +39,7 @@ Check items off as they ship: `[x]`
 - [x] Favorites  star videos to a persistent Saved list
 - [x] YouTube full-channel downloads, custom filename templates, first-visit hint
 - [x] Zero-friction input funnel: drag-and-drop, paste-anywhere, clipboard detection on focus
+- [x] Command palette (⌘K) + real legal pages (Terms, Privacy, DMCA)
 
 ---
 
@@ -110,9 +111,9 @@ Check items off as they ship: `[x]`
 - [x] Video preview player in the result card (watch before saving)
 - [x] Drag-and-drop a link anywhere on the page (full-page drop target)
 - [ ] QR code handoff (scan to continue the download on your phone)
-- [ ] Command palette (⌘K) for power users
+- [x] Command palette (⌘K) for power users (search, saved/recent, theme, navigation)
 - [x] Paste anywhere on the page to fetch (no need to focus the input)
-- [ ] Full keyboard shortcut set (command palette level)
+- [x] Full keyboard shortcut set (⌘K palette with arrow/enter/escape nav)
 - [x] Light theme + system theme toggle (semantic design tokens, no-flicker init, per-theme platform colors)
 - [ ] Multi-language UI (i18n) with localized SEO pages
 - [x] First-visit onboarding hint (dismissible, auto-hides after first download)
@@ -142,7 +143,7 @@ Check items off as they ship: `[x]`
 - [ ] Referral link program
 - [ ] Status page + uptime badge
 - [x] Changelog / "What's new" page (/changelog, linked from the footer)
-- [ ] DMCA, Terms, and Privacy pages (real ones)
+- [x] Terms, Privacy, and Copyright/DMCA pages (real ones, linked in footer + sitemap)
 - [ ] Rate limiting + abuse/captcha protection
 - [x] Privacy-friendly analytics (Vercel Analytics  cookie-less, activates on deploy)
 
@@ -159,15 +160,15 @@ Check items off as they ship: `[x]`
 
 ## 🎯 Suggested quick wins
 
-Seven full rounds of quick wins have shipped. Next highest-impact candidates:
+Eight full rounds of quick wins have shipped. Next highest-impact candidates:
 
 1. Collections & tags on top of the Saved list
 2. Multi-language UI (i18n)
-3. Command palette (Cmd+K) for power users
-4. QR handoff to continue a download on your phone
+3. QR handoff to continue a download on your phone
+4. Usage stats dashboard ("you've saved N videos")
 5. Bulk download by username/profile (other platforms)
-6. DMCA / Terms / Privacy pages
-7. Usage stats dashboard
+6. Onboarding tour beyond the first-visit hint
+7. Status page / uptime badge
 
 ---
 

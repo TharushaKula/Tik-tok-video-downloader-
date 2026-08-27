@@ -10,6 +10,12 @@ const LINKS = [
   { href: "/changelog", label: "What's new" },
 ];
 
+const LEGAL_LINKS = [
+  { href: "/terms", label: "Terms" },
+  { href: "/privacy", label: "Privacy" },
+  { href: "/dmca", label: "Copyright" },
+];
+
 export default function Footer() {
   const year = new Date().getFullYear();
 
@@ -60,13 +66,25 @@ export default function Footer() {
         </nav>
 
         <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-veil/[0.05] pt-6 text-center sm:flex-row sm:text-left">
-          <p className="max-w-lg text-xs leading-relaxed text-ink-4">
+          <p className="max-w-md text-xs leading-relaxed text-ink-4">
             SnapLoad isn&apos;t affiliated with any of the supported platforms.
             Download only content you own or have permission to save.
           </p>
-          <p className="shrink-0 text-xs text-ink-4">
-            © {year} SnapLoad
-          </p>
+          <nav
+            className="flex shrink-0 items-center gap-1"
+            aria-label="Legal"
+          >
+            {LEGAL_LINKS.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="focus-ring rounded-md px-2 py-1 text-xs text-ink-4 transition-colors hover:text-ink-1"
+              >
+                {label}
+              </Link>
+            ))}
+            <span className="ml-1 text-xs text-ink-4">© {year}</span>
+          </nav>
         </div>
       </div>
     </footer>

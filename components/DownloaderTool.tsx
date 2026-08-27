@@ -15,6 +15,7 @@ import RecentDownloads, {
   clearRecent,
 } from "@/components/RecentDownloads";
 import Favorites from "@/components/Favorites";
+import CommandPalette from "@/components/CommandPalette";
 import OnboardingHint, {
   hasOnboarded,
   markOnboarded,
@@ -75,6 +76,7 @@ export default function DownloaderTool() {
   const [recent, setRecent] = useState<RecentEntry[]>([]);
   const [favorites, setFavorites] = useState<FavoriteEntry[]>([]);
   const [showHint, setShowHint] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
 
@@ -155,6 +157,38 @@ export default function DownloaderTool() {
   }
   const routeRef = useRef(routeIncomingText);
   routeRef.current = routeIncomingText;
+
+  // Read the clipboard and route whatever's there (used by the command
+  // palette's "Paste and fetch" action).
+  async function pasteAndFetch() {
+    let text = "";
+    try {
+      text = (await navigator.clipboard.readText()).trim();
+    } catch {
+      toast.error("Clipboard access was denied by the browser");
+      return;
+    }
+    if (!text) {
+      toast("Your clipboard is empty");
+      return;
+    }
+    if (!routeRef.current(text)) {
+      setUrl(text.split(/\s+/)[0].slice(0, 500));
+      toast("That doesn't look like a supported link");
+    }
+  }
+
+  // Cmd/Ctrl+K opens the command palette from anywhere
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPaletteOpen((o) => !o);
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   // Drag-and-drop a link anywhere on the page
   const [dragging, setDragging] = useState(false);
@@ -489,6 +523,15 @@ export default function DownloaderTool() {
         </div>
       )}
 
+      <CommandPalette
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        recent={recent}
+        favorites={favorites}
+        onSelectUrl={(u) => handleSubmit(u)}
+        onPasteFetch={pasteAndFetch}
+      />
+
       <OnboardingHint
         visible={showHint}
         onDismiss={() => {
@@ -613,12 +656,23 @@ export default function DownloaderTool() {
           ·
         </span>
         <span className="hidden items-center gap-1 sm:inline-flex">
-          Press{" "}
           <kbd className="rounded border border-veil/10 bg-veil/[0.04] px-1 py-0.5 font-mono text-[10px] text-ink-3">
             /
           </kbd>{" "}
-          to jump to the link box
+          link box
         </span>
+        <span aria-hidden className="hidden sm:inline">
+          ·
+        </span>
+        <button
+          onClick={() => setPaletteOpen(true)}
+          className="focus-ring hidden items-center gap-1 rounded sm:inline-flex hover:text-ink-2"
+        >
+          <kbd className="rounded border border-veil/10 bg-veil/[0.04] px-1 py-0.5 font-mono text-[10px] text-ink-3">
+            {"⌘"}K
+          </kbd>{" "}
+          commands
+        </button>
       </p>
     </div>
   );
