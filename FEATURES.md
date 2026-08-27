@@ -28,6 +28,8 @@ Check items off as they ship: `[x]`
 - [x] PWA — installable app with Android share-target ("Share to SnapLoad")
 - [x] SEO landing pages per platform + sitemap + robots + FAQ structured data
 - [x] Reddit videos with sound + Pinterest video/image pins (7 platforms total)
+- [x] Carousel/slideshow ZIP bundles, thumbnail saver, and title-based smart filenames
+- [x] /changelog page ("What's new")
 - [x] YouTube playlist → batch downloads
 - [x] Instagram Stories & Highlights link support
 - [x] TikTok resolver failover (TikWM → SnapTik)
@@ -53,7 +55,7 @@ Check items off as they ship: `[x]`
 - [ ] TikTok slideshow auto-merge → single MP4 with music (needs server-side rendering)
 - [ ] TikTok Stories downloads
 - [x] Instagram Stories & Highlights links (accepted & resolved when public; depends on the story being live)
-- [ ] Instagram carousel downloads (all slides, zipped)
+- [x] Carousel & slideshow ZIP downloads (Instagram carousels, TikTok slideshows — one click, one archive)
 - [ ] Profile-picture / avatar downloader (full HD)
 - [x] YouTube playlist batch downloads (via official RSS — latest 10 videos into the batch queue)
 - [ ] YouTube full-channel batch downloads
@@ -73,7 +75,7 @@ Check items off as they ship: `[x]`
 - [ ] 4K / 8K / 60fps quality tiers
 - [ ] Resumable / retryable downloads
 - [ ] Subtitle downloads (SRT/VTT, language picker, burned-in option)
-- [ ] Thumbnail & cover-image download button
+- [x] Thumbnail & cover-image download button
 - [ ] Clipboard auto-detection on page focus ("We noticed a link — download it?")
 - [ ] Concurrent-download limit control
 
@@ -85,7 +87,8 @@ Check items off as they ship: `[x]`
 - [ ] Audio bitrate picker (128/192/320 kbps)
 - [ ] Video compressor (target file size)
 - [ ] Format converter (MP4 ↔ WebM/MKV/MOV)
-- [ ] Custom filename templates (title, author, date variables)
+- [x] Smart filenames — downloads named after the video title (sanitized, unicode-safe)
+- [ ] User-configurable filename templates (author, date variables)
 - [ ] Embedded metadata & chapters in output files (title, artist, artwork)
 - [ ] SponsorBlock integration (auto-remove sponsor segments from YouTube)
 - [ ] Watermark/branding overlay option (for creators saving their own content)
@@ -127,7 +130,7 @@ Check items off as they ship: `[x]`
 - [ ] Donation/tip option
 - [ ] Referral link program
 - [ ] Status page + uptime badge
-- [ ] Changelog / "What's new" panel
+- [x] Changelog / "What's new" page (/changelog, linked from the footer)
 - [ ] DMCA, Terms, and Privacy pages (real ones)
 - [ ] Rate limiting + abuse/captcha protection
 - [x] Privacy-friendly analytics (Vercel Analytics — cookie-less, activates on deploy)
@@ -135,7 +138,7 @@ Check items off as they ship: `[x]`
 ## 🛡️ Reliability & performance
 
 - [x] Multi-resolver fallback chain for TikTok (TikWM → SnapTik auto-failover; also covers rate limits)
-- [ ] Fallback resolvers for the remaining platforms
+- [ ] Fallback resolvers for the remaining platforms (investigated 2026-08: fdown, getfvid, snapinsta, snapins, getmyfb, and oceansaver are all dead or bot-walled from server contexts — revisit when a viable candidate appears)
 - [ ] Server-side caching of recently resolved links
 - [x] Background job queue for long YouTube conversions (client polls with live progress)
 - [ ] Health monitoring + alerting when a platform resolver breaks
@@ -145,16 +148,15 @@ Check items off as they ship: `[x]`
 
 ## 🎯 Suggested quick wins
 
-Three full rounds of quick wins have shipped (including the light theme). Next
-highest-impact candidates:
+Four full rounds of quick wins have shipped. Next highest-impact candidates:
 
-1. Fallback resolvers for Instagram/Facebook/YouTube
-2. Instagram carousel downloads (all slides, zipped)
-3. Thumbnail & cover-image download button
-4. Twitch clips / SoundCloud / Vimeo support
-5. Collections & favorites
-6. Changelog / "What's new" panel
-7. Custom filename templates
+1. Twitch clips / SoundCloud / Vimeo support
+2. Collections & favorites
+3. User-configurable filename templates
+4. Subtitle downloads for YouTube
+5. Onboarding tour / first-visit hints
+6. Multi-language UI (i18n)
+7. Fallback resolvers (blocked on viable candidates — see note above)
 
 ---
 
