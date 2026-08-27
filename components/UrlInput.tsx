@@ -10,6 +10,7 @@ import {
   Link2,
   Instagram,
   Facebook,
+  Youtube,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { detectPlatform } from "@/lib/validators";
@@ -34,6 +35,7 @@ export default function UrlInput({
   const isTikTok = platform === "tiktok";
   const isInstagram = platform === "instagram";
   const isFacebook = platform === "facebook";
+  const isYouTube = platform === "youtube";
 
   async function handlePaste() {
     try {
@@ -61,6 +63,8 @@ export default function UrlInput({
     ? "rgba(217,70,239,0.5)"
     : isFacebook
     ? "rgba(59,130,246,0.5)"
+    : isYouTube
+    ? "rgba(239,68,68,0.5)"
     : "rgba(139,92,246,0.5)";
 
   return (
@@ -81,6 +85,8 @@ export default function UrlInput({
           <Instagram size={18} className="text-fuchsia-400 shrink-0" />
         ) : isFacebook ? (
           <Facebook size={18} className="text-blue-400 shrink-0" />
+        ) : isYouTube ? (
+          <Youtube size={18} className="text-red-400 shrink-0" />
         ) : (
           <Link2 size={18} className="text-slate-500 shrink-0" />
         )}
@@ -93,7 +99,7 @@ export default function UrlInput({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           onKeyDown={handleKeyDown}
-          placeholder="Paste a TikTok, Instagram, or Facebook URL..."
+          placeholder="Paste a TikTok, Instagram, Facebook, or YouTube URL..."
           disabled={loading}
           className="flex-1 bg-transparent text-slate-200 placeholder-slate-500 outline-none text-sm min-w-0"
           aria-label="Video URL"

@@ -3,6 +3,7 @@ import { detectPlatform } from "@/lib/validators";
 import { fetchTikTokData } from "@/lib/tikwm";
 import { fetchInstagramData } from "@/lib/instagram";
 import { fetchFacebookData } from "@/lib/facebook";
+import { fetchYouTubeData } from "@/lib/youtube";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Invalid URL. Please enter a valid TikTok, Instagram, or Facebook link.",
+            "Invalid URL. Please enter a valid TikTok, Instagram, Facebook, or YouTube link.",
         },
         { status: 400 }
       );
@@ -34,7 +35,9 @@ export async function POST(req: NextRequest) {
         ? await fetchTikTokData(trimmedUrl)
         : platform === "instagram"
         ? await fetchInstagramData(trimmedUrl)
-        : await fetchFacebookData(trimmedUrl);
+        : platform === "facebook"
+        ? await fetchFacebookData(trimmedUrl)
+        : await fetchYouTubeData(trimmedUrl);
 
     return NextResponse.json({ success: true, data });
   } catch (err: unknown) {

@@ -30,6 +30,13 @@ const PLATFORM_STYLES: Record<
     text: "text-blue-300",
     dot: "bg-blue-400",
   },
+  youtube: {
+    label: "YouTube",
+    border: "border-red-500/30",
+    bg: "bg-red-900/20",
+    text: "text-red-300",
+    dot: "bg-red-400",
+  },
 };
 
 export default function PlatformBadge({

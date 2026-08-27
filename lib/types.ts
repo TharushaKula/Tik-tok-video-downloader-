@@ -1,4 +1,4 @@
-export type PlatformId = 'tiktok' | 'instagram' | 'facebook';
+export type PlatformId = 'tiktok' | 'instagram' | 'facebook' | 'youtube';
 
 export interface DownloadOption {
   label: string;

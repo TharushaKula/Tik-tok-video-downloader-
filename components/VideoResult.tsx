@@ -37,9 +37,11 @@ function triggerProxyDownload(
   url: string,
   type: "video" | "audio" | "image",
   format: string,
-  platform: PlatformId
+  platform: PlatformId,
+  quality?: string
 ) {
   const params = new URLSearchParams({ url, type, format, platform });
+  if (quality) params.set("quality", quality);
   const proxyUrl = `/api/proxy-download?${params.toString()}`;
   const ext = format === "mp3" ? "mp3" : format === "jpg" ? "jpg" : "mp4";
   const filename = `${platform}-${type}.${ext}`;
@@ -72,17 +74,31 @@ function DownloadButton({
         ? "image"
         : "video";
       if (option.isProxy) {
-        triggerProxyDownload(option.url, type, option.format, platform);
+        triggerProxyDownload(
+          option.url,
+          type,
+          option.format,
+          platform,
+          option.quality
+        );
       } else {
         window.open(option.url, "_blank", "noopener,noreferrer");
       }
-      toast.success(
-        type === "audio"
-          ? "Audio download started!"
-          : type === "image"
-          ? "Image download started!"
-          : "Video download started!"
-      );
+      if (platform === "youtube") {
+        // The file is converted on demand, so the browser download appears
+        // once the conversion finishes.
+        toast.success("Preparing your download — this can take a minute...", {
+          duration: 6000,
+        });
+      } else {
+        toast.success(
+          type === "audio"
+            ? "Audio download started!"
+            : type === "image"
+            ? "Image download started!"
+            : "Video download started!"
+        );
+      }
       setTimeout(() => {
         setDownloading(false);
         setDone(true);
@@ -220,6 +236,8 @@ export default function VideoResult({ info }: { info: VideoInfo }) {
                   ? "border-fuchsia-500/40"
                   : info.platform === "facebook"
                   ? "border-blue-500/40"
+                  : info.platform === "youtube"
+                  ? "border-red-500/40"
                   : "border-pink-500/40"
               }`}
             >

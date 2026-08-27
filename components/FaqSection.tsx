@@ -7,15 +7,19 @@ import { ChevronDown } from "lucide-react";
 const FAQS = [
   {
     q: "Which platforms are supported?",
-    a: "SnapLoad supports TikTok videos, Instagram Reels and posts, and Facebook videos and Reels — including short links like fb.watch and share links.",
+    a: "SnapLoad supports TikTok videos, Instagram Reels and posts, Facebook videos and Reels (including fb.watch and share links), and YouTube videos and Shorts — downloadable as MP4 in up to 1080p or as MP3 audio.",
   },
   {
     q: "Is it free to use?",
-    a: "Yes, SnapLoad is completely free to use with no hidden charges or subscription fees. You can download as many TikTok, Instagram, and Facebook videos as you like.",
+    a: "Yes, SnapLoad is completely free to use with no hidden charges or subscription fees. You can download as many TikTok, Instagram, Facebook, and YouTube videos as you like.",
   },
   {
     q: "How do I download videos without watermark?",
-    a: "Simply paste your TikTok, Instagram, or Facebook video URL into the input field and click Download. We fetch the watermark-free HD version directly, giving you a clean video file.",
+    a: "Simply paste your video URL into the input field and click Download. For TikTok, Instagram, and Facebook we fetch the watermark-free HD version directly. YouTube videos download exactly as published, with a choice of quality.",
+  },
+  {
+    q: "Why do YouTube downloads take longer to start?",
+    a: "YouTube files are converted to your chosen quality on the fly. Most downloads begin within a few seconds, but long HD videos can take up to a minute to start — keep the tab open and it will land in your downloads automatically.",
   },
   {
     q: "Can I download private videos?",

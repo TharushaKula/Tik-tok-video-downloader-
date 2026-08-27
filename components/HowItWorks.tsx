@@ -8,7 +8,7 @@ const STEPS = [
     number: "01",
     icon: Copy,
     title: "Copy Link",
-    desc: "Copy the TikTok, Instagram, or Facebook video URL from the app or browser.",
+    desc: "Copy the TikTok, Instagram, Facebook, or YouTube video URL from the app or browser.",
     gradient: "from-pink-500 to-purple-500",
     glow: "shadow-pink-500/20",
   },
@@ -47,8 +47,8 @@ export default function HowItWorks() {
           How it works
         </h2>
         <p className="mt-3 text-slate-400 text-sm max-w-md mx-auto">
-          Download any TikTok, Instagram, or Facebook video in three simple
-          steps. No sign-up required.
+          Download any TikTok, Instagram, Facebook, or YouTube video in three
+          simple steps. No sign-up required.
         </p>
       </motion.div>
 

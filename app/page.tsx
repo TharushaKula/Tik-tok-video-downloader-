@@ -25,12 +25,14 @@ export default function HomePage() {
   async function handleSubmit() {
     const trimmed = url.trim();
     if (!trimmed) {
-      toast.error("Please enter a TikTok, Instagram, or Facebook URL");
+      toast.error("Please enter a TikTok, Instagram, Facebook, or YouTube URL");
       return;
     }
 
     if (!isValidUrl(trimmed)) {
-      toast.error("Please enter a valid TikTok, Instagram, or Facebook URL");
+      toast.error(
+        "Please enter a valid TikTok, Instagram, Facebook, or YouTube URL"
+      );
       return;
     }
 
@@ -78,7 +80,7 @@ export default function HomePage() {
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-pink-500/10 px-4 py-1.5 text-pink-300 text-xs font-medium">
               <Sparkles size={12} />
-              TikTok · Instagram · Facebook — No Watermark · HD Quality · Free
+              TikTok · Instagram · Facebook · YouTube — HD Quality · Free
             </div>
           </motion.div>
 
@@ -89,9 +91,9 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.08 }}
             className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-center"
           >
-            Download TikTok, Instagram & Facebook Videos{" "}
+            Download TikTok, Instagram, Facebook & YouTube Videos{" "}
             <span className="bg-gradient-to-r from-pink-400 via-purple-300 to-cyan-400 bg-clip-text text-transparent">
-              Without Watermark
+              in HD, for Free
             </span>
           </motion.h1>
 
@@ -102,9 +104,9 @@ export default function HomePage() {
             transition={{ duration: 0.5, delay: 0.18 }}
             className="text-center text-slate-400 text-base sm:text-lg max-w-md leading-relaxed"
           >
-            Paste any TikTok, Instagram, or Facebook link and download it in HD
-            or SD quality, completely watermark-free. Audio downloads for
-            TikTok too.
+            Paste any TikTok, Instagram, Facebook, or YouTube link and download
+            it in HD or SD quality — watermark-free for social videos, with MP3
+            audio for TikTok and YouTube.
           </motion.p>
 
           {/* Input card */}

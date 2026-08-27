@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
+import { isValidYouTubeUrl } from "@/lib/validators";
+import { resolveYouTubeDownload, type YouTubeFormat } from "@/lib/youtube";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+// YouTube conversions run server-side at the resolver and can take a few
+// minutes for long HD videos, so give this route the full budget.
+export const maxDuration = 300;
 
 const TIKTOK_HOSTS = [
   "tikwm.com",
@@ -36,9 +40,37 @@ export async function GET(req: NextRequest) {
   const type = searchParams.get("type") || "video";
   const requestedPlatform = searchParams.get("platform");
   const format = searchParams.get("format") || "";
+  const quality = searchParams.get("quality") || "";
 
   if (!videoUrl) {
     return NextResponse.json({ error: "Missing url parameter" }, { status: 400 });
+  }
+
+  // ── YouTube: resolve via loader.to, then hand the browser the CDN link ────
+  // The stored option URL is the original watch URL; the conversion job is
+  // started only when the user actually clicks download. Redirecting (rather
+  // than proxying) keeps multi-GB files off this function entirely.
+  if (requestedPlatform === "youtube") {
+    if (!isValidYouTubeUrl(videoUrl)) {
+      return NextResponse.json({ error: "URL not allowed" }, { status: 403 });
+    }
+    const ytFormat: YouTubeFormat =
+      type === "audio"
+        ? "mp3"
+        : quality === "1080p"
+        ? "1080"
+        : quality === "720p"
+        ? "720"
+        : "360";
+    try {
+      const downloadUrl = await resolveYouTubeDownload(videoUrl, ytFormat);
+      return NextResponse.redirect(downloadUrl, 302);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to resolve YouTube video";
+      console.error("[/api/proxy-download][youtube] Error:", message);
+      return NextResponse.json({ error: message }, { status: 502 });
+    }
   }
 
   let parsedUrl: URL;

@@ -15,6 +15,8 @@ const nextConfig = {
       { protocol: "https", hostname: "**.facebook.com" },
       { protocol: "https", hostname: "**.rapidcdn.app" },
       { protocol: "https", hostname: "**.snapcdn.app" },
+      { protocol: "https", hostname: "i.ytimg.com" },
+      { protocol: "https", hostname: "img.youtube.com" },
     ],
   },
 };
