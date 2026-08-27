@@ -5,7 +5,7 @@ import type { PlatformId } from "./types";
 // themes in globals.css) so dark mode gets bright 400-tier tints and light
 // mode gets readable 600-tier ones automatically.
 //
-// IMPORTANT: every Tailwind class below must be a COMPLETE LITERAL string —
+// IMPORTANT: every Tailwind class below must be a COMPLETE LITERAL string 
 // the JIT compiler only emits CSS for class names it can see verbatim.
 export interface PlatformMeta {
   name: string;

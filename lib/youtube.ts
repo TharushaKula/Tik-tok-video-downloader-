@@ -4,7 +4,7 @@ import type { VideoInfo } from "./types";
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
-// YouTube's official oEmbed endpoint — no API key, always available.
+// YouTube's official oEmbed endpoint  no API key, always available.
 interface OEmbedResponse {
   title: string;
   author_name: string;
@@ -147,7 +147,7 @@ function assertSafeProgressUrl(raw: string): URL {
   if (parsed.protocol !== "https:") {
     throw new Error("Unexpected progress URL from YouTube resolver");
   }
-  // Reject IP literals / local hosts — the URL must be a public domain.
+  // Reject IP literals / local hosts  the URL must be a public domain.
   if (!/^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(parsed.hostname) ||
       /^\d+\.\d+\.\d+\.\d+$/.test(parsed.hostname)) {
     throw new Error("Unexpected progress URL from YouTube resolver");
@@ -215,7 +215,7 @@ export async function resolveYouTubeDownload(
       });
       progress = res.data;
     } catch {
-      continue; // transient poll failure — try again within the budget
+      continue; // transient poll failure  try again within the budget
     }
 
     if (typeof progress?.download_url === "string" &&

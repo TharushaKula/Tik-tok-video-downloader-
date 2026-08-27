@@ -144,7 +144,7 @@ export function parseSnapHtml(html: string, defaultTitle: string): SnapResult {
   return { title: sanitizeTitle(title, defaultTitle), thumbnail, downloads };
 }
 
-// Captions can come back as placeholder junk like "..." — require at least
+// Captions can come back as placeholder junk like "..."  require at least
 // one character that isn't whitespace or filler punctuation.
 export function sanitizeTitle(title: string, fallback: string): string {
   return /[^\s.·…\-_|]/.test(title) ? title : fallback;
@@ -196,7 +196,7 @@ export async function fetchSnapsaveHtml(
 
   // On failure the decoded JS sets an error message on the #alert element
   // instead of filling the download section, e.g. for private videos.
-  // Extract it before unescaping — inner quotes are still \" so the lazy
+  // Extract it before unescaping  inner quotes are still \" so the lazy
   // match reliably stops at the closing "; of the assignment.
   const alertMatch = decoded.match(
     /querySelector\("#alert"\)\.innerHTML\s*=\s*"([\s\S]*?)";/

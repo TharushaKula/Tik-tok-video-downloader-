@@ -59,7 +59,7 @@ export async function pollYouTubeJob(
       data = (await res.json()) as ProgressPayload;
       consecutiveFailures = 0;
     } catch {
-      // Content blockers commonly block downloader domains — give the
+      // Content blockers commonly block downloader domains  give the
       // caller a chance to fall back to the server-side flow.
       consecutiveFailures++;
       if (consecutiveFailures >= 3) throw new PollBlockedError();
@@ -93,7 +93,7 @@ export function triggerBrowserDownload(url: string) {
   document.body.removeChild(a);
 }
 
-// Conversions take a while, so users tab away — ask (once, on a real click)
+// Conversions take a while, so users tab away  ask (once, on a real click)
 // for permission to ping them when the file is ready.
 function requestNotifyPermission() {
   if (
@@ -110,7 +110,7 @@ function notifyIfHidden(title: string, body: string) {
   try {
     new Notification(title, { body, icon: "/icons/icon-192.png" });
   } catch {
-    // Some platforms only allow notifications from service workers — fine.
+    // Some platforms only allow notifications from service workers  fine.
   }
 }
 

@@ -124,7 +124,7 @@ export default function VideoResult({ info, onReset }: VideoResultProps) {
     { icon: Share2, label: "shares", value: info.stats?.shares },
   ].filter((s) => (s.value ?? 0) > 0);
 
-  // In-page preview streams through our proxy. YouTube is excluded — it
+  // In-page preview streams through our proxy. YouTube is excluded  it
   // would kick off a full conversion just to peek.
   const previewOption =
     info.platform !== "youtube"
@@ -290,7 +290,7 @@ export default function VideoResult({ info, onReset }: VideoResultProps) {
         </div>
         <p className="mt-3 text-xs leading-relaxed text-ink-4">
           {info.platform === "youtube"
-            ? "YouTube files are converted on the fly — you'll see live progress, and the download starts automatically when it's ready."
+            ? "YouTube files are converted on the fly  you'll see live progress, and the download starts automatically when it's ready."
             : "Files are fetched through our server, so nothing is installed and no app is needed."}
         </p>
       </div>

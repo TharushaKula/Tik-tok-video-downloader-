@@ -43,7 +43,7 @@ export default function PlatformsSection() {
           One tool for every feed
         </h2>
         <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-ink-2">
-          Paste a link from any of these platforms — SnapLoad detects it and
+          Paste a link from any of these platforms  SnapLoad detects it and
           fetches the best quality available.
         </p>
       </motion.div>

@@ -14,9 +14,9 @@ const THEME_INIT = `(function(){try{var p=localStorage.getItem("snapload:theme")
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "SnapLoad — Free Video Downloader for TikTok, YouTube & More",
+  title: "SnapLoad  Free Video Downloader for TikTok, YouTube & More",
   description:
-    "Save videos from TikTok, Instagram, Facebook, YouTube, X (Twitter), Reddit, and Pinterest in HD — watermark-free, with MP3 audio. Free, no sign-up, no limits.",
+    "Save videos from TikTok, Instagram, Facebook, YouTube, X (Twitter), Reddit, and Pinterest in HD  watermark-free, with MP3 audio. Free, no sign-up, no limits.",
   keywords: [
     "video downloader",
     "tiktok downloader",

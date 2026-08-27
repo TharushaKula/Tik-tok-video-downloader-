@@ -20,7 +20,7 @@ export default function Footer() {
           <a
             href="#top"
             className="focus-ring flex items-center gap-2.5 rounded-lg"
-            aria-label="SnapLoad — back to top"
+            aria-label="SnapLoad  back to top"
           >
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500">
               <Download size={14} className="text-white" strokeWidth={2.5} />

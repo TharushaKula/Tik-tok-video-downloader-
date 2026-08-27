@@ -82,7 +82,7 @@ export default function BatchResults({
     if (savingAll || ready.length === 0) return;
     setSavingAll(true);
     toast.success(
-      `Starting ${ready.length} downloads — your browser may ask to allow multiple files`,
+      `Starting ${ready.length} downloads  your browser may ask to allow multiple files`,
       { duration: 5000 }
     );
     // Stagger the triggers so the browser registers each one

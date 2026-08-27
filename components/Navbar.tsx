@@ -17,7 +17,7 @@ export default function Navbar() {
         <a
           href="#top"
           className="focus-ring flex shrink-0 items-center gap-2.5 rounded-lg"
-          aria-label="SnapLoad — back to top"
+          aria-label="SnapLoad  back to top"
         >
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-[0_0_18px_rgba(139,92,246,0.35)]">
             <Download size={14} className="text-white" strokeWidth={2.5} />

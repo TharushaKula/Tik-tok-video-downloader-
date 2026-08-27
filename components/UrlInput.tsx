@@ -106,7 +106,7 @@ export default function UrlInput({
       onBatchModeChange(true);
       onBatchTextChange(found.urls.join("\n"));
       onBatchSubmit(found.urls);
-      toast.success(`${found.urls.length} links detected — fetching all`);
+      toast.success(`${found.urls.length} links detected  fetching all`);
       return true;
     }
     if (found.urls.length === 1 && !loading) {
@@ -170,17 +170,17 @@ export default function UrlInput({
     : "none";
 
   const singleHint = !trimmed
-    ? "Paste a link — or several at once — platforms are detected automatically"
+    ? "Paste a link  or several at once  platforms are detected automatically"
     : isPlaylist
-    ? "YouTube playlist detected — we'll fetch its latest videos as a batch"
+    ? "YouTube playlist detected  we'll fetch its latest videos as a batch"
     : meta
-    ? `${meta.name} link detected — press Enter to fetch`
+    ? `${meta.name} link detected  press Enter to fetch`
     : trimmed.length > 12
     ? "This doesn't look like a supported link yet"
     : " ";
 
   const batchHint = !batchText.trim()
-    ? "One link per line — or paste any text, the links are picked out for you"
+    ? "One link per line  or paste any text, the links are picked out for you"
     : [
         `${batch.urls.length} valid ${batch.urls.length === 1 ? "link" : "links"}`,
         batch.unsupported > 0 ? `${batch.unsupported} unsupported` : null,
@@ -318,8 +318,8 @@ export default function UrlInput({
                 onClick={enterBatchMode}
                 disabled={loading}
                 className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-veil/[0.08] px-2.5 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1 disabled:opacity-50"
-                aria-label="Batch mode — paste several links"
-                title="Batch mode — paste several links"
+                aria-label="Batch mode  paste several links"
+                title="Batch mode  paste several links"
               >
                 <ListPlus size={13} />
                 <span className="hidden sm:inline">Batch</span>

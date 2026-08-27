@@ -35,7 +35,7 @@ export default function ThemeToggle() {
         setPref(stored);
       }
     } catch {
-      // private mode — stay on system
+      // private mode  stay on system
     }
   }, []);
 
@@ -62,7 +62,7 @@ export default function ThemeToggle() {
   const Icon = !mounted || pref === "system" ? Monitor : pref === "light" ? Sun : Moon;
   const label = !mounted
     ? "Theme"
-    : `Theme: ${pref} — click to change`;
+    : `Theme: ${pref}  click to change`;
 
   return (
     <button

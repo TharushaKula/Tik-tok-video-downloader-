@@ -1,5 +1,5 @@
 // Host allowlist shared by every route that fetches remote media on a
-// user-supplied URL (proxy-download, zip). Suffix matching only — a URL is
+// user-supplied URL (proxy-download, zip). Suffix matching only  a URL is
 // allowed when its hostname equals an entry or ends with "." + entry.
 
 export const TIKTOK_HOSTS = [

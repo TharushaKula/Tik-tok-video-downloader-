@@ -68,13 +68,13 @@ export default function DownloaderTool() {
     batchItems.some((i) => i.status === "queued" || i.status === "loading");
   const busy = state.kind === "loading" || batchRunning;
 
-  // History lives in localStorage — read it after mount to keep SSR markup stable.
+  // History lives in localStorage  read it after mount to keep SSR markup stable.
   useEffect(() => {
     setRecent(loadRecent());
   }, []);
 
   // PWA share target / deep link: links shared into the installed app land
-  // here as ?url= / ?text= query params — pick them up and fetch right away.
+  // here as ?url= / ?text= query params  pick them up and fetch right away.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const shared = [params.get("url"), params.get("text"), params.get("title")]
@@ -137,8 +137,8 @@ export default function DownloaderTool() {
         const urls: string[] = json.urls;
         toast.success(
           json.total > urls.length
-            ? `Playlist loaded — fetching the ${urls.length} most recent videos`
-            : `Playlist loaded — fetching ${urls.length} ${urls.length === 1 ? "video" : "videos"}`
+            ? `Playlist loaded  fetching the ${urls.length} most recent videos`
+            : `Playlist loaded  fetching ${urls.length} ${urls.length === 1 ? "video" : "videos"}`
         );
         await handleBatchSubmit(urls);
       } catch (err: unknown) {
@@ -274,7 +274,7 @@ export default function DownloaderTool() {
         />
       </motion.div>
 
-      {/* Fetch state — skeleton, error, result, or batch queue */}
+      {/* Fetch state  skeleton, error, result, or batch queue */}
       <div ref={resultRef} className="w-full scroll-mt-24" aria-live="polite">
         <AnimatePresence mode="wait" initial={false}>
           {state.kind === "loading" && (

@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Invalid URL. Please paste a link from a supported platform — TikTok, Instagram, Facebook, YouTube, X, Reddit, or Pinterest.",
+            "Invalid URL. Please paste a link from a supported platform  TikTok, Instagram, Facebook, YouTube, X, Reddit, or Pinterest.",
         },
         { status: 400 }
       );

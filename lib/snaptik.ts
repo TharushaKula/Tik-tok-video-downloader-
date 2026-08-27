@@ -66,7 +66,7 @@ function solveChallenge(t: SnaptikChallenge): number {
   }
 }
 
-/** Fallback TikTok resolver — used when TikWM is down or rejects a post. */
+/** Fallback TikTok resolver  used when TikWM is down or rejects a post. */
 export async function fetchTikTokViaSnaptik(url: string): Promise<VideoInfo> {
   const tokenRes = await axios.post<{ id: string; p: string }>(
     "https://snaptik.app/api/token",

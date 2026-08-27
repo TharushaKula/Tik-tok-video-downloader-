@@ -30,7 +30,7 @@ function normalizeFacebookUrl(url: string): string {
 
 // Facebook results from Snapsave usually come back as a quality table:
 //   <tr><td>720p (HD)</td><td>...</td><td><a href="https://...">Download</a></td></tr>
-// Some rows expose a render-on-demand button instead of a direct link — those
+// Some rows expose a render-on-demand button instead of a direct link  those
 // have no http(s) href and are skipped.
 function parseFacebookTable(html: string): DownloadOption[] {
   const downloads: DownloadOption[] = [];

@@ -95,7 +95,7 @@ export async function fetchTwitterData(url: string): Promise<VideoInfo> {
   let token: string | undefined;
   let cookies = "";
   try {
-    // Request /en2 directly — the root 301s there, and axios would drop
+    // Request /en2 directly  the root 301s there, and axios would drop
     // any Set-Cookie from the intermediate hop.
     const home = await axios.get<string>(`${BASE}/en2`, {
       timeout: 15000,

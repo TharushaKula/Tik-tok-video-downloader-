@@ -6,7 +6,7 @@ const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
 // Pinterest pin pages are public server-rendered HTML with the video/image
-// variants embedded as JSON — no third-party resolver needed. pin.it short
+// variants embedded as JSON  no third-party resolver needed. pin.it short
 // links redirect to the full pin URL and axios follows them.
 export async function fetchPinterestData(url: string): Promise<VideoInfo> {
   let html: string;

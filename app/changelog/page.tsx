@@ -9,9 +9,9 @@ import { CHANGELOG } from "@/lib/changelog";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "What's new — SnapLoad",
+  title: "What's new  SnapLoad",
   description:
-    "Every improvement to SnapLoad — new platforms, features, and fixes.",
+    "Every improvement to SnapLoad  new platforms, features, and fixes.",
   alternates: { canonical: `${SITE_URL}/changelog` },
 };
 
@@ -46,7 +46,7 @@ export default function ChangelogPage() {
           What&apos;s new
         </h1>
         <p className="mt-3 max-w-md text-sm leading-relaxed text-ink-2">
-          Every improvement to SnapLoad — new platforms, features, and fixes.
+          Every improvement to SnapLoad  new platforms, features, and fixes.
         </p>
 
         <div className="mt-10 space-y-4">

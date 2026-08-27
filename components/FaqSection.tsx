@@ -11,19 +11,19 @@ const FAQS = [
   },
   {
     q: "Can I download several videos at once?",
-    a: "Yes — paste multiple links together (or use the Batch button) and SnapLoad fetches up to 10 at a time. Each video gets its own row with quality options, and Save all grabs the best quality for everything in one go.",
+    a: "Yes  paste multiple links together (or use the Batch button) and SnapLoad fetches up to 10 at a time. Each video gets its own row with quality options, and Save all grabs the best quality for everything in one go.",
   },
   {
     q: "Is it really free?",
-    a: "Yes — every download, in every quality, with no account, no limits, and no hidden fees.",
+    a: "Yes  every download, in every quality, with no account, no limits, and no hidden fees.",
   },
   {
     q: "Why do YouTube downloads take longer to start?",
-    a: "YouTube files are converted to your chosen quality on the fly. Most start within seconds, but long HD videos can take up to a minute — keep the tab open and the file will land in your downloads automatically.",
+    a: "YouTube files are converted to your chosen quality on the fly. Most start within seconds, but long HD videos can take up to a minute  keep the tab open and the file will land in your downloads automatically.",
   },
   {
     q: "Can I download private videos?",
-    a: "No. Only public posts can be fetched. Private, followers-only, or age-restricted content is not accessible — by design, to respect creators' privacy.",
+    a: "No. Only public posts can be fetched. Private, followers-only, or age-restricted content is not accessible  by design, to respect creators' privacy.",
   },
   {
     q: "Is downloading videos allowed?",

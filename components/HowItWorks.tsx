@@ -8,7 +8,7 @@ const STEPS = [
     number: "01",
     icon: Link2,
     title: "Copy a link",
-    desc: "Use the share button in any supported app — TikTok, Instagram, YouTube, Reddit, and more — and copy the video link.",
+    desc: "Use the share button in any supported app  TikTok, Instagram, YouTube, Reddit, and more  and copy the video link.",
   },
   {
     number: "02",
@@ -20,7 +20,7 @@ const STEPS = [
     number: "03",
     icon: Download,
     title: "Save your file",
-    desc: "Pick a quality — MP4 in HD or MP3 audio — and it lands straight in your downloads.",
+    desc: "Pick a quality  MP4 in HD or MP3 audio  and it lands straight in your downloads.",
   },
 ];
 

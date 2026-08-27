@@ -8,7 +8,7 @@ export default function PwaSetup() {
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js").catch(() => {
-        // Not fatal — the site works fine without installability
+        // Not fatal  the site works fine without installability
       });
     }
   }, []);

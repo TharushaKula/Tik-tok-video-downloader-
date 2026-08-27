@@ -1,4 +1,4 @@
-# SnapLoad — Feature Roadmap
+# SnapLoad  Feature Roadmap
 
 A backlog of feature ideas for SnapLoad, compiled from research into top-tier
 downloaders (4K Video Downloader Plus, Stacher/yt-dlp, Cobalt, SnapTik, SSSTik,
@@ -20,12 +20,12 @@ Check items off as they ship: `[x]`
 - [x] Loading skeleton, error recovery card, honest download states
 - [x] Recent downloads history (localStorage, re-fetch in one click)
 - [x] Responsive design, reduced-motion support, focus-visible states
-- [x] Batch mode — multi-link paste with parallel fetch queue, per-item status/retry, and Save all
+- [x] Batch mode  multi-link paste with parallel fetch queue, per-item status/retry, and Save all
 - [x] X (Twitter) videos & GIFs
 - [x] TikTok photo slideshows (all slides + soundtrack MP3)
 - [x] Live YouTube conversion progress (client-side job polling, no held server connections)
 - [x] In-card video preview with seeking (streamed inline through the proxy)
-- [x] PWA — installable app with Android share-target ("Share to SnapLoad")
+- [x] PWA  installable app with Android share-target ("Share to SnapLoad")
 - [x] SEO landing pages per platform + sitemap + robots + FAQ structured data
 - [x] Reddit videos with sound + Pinterest video/image pins (7 platforms total)
 - [x] Carousel/slideshow ZIP bundles, thumbnail saver, and title-based smart filenames
@@ -41,7 +41,7 @@ Check items off as they ship: `[x]`
 ## 🌍 Platform & content expansion
 
 - [x] Twitter/X video & GIF downloads
-- [x] Reddit video downloads (with sound — video+audio muxed)
+- [x] Reddit video downloads (with sound  video+audio muxed)
 - [x] Pinterest video & image pin downloads
 - [ ] Snapchat Spotlight downloads
 - [ ] Threads video downloads
@@ -55,9 +55,9 @@ Check items off as they ship: `[x]`
 - [ ] TikTok slideshow auto-merge → single MP4 with music (needs server-side rendering)
 - [ ] TikTok Stories downloads
 - [x] Instagram Stories & Highlights links (accepted & resolved when public; depends on the story being live)
-- [x] Carousel & slideshow ZIP downloads (Instagram carousels, TikTok slideshows — one click, one archive)
+- [x] Carousel & slideshow ZIP downloads (Instagram carousels, TikTok slideshows  one click, one archive)
 - [ ] Profile-picture / avatar downloader (full HD)
-- [x] YouTube playlist batch downloads (via official RSS — latest 10 videos into the batch queue)
+- [x] YouTube playlist batch downloads (via official RSS  latest 10 videos into the batch queue)
 - [ ] YouTube full-channel batch downloads
 - [ ] YouTube chapters support (split video by chapter)
 - [ ] Live stream / ongoing broadcast capture
@@ -65,7 +65,7 @@ Check items off as they ship: `[x]`
 
 ## ⚡ Download power features
 
-- [x] Batch mode — paste multiple links at once (multi-line box)
+- [x] Batch mode  paste multiple links at once (multi-line box)
 - [ ] Bulk download by username/profile (all videos from an account)
 - [ ] TXT/CSV link-list import
 - [ ] Download queue with per-item progress and pause/cancel
@@ -76,7 +76,7 @@ Check items off as they ship: `[x]`
 - [ ] Resumable / retryable downloads
 - [ ] Subtitle downloads (SRT/VTT, language picker, burned-in option)
 - [x] Thumbnail & cover-image download button
-- [ ] Clipboard auto-detection on page focus ("We noticed a link — download it?")
+- [ ] Clipboard auto-detection on page focus ("We noticed a link  download it?")
 - [ ] Concurrent-download limit control
 
 ## 🎬 Media processing (post-download tools)
@@ -87,7 +87,7 @@ Check items off as they ship: `[x]`
 - [ ] Audio bitrate picker (128/192/320 kbps)
 - [ ] Video compressor (target file size)
 - [ ] Format converter (MP4 ↔ WebM/MKV/MOV)
-- [x] Smart filenames — downloads named after the video title (sanitized, unicode-safe)
+- [x] Smart filenames  downloads named after the video title (sanitized, unicode-safe)
 - [ ] User-configurable filename templates (author, date variables)
 - [ ] Embedded metadata & chapters in output files (title, artist, artwork)
 - [ ] SponsorBlock integration (auto-remove sponsor segments from YouTube)
@@ -133,12 +133,12 @@ Check items off as they ship: `[x]`
 - [x] Changelog / "What's new" page (/changelog, linked from the footer)
 - [ ] DMCA, Terms, and Privacy pages (real ones)
 - [ ] Rate limiting + abuse/captcha protection
-- [x] Privacy-friendly analytics (Vercel Analytics — cookie-less, activates on deploy)
+- [x] Privacy-friendly analytics (Vercel Analytics  cookie-less, activates on deploy)
 
 ## 🛡️ Reliability & performance
 
 - [x] Multi-resolver fallback chain for TikTok (TikWM → SnapTik auto-failover; also covers rate limits)
-- [ ] Fallback resolvers for the remaining platforms (investigated 2026-08: fdown, getfvid, snapinsta, snapins, getmyfb, and oceansaver are all dead or bot-walled from server contexts — revisit when a viable candidate appears)
+- [ ] Fallback resolvers for the remaining platforms (investigated 2026-08: fdown, getfvid, snapinsta, snapins, getmyfb, and oceansaver are all dead or bot-walled from server contexts  revisit when a viable candidate appears)
 - [ ] Server-side caching of recently resolved links
 - [x] Background job queue for long YouTube conversions (client polls with live progress)
 - [ ] Health monitoring + alerting when a platform resolver breaks
@@ -156,18 +156,18 @@ Four full rounds of quick wins have shipped. Next highest-impact candidates:
 4. Subtitle downloads for YouTube
 5. Onboarding tour / first-visit hints
 6. Multi-language UI (i18n)
-7. Fallback resolvers (blocked on viable candidates — see note above)
+7. Fallback resolvers (blocked on viable candidates  see note above)
 
 ---
 
 ## Sources
 
-- [4K Video Downloader Plus — GetApp](https://www.getapp.com/website-ecommerce-software/a/4k-video-downloader-plus/)
-- [Cobalt.tools review — Wondershare](https://videoconverter.wondershare.com/video-converters/cobalt-tools-alternative.html)
+- [4K Video Downloader Plus  GetApp](https://www.getapp.com/website-ecommerce-software/a/4k-video-downloader-plus/)
+- [Cobalt.tools review  Wondershare](https://videoconverter.wondershare.com/video-converters/cobalt-tools-alternative.html)
 - [Stacher7](https://stacher.io/)
 - [Video DownloadHelper](https://downloadhelper.net/)
 - [yt-dlp man page](https://www.mankier.com/1/yt-dlp)
-- [yt-dlp complete guide — RapidSeedbox](https://www.rapidseedbox.com/blog/yt-dlp-complete-guide)
+- [yt-dlp complete guide  RapidSeedbox](https://www.rapidseedbox.com/blog/yt-dlp-complete-guide)
 - [SnapTik slideshow downloader](https://snaptik.app/download-tiktok-slide)
 - [SSSTik story downloader](https://ssstik.io/download-tiktok-stories)
 - [iGram](https://igram.world/en2/)

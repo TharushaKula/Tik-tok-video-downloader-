@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "SnapLoad — Video Downloader",
+    name: "SnapLoad  Video Downloader",
     short_name: "SnapLoad",
     description:
-      "Download videos from TikTok, Instagram, Facebook, YouTube, and X in HD — free, no sign-up.",
+      "Download videos from TikTok, Instagram, Facebook, YouTube, and X in HD  free, no sign-up.",
     id: "/",
     start_url: "/",
     scope: "/",

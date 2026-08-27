@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    // archiver's package exports map trips webpack — load it at runtime
+    // archiver's package exports map trips webpack  load it at runtime
     serverComponentsExternalPackages: ["archiver"],
   },
   images: {

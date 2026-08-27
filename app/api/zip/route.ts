@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   const out = new PassThrough();
   archive.pipe(out);
 
-  // Fetch sequentially and append — keeps memory flat and ordering stable.
+  // Fetch sequentially and append  keeps memory flat and ordering stable.
   const fill = async () => {
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
           archive.once("error", onErr);
         });
       } catch {
-        // Skip files that fail — an incomplete bundle beats a dead download
+        // Skip files that fail  an incomplete bundle beats a dead download
         archive.append(`Could not fetch: ${item.url}\n`, {
           name: `${entryName}.SKIPPED.txt`,
         });

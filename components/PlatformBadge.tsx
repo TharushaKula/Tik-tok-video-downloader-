@@ -1,7 +1,7 @@
 import { PLATFORMS } from "@/lib/platforms";
 import type { PlatformId } from "@/lib/types";
 
-// Dark glass chip with a colored identity dot — readable on any thumbnail.
+// Dark glass chip with a colored identity dot  readable on any thumbnail.
 export default function PlatformBadge({
   platform = "tiktok",
 }: {

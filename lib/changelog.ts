@@ -44,7 +44,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: "2026-08-27",
     title: "Batch downloads",
     items: [
-      "Paste several links at once — they fetch in parallel with per-video status",
+      "Paste several links at once  they fetch in parallel with per-video status",
       "Save all grabs the best quality for every video in the batch",
       "Failed fetches can be retried individually",
     ],

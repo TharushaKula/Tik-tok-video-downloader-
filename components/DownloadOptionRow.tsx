@@ -84,7 +84,7 @@ export function startOptionDownload(
     );
     if (notify) {
       toast.success(
-        "Preparing your file — the download starts when it's ready",
+        "Preparing your file  the download starts when it's ready",
         { duration: 5000 }
       );
     }
@@ -92,7 +92,7 @@ export function startOptionDownload(
   }
   proxyDownloadOption(option, platform, title);
   if (notify) {
-    toast.success("Download started — check your browser downloads");
+    toast.success("Download started  check your browser downloads");
   }
 }
 
@@ -105,7 +105,7 @@ export default function DownloadOptionRow({
 }: {
   option: DownloadOption;
   platform: PlatformId;
-  /** Video title — becomes the saved filename */
+  /** Video title  becomes the saved filename */
   title?: string;
 }) {
   const [status, setStatus] = useState<OptionStatus>("idle");
@@ -141,15 +141,15 @@ export default function DownloadOptionRow({
       await downloadYouTubeOption(option, (p) => {
         if (mounted.current) setPercent(p);
       });
-      finish("Download started — check your browser downloads");
+      finish("Download started  check your browser downloads");
     } catch (err) {
       if (!mounted.current) return;
       if (err instanceof PollBlockedError) {
-        // Browser can't reach the resolver (adblock) — server flow instead
+        // Browser can't reach the resolver (adblock)  server flow instead
         proxyDownloadOption(option, platform, title);
         setPercent(null);
         toast.success(
-          "Preparing your file — the download starts when it's ready",
+          "Preparing your file  the download starts when it's ready",
           { duration: 5000 }
         );
         timers.current.push(setTimeout(() => finish(), 8000));
@@ -172,7 +172,7 @@ export default function DownloadOptionRow({
     try {
       setStatus("working");
       proxyDownloadOption(option, platform, title);
-      toast.success("Download started — check your browser downloads");
+      toast.success("Download started  check your browser downloads");
       timers.current.push(
         setTimeout(() => {
           setStatus("started");

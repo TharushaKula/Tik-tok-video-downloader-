@@ -116,7 +116,7 @@ export function isValidTwitterUrl(url: string): boolean {
   }
 }
 
-/** Pure playlist pages (youtube.com/playlist?list=…) — not watch links. */
+/** Pure playlist pages (youtube.com/playlist?list=…)  not watch links. */
 export function isYouTubePlaylistUrl(url: string): boolean {
   return extractYouTubePlaylistId(url) !== null;
 }
@@ -205,7 +205,7 @@ export interface ExtractedUrls {
 }
 
 /**
- * Pull every supported video link out of a blob of text — pasted lists,
+ * Pull every supported video link out of a blob of text  pasted lists,
  * share-sheet text, chat messages. Links are deduped and capped at `max`.
  */
 export function extractSupportedUrls(

@@ -121,7 +121,7 @@ export async function fetchTikTokData(url: string): Promise<VideoInfo> {
       const { fetchTikTokViaSnaptik } = await import("./snaptik");
       return await fetchTikTokViaSnaptik(url);
     } catch {
-      // Surface the primary resolver's error — it's usually more specific
+      // Surface the primary resolver's error  it's usually more specific
       // ("video not found") than the fallback's.
       throw primaryErr;
     }

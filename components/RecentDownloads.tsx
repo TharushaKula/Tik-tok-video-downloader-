@@ -33,7 +33,7 @@ export function saveRecent(entry: RecentEntry): RecentEntry[] {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   } catch {
-    // storage full / private mode — history is best-effort
+    // storage full / private mode  history is best-effort
   }
   return next;
 }

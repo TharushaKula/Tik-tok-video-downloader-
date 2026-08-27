@@ -5,7 +5,7 @@ import { MAX_BATCH_SIZE } from "@/lib/validators";
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
-// Resolves a playlist to its videos via YouTube's official RSS feed —
+// Resolves a playlist to its videos via YouTube's official RSS feed 
 // no API key, no scraping. The feed carries the playlist's most recent
 // entries (up to 15); we cap at the batch limit.
 export async function GET(req: NextRequest) {
