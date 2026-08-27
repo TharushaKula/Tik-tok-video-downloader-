@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
+  Bot,
   Clipboard,
   Facebook,
   Instagram,
@@ -11,6 +12,7 @@ import {
   ListX,
   Loader2,
   Music2,
+  Pin,
   Twitter,
   X,
   Youtube,
@@ -19,6 +21,7 @@ import toast from "react-hot-toast";
 import {
   detectPlatform,
   extractSupportedUrls,
+  isYouTubePlaylistUrl,
   MAX_BATCH_SIZE,
 } from "@/lib/validators";
 import { PLATFORMS, PLATFORM_IDS } from "@/lib/platforms";
@@ -30,6 +33,8 @@ const PLATFORM_ICONS: Record<PlatformId, typeof Music2> = {
   facebook: Facebook,
   youtube: Youtube,
   twitter: Twitter,
+  reddit: Bot,
+  pinterest: Pin,
 };
 
 interface UrlInputProps {
@@ -62,7 +67,8 @@ export default function UrlInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const trimmed = value.trim();
-  const platform = trimmed ? detectPlatform(trimmed) : null;
+  const isPlaylist = trimmed ? isYouTubePlaylistUrl(trimmed) : false;
+  const platform = isPlaylist ? "youtube" : trimmed ? detectPlatform(trimmed) : null;
   const meta = platform ? PLATFORMS[platform] : null;
   const PlatformIcon = platform ? PLATFORM_ICONS[platform] : Link2;
 
@@ -165,6 +171,8 @@ export default function UrlInput({
 
   const singleHint = !trimmed
     ? "Paste a link — or several at once — platforms are detected automatically"
+    : isPlaylist
+    ? "YouTube playlist detected — we'll fetch its latest videos as a batch"
     : meta
     ? `${meta.name} link detected — press Enter to fetch`
     : trimmed.length > 12

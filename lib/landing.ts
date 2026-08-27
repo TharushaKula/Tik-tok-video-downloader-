@@ -197,4 +197,77 @@ export const LANDING_PAGES: Record<string, LandingCopy> = {
   },
 };
 
+LANDING_PAGES["reddit-downloader"] = {
+  slug: "reddit-downloader",
+  platform: "reddit",
+  metaTitle: "Reddit Video Downloader — With Sound, HD & Free | SnapLoad",
+  metaDescription:
+    "Download Reddit videos with sound in HD. Works with post links, share links, and redd.it shortlinks. Free, no sign-up.",
+  keywords: [
+    "reddit video downloader",
+    "download reddit video with sound",
+    "v.redd.it downloader",
+    "reddit gif downloader",
+  ],
+  h1: "Download Reddit videos, with sound.",
+  sub: "Reddit stores video and audio separately — SnapLoad merges them so your download plays with sound everywhere.",
+  highlights: [
+    "Video + audio merged",
+    "GIFs as MP4",
+    "Share links & redd.it",
+    "No account needed",
+  ],
+  faqs: [
+    {
+      q: "Why do Reddit videos usually download without sound?",
+      a: "Reddit serves the video and audio as separate streams. SnapLoad merges them server-side, so the file you save plays with sound in any player.",
+    },
+    {
+      q: "Which Reddit links work?",
+      a: "Full post links (reddit.com/r/…/comments/…), mobile share links (reddit.com/r/…/s/…), and redd.it shortlinks.",
+    },
+    {
+      q: "Can I download from private subreddits?",
+      a: "No — only posts that are publicly visible can be fetched.",
+    },
+  ],
+};
+
+LANDING_PAGES["pinterest-downloader"] = {
+  slug: "pinterest-downloader",
+  platform: "pinterest",
+  metaTitle: "Pinterest Video Downloader — Pins in HD & Free | SnapLoad",
+  metaDescription:
+    "Download Pinterest video pins and images in HD. Works with pinterest.com and pin.it links. Free, no sign-up, no watermark.",
+  keywords: [
+    "pinterest video downloader",
+    "pinterest downloader",
+    "pin.it downloader",
+    "download pinterest video",
+    "pinterest image downloader",
+  ],
+  h1: "Download Pinterest videos & pins.",
+  sub: "Paste a pin link — video pins save as MP4 and image pins as full-resolution originals.",
+  highlights: [
+    "Video pins as MP4",
+    "Images in original quality",
+    "pin.it short links",
+    "All country domains",
+  ],
+  faqs: [
+    {
+      q: "How do I copy a pin link?",
+      a: "Open the pin, tap the share icon, and choose Copy Link. Both pinterest.com links and pin.it shortlinks work.",
+    },
+    {
+      q: "Can I download image pins too?",
+      a: "Yes — image pins download as the original full-resolution file, not a compressed preview.",
+    },
+    {
+      q: "Do country domains like pinterest.co.uk work?",
+      a: "Yes — every regional Pinterest domain is supported, along with pin.it shortlinks from the app.",
+    },
+  ],
+};
+
 export const LANDING_SLUGS = Object.keys(LANDING_PAGES);

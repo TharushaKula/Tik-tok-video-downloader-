@@ -60,9 +60,8 @@ export default function Footer() {
 
         <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-white/[0.05] pt-6 text-center sm:flex-row sm:text-left">
           <p className="max-w-lg text-xs leading-relaxed text-slate-600">
-            SnapLoad isn&apos;t affiliated with TikTok, Instagram, Facebook,
-            YouTube, or X. Download only content you own or have permission to
-            save.
+            SnapLoad isn&apos;t affiliated with any of the supported platforms.
+            Download only content you own or have permission to save.
           </p>
           <p className="shrink-0 text-xs text-slate-600">
             © {year} SnapLoad

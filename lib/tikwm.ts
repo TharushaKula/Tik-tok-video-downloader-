@@ -91,7 +91,7 @@ export function mapTikTokResponse(video: TikWMVideo): VideoInfo {
   };
 }
 
-export async function fetchTikTokData(url: string): Promise<VideoInfo> {
+async function fetchViaTikwm(url: string): Promise<VideoInfo> {
   const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}&hd=1`;
 
   const response = await axios.get(apiUrl, {
@@ -109,4 +109,21 @@ export async function fetchTikTokData(url: string): Promise<VideoInfo> {
   }
 
   return mapTikTokResponse(data.data as TikWMVideo);
+}
+
+export async function fetchTikTokData(url: string): Promise<VideoInfo> {
+  try {
+    return await fetchViaTikwm(url);
+  } catch (primaryErr) {
+    // Resolver fallback chain: TikWM → SnapTik. The secondary offers fewer
+    // options (single HD file) but keeps TikTok working when TikWM is down.
+    try {
+      const { fetchTikTokViaSnaptik } = await import("./snaptik");
+      return await fetchTikTokViaSnaptik(url);
+    } catch {
+      // Surface the primary resolver's error — it's usually more specific
+      // ("video not found") than the fallback's.
+      throw primaryErr;
+    }
+  }
 }

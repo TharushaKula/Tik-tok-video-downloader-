@@ -5,6 +5,8 @@ import { fetchInstagramData } from "@/lib/instagram";
 import { fetchFacebookData } from "@/lib/facebook";
 import { fetchYouTubeData } from "@/lib/youtube";
 import { fetchTwitterData } from "@/lib/twitter";
+import { fetchRedditData } from "@/lib/reddit";
+import { fetchPinterestData } from "@/lib/pinterest";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -25,7 +27,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Invalid URL. Please enter a valid TikTok, Instagram, Facebook, YouTube, or X link.",
+            "Invalid URL. Please paste a link from a supported platform — TikTok, Instagram, Facebook, YouTube, X, Reddit, or Pinterest.",
         },
         { status: 400 }
       );
@@ -40,6 +42,10 @@ export async function POST(req: NextRequest) {
         ? await fetchFacebookData(trimmedUrl)
         : platform === "twitter"
         ? await fetchTwitterData(trimmedUrl)
+        : platform === "reddit"
+        ? await fetchRedditData(trimmedUrl)
+        : platform === "pinterest"
+        ? await fetchPinterestData(trimmedUrl)
         : await fetchYouTubeData(trimmedUrl);
 
     return NextResponse.json({ success: true, data });

@@ -28,7 +28,11 @@ export function isValidInstagramUrl(url: string): boolean {
       (host) => parsed.hostname === host || parsed.hostname.endsWith("." + host)
     );
     if (!hostOk) return false;
-    return /\/(reel|reels|p|tv)\/[A-Za-z0-9_-]+/.test(parsed.pathname);
+    return (
+      /\/(reel|reels|p|tv)\/[A-Za-z0-9_-]+/.test(parsed.pathname) ||
+      // Stories and highlights: /stories/<user>/<id> or /stories/highlights/<id>
+      /^\/stories\/[^/]+/.test(parsed.pathname)
+    );
   } catch {
     return false;
   }
@@ -112,12 +116,70 @@ export function isValidTwitterUrl(url: string): boolean {
   }
 }
 
+/** Pure playlist pages (youtube.com/playlist?list=…) — not watch links. */
+export function isYouTubePlaylistUrl(url: string): boolean {
+  return extractYouTubePlaylistId(url) !== null;
+}
+
+export function extractYouTubePlaylistId(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+    const validHosts = [
+      "youtube.com",
+      "www.youtube.com",
+      "m.youtube.com",
+      "music.youtube.com",
+    ];
+    const hostOk = validHosts.some(
+      (host) => parsed.hostname === host || parsed.hostname.endsWith("." + host)
+    );
+    if (!hostOk || parsed.pathname !== "/playlist") return null;
+    const id = parsed.searchParams.get("list");
+    return id && /^[A-Za-z0-9_-]{10,60}$/.test(id) ? id : null;
+  } catch {
+    return null;
+  }
+}
+
+export function isValidRedditUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname;
+    // Short links and direct video hosts
+    if (host === "redd.it" || host === "v.redd.it") {
+      return parsed.pathname.length > 1;
+    }
+    if (!(host === "reddit.com" || host.endsWith(".reddit.com"))) return false;
+    return (
+      /\/comments\/[a-z0-9]+/i.test(parsed.pathname) ||
+      /^\/r\/[^/]+\/s\/[A-Za-z0-9]+/.test(parsed.pathname)
+    );
+  } catch {
+    return false;
+  }
+}
+
+export function isValidPinterestUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname;
+    if (host === "pin.it") return parsed.pathname.length > 1;
+    // pinterest.com plus country domains (pinterest.ca, pinterest.co.uk, …)
+    if (!/(^|\.)pinterest\.[a-z]{2,3}(\.[a-z]{2})?$/.test(host)) return false;
+    return /^\/pin\/[^/]+/.test(parsed.pathname);
+  } catch {
+    return false;
+  }
+}
+
 export type Platform =
   | "tiktok"
   | "instagram"
   | "facebook"
   | "youtube"
   | "twitter"
+  | "reddit"
+  | "pinterest"
   | null;
 
 export function detectPlatform(url: string): Platform {
@@ -126,6 +188,8 @@ export function detectPlatform(url: string): Platform {
   if (isValidFacebookUrl(url)) return "facebook";
   if (isValidYouTubeUrl(url)) return "youtube";
   if (isValidTwitterUrl(url)) return "twitter";
+  if (isValidRedditUrl(url)) return "reddit";
+  if (isValidPinterestUrl(url)) return "pinterest";
   return null;
 }
 

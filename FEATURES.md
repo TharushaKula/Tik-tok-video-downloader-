@@ -27,14 +27,20 @@ Check items off as they ship: `[x]`
 - [x] In-card video preview with seeking (streamed inline through the proxy)
 - [x] PWA — installable app with Android share-target ("Share to SnapLoad")
 - [x] SEO landing pages per platform + sitemap + robots + FAQ structured data
+- [x] Reddit videos with sound + Pinterest video/image pins (7 platforms total)
+- [x] YouTube playlist → batch downloads
+- [x] Instagram Stories & Highlights link support
+- [x] TikTok resolver failover (TikWM → SnapTik)
+- [x] Background-tab notification when YouTube conversions finish
+- [x] Vercel Analytics (privacy-friendly, cookie-less)
 
 ---
 
 ## 🌍 Platform & content expansion
 
 - [x] Twitter/X video & GIF downloads
-- [ ] Reddit video downloads
-- [ ] Pinterest video/idea-pin downloads
+- [x] Reddit video downloads (with sound — video+audio muxed)
+- [x] Pinterest video & image pin downloads
 - [ ] Snapchat Spotlight downloads
 - [ ] Threads video downloads
 - [ ] LinkedIn video downloads
@@ -46,10 +52,10 @@ Check items off as they ship: `[x]`
 - [x] TikTok photo slideshows → all slides as images + soundtrack MP3
 - [ ] TikTok slideshow auto-merge → single MP4 with music (needs server-side rendering)
 - [ ] TikTok Stories downloads
-- [ ] Instagram Stories & Highlights downloads
+- [x] Instagram Stories & Highlights links (accepted & resolved when public; depends on the story being live)
 - [ ] Instagram carousel downloads (all slides, zipped)
 - [ ] Profile-picture / avatar downloader (full HD)
-- [ ] YouTube playlist batch downloads
+- [x] YouTube playlist batch downloads (via official RSS — latest 10 videos into the batch queue)
 - [ ] YouTube full-channel batch downloads
 - [ ] YouTube chapters support (split video by chapter)
 - [ ] Live stream / ongoing broadcast capture
@@ -97,7 +103,7 @@ Check items off as they ship: `[x]`
 - [ ] Light theme + system theme toggle
 - [ ] Multi-language UI (i18n) with localized SEO pages
 - [ ] Onboarding tour / first-visit hints
-- [ ] Download-complete browser notifications
+- [x] Browser notification when a YouTube conversion finishes while the tab is in the background
 - [ ] Sound/haptic feedback on completion
 
 ## ☁️ Accounts, retention & cloud
@@ -124,11 +130,12 @@ Check items off as they ship: `[x]`
 - [ ] Changelog / "What's new" panel
 - [ ] DMCA, Terms, and Privacy pages (real ones)
 - [ ] Rate limiting + abuse/captcha protection
-- [ ] Privacy-friendly analytics (e.g. Plausible)
+- [x] Privacy-friendly analytics (Vercel Analytics — cookie-less, activates on deploy)
 
 ## 🛡️ Reliability & performance
 
-- [ ] Multi-resolver fallback chains per platform (auto-failover when one API dies)
+- [x] Multi-resolver fallback chain for TikTok (TikWM → SnapTik auto-failover; also covers rate limits)
+- [ ] Fallback resolvers for the remaining platforms
 - [ ] Server-side caching of recently resolved links
 - [x] Background job queue for long YouTube conversions (client polls with live progress)
 - [ ] Health monitoring + alerting when a platform resolver breaks
@@ -138,15 +145,15 @@ Check items off as they ship: `[x]`
 
 ## 🎯 Suggested quick wins
 
-~~All seven original quick wins have shipped~~ ✅ Next highest-impact candidates:
+Two full rounds of quick wins have shipped. Next highest-impact candidates:
 
-1. Reddit + Pinterest support (same resolver pattern)
-2. Instagram Stories & Highlights
-3. YouTube playlist batch downloads
-4. Download-complete browser notifications
-5. Light theme + system theme toggle
-6. Multi-resolver fallback chains (reliability)
-7. Privacy-friendly analytics
+1. Light theme + system toggle (deferred — deserves its own design pass over the whole color system)
+2. Fallback resolvers for Instagram/Facebook/YouTube
+3. Instagram carousel downloads (all slides, zipped)
+4. Thumbnail & cover-image download button
+5. Twitch clips / SoundCloud / Vimeo support
+6. Collections & favorites
+7. Changelog / "What's new" panel
 
 ---
 

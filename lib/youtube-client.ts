@@ -93,15 +93,41 @@ export function triggerBrowserDownload(url: string) {
   document.body.removeChild(a);
 }
 
+// Conversions take a while, so users tab away — ask (once, on a real click)
+// for permission to ping them when the file is ready.
+function requestNotifyPermission() {
+  if (
+    typeof Notification !== "undefined" &&
+    Notification.permission === "default"
+  ) {
+    void Notification.requestPermission();
+  }
+}
+
+function notifyIfHidden(title: string, body: string) {
+  if (typeof Notification === "undefined") return;
+  if (!document.hidden || Notification.permission !== "granted") return;
+  try {
+    new Notification(title, { body, icon: "/icons/icon-192.png" });
+  } catch {
+    // Some platforms only allow notifications from service workers — fine.
+  }
+}
+
 /** Full flow: start → poll (with progress callbacks) → hand off to browser. */
 export async function downloadYouTubeOption(
   option: DownloadOption,
   onProgress?: (percent: number) => void
 ): Promise<void> {
+  requestNotifyPermission();
   const progressUrl = await startYouTubeJob(
     option.url,
     youtubeFormatFor(option)
   );
   const downloadUrl = await pollYouTubeJob(progressUrl, onProgress);
   triggerBrowserDownload(downloadUrl);
+  notifyIfHidden(
+    "Your download is ready",
+    "The converted file is saving to your downloads now."
+  );
 }

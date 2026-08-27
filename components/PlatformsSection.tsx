@@ -2,10 +2,12 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import {
+  Bot,
   Check,
   Facebook,
   Instagram,
   Music2,
+  Pin,
   Twitter,
   Youtube,
 } from "lucide-react";
@@ -18,6 +20,8 @@ const ICONS: Record<PlatformId, typeof Music2> = {
   facebook: Facebook,
   youtube: Youtube,
   twitter: Twitter,
+  reddit: Bot,
+  pinterest: Pin,
 };
 
 export default function PlatformsSection() {
@@ -44,7 +48,7 @@ export default function PlatformsSection() {
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {PLATFORM_IDS.map((id, i) => {
           const meta = PLATFORMS[id];
           const Icon = ICONS[id];

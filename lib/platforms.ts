@@ -64,6 +64,24 @@ export const PLATFORMS: Record<PlatformId, PlatformMeta> = {
     glow: "rgba(56, 189, 248, 0.18)",
     supports: ["Tweet videos", "GIFs as MP4", "HD quality"],
   },
+  reddit: {
+    name: "Reddit",
+    dot: "bg-orange-400",
+    text: "text-orange-400",
+    activeChip: "border-orange-400/40 bg-orange-400/10 text-orange-300",
+    hoverBorder: "hover:border-orange-400/30",
+    glow: "rgba(251, 146, 60, 0.18)",
+    supports: ["Videos with sound", "GIFs as MP4", "Share links & redd.it"],
+  },
+  pinterest: {
+    name: "Pinterest",
+    dot: "bg-red-400",
+    text: "text-red-400",
+    activeChip: "border-red-400/40 bg-red-400/10 text-red-300",
+    hoverBorder: "hover:border-red-400/30",
+    glow: "rgba(248, 113, 113, 0.18)",
+    supports: ["Video pins", "Image pins in HD", "pin.it short links"],
+  },
 };
 
 export const PLATFORM_IDS: PlatformId[] = [
@@ -72,4 +90,6 @@ export const PLATFORM_IDS: PlatformId[] = [
   "facebook",
   "youtube",
   "twitter",
+  "reddit",
+  "pinterest",
 ];

@@ -7,7 +7,7 @@ import { ChevronDown } from "lucide-react";
 const FAQS = [
   {
     q: "Which platforms and formats are supported?",
-    a: "TikTok videos (watermark-free, with MP3 audio), Instagram Reels and posts, Facebook videos and Reels — including fb.watch and share links — YouTube videos and Shorts as MP4 up to 1080p or MP3 audio, and X (Twitter) videos and GIFs.",
+    a: "TikTok (watermark-free videos, photo slideshows, MP3), Instagram Reels and posts, Facebook videos and Reels, YouTube videos and Shorts (MP4 up to 1080p or MP3), X (Twitter) videos and GIFs, Reddit videos with sound, and Pinterest video and image pins.",
   },
   {
     q: "Can I download several videos at once?",

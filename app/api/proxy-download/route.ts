@@ -16,10 +16,10 @@ const TIKTOK_HOSTS = [
   "tiktokv.com",
 ];
 
-// Instagram, Facebook, and X downloads all resolve through the Snapsave
-// family of services, so they share one set of CDN hosts (fbcdn.net serves
-// both Meta platforms; rapidcdn tokens front the rest).
-const SNAP_MEDIA_HOSTS = [
+// Every non-TikTok platform's media/CDN hosts. Several platforms share CDNs
+// (fbcdn serves both Meta apps; rapidcdn tokens front the Snapsave family),
+// so the platform hint from the client decides referer and filename.
+const MEDIA_HOSTS = [
   "cdninstagram.com",
   "fbcdn.net",
   "instagram.com",
@@ -28,7 +28,29 @@ const SNAP_MEDIA_HOSTS = [
   "snapcdn.app",
   "snapsave.app",
   "twimg.com",
+  "rapidsave.com",
+  "redd.it",
+  "pinimg.com",
+  "pinterest.com",
 ];
+
+const HINTABLE_PLATFORMS = new Set([
+  "tiktok",
+  "instagram",
+  "facebook",
+  "twitter",
+  "reddit",
+  "pinterest",
+]);
+
+const REFERERS: Record<string, string> = {
+  tiktok: "https://www.tiktok.com/",
+  instagram: "https://www.instagram.com/",
+  facebook: "https://www.facebook.com/",
+  twitter: "https://x.com/",
+  reddit: "https://www.reddit.com/",
+  pinterest: "https://www.pinterest.com/",
+};
 
 function matchHost(hostname: string, suffixes: string[]): boolean {
   return suffixes.some(
@@ -85,29 +107,21 @@ export async function GET(req: NextRequest) {
   }
 
   const isTikTok = matchHost(parsedUrl.hostname, TIKTOK_HOSTS);
-  const isSnapMedia = matchHost(parsedUrl.hostname, SNAP_MEDIA_HOSTS);
+  const isMedia = matchHost(parsedUrl.hostname, MEDIA_HOSTS);
 
-  if (!isTikTok && !isSnapMedia) {
+  if (!isTikTok && !isMedia) {
     return NextResponse.json({ error: "URL not allowed" }, { status: 403 });
   }
 
-  // The shared CDN hosts can't distinguish the Snapsave-family platforms,
-  // so trust the client's platform hint there (it only affects referer and
-  // filename).
+  // Shared CDN hosts can't identify the platform on their own, so trust the
+  // client's hint there (it only affects referer and filename).
   const platformLabel = isTikTok
     ? "tiktok"
-    : requestedPlatform === "facebook" || requestedPlatform === "twitter"
+    : requestedPlatform && HINTABLE_PLATFORMS.has(requestedPlatform)
     ? requestedPlatform
     : "instagram";
 
-  const referer =
-    platformLabel === "facebook"
-      ? "https://www.facebook.com/"
-      : platformLabel === "twitter"
-      ? "https://x.com/"
-      : platformLabel === "instagram"
-      ? "https://www.instagram.com/"
-      : "https://www.tiktok.com/";
+  const referer = REFERERS[platformLabel] ?? "https://www.tiktok.com/";
   let ext: string;
   let defaultContentType: string;
   if (type === "audio") {

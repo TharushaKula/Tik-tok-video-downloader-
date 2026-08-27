@@ -18,9 +18,11 @@ import RecentDownloads, {
 import {
   detectPlatform,
   extractSupportedUrls,
+  extractYouTubePlaylistId,
   MAX_BATCH_SIZE,
 } from "@/lib/validators";
 import type { PlatformId, VideoInfo } from "@/lib/types";
+import toast from "react-hot-toast";
 
 type FetchState =
   | { kind: "idle" }
@@ -122,12 +124,40 @@ export default function DownloaderTool() {
     const target = (explicitUrl ?? url).trim();
     if (!target || busy) return;
 
+    // YouTube playlists expand into a batch of their videos
+    const playlistId = extractYouTubePlaylistId(target);
+    if (playlistId) {
+      if (explicitUrl) setUrl(explicitUrl);
+      try {
+        const res = await fetch(`/api/youtube/playlist?list=${playlistId}`);
+        const json = await res.json().catch(() => null);
+        if (!res.ok || !json?.success) {
+          throw new Error(json?.error || "Couldn't load that playlist");
+        }
+        const urls: string[] = json.urls;
+        toast.success(
+          json.total > urls.length
+            ? `Playlist loaded — fetching the ${urls.length} most recent videos`
+            : `Playlist loaded — fetching ${urls.length} ${urls.length === 1 ? "video" : "videos"}`
+        );
+        await handleBatchSubmit(urls);
+      } catch (err: unknown) {
+        setState({
+          kind: "error",
+          message:
+            err instanceof Error ? err.message : "Couldn't load that playlist",
+          url: target,
+        });
+      }
+      return;
+    }
+
     const platform = detectPlatform(target);
     if (!platform) {
       setState({
         kind: "error",
         message:
-          "That link isn't from a supported platform. Paste a TikTok, Instagram, Facebook, YouTube, or X video link.",
+          "That link isn't from a supported platform. Paste a TikTok, Instagram, Facebook, YouTube, X, Reddit, or Pinterest link.",
         url: target,
       });
       return;

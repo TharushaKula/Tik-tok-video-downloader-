@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react";
 import ToastProvider from "@/components/ToastProvider";
 import PwaSetup from "@/components/PwaSetup";
 import { SITE_URL } from "@/lib/site";
@@ -9,9 +10,9 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "SnapLoad — Download TikTok, Instagram, Facebook, YouTube & X Videos",
+  title: "SnapLoad — Free Video Downloader for TikTok, YouTube & More",
   description:
-    "Save videos from TikTok, Instagram, Facebook, YouTube, and X (Twitter) in HD — watermark-free, with MP3 audio. Free, no sign-up, no limits.",
+    "Save videos from TikTok, Instagram, Facebook, YouTube, X (Twitter), Reddit, and Pinterest in HD — watermark-free, with MP3 audio. Free, no sign-up, no limits.",
   keywords: [
     "video downloader",
     "tiktok downloader",
@@ -20,6 +21,8 @@ export const metadata: Metadata = {
     "youtube downloader",
     "twitter video downloader",
     "x video downloader",
+    "reddit video downloader",
+    "pinterest video downloader",
     "no watermark",
     "mp4",
     "mp3",
@@ -50,6 +53,7 @@ export default function RootLayout({
         <ToastProvider />
         <PwaSetup />
         {children}
+        <Analytics />
       </body>
     </html>
   );
