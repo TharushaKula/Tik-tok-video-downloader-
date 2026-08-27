@@ -1,15 +1,16 @@
 export function isValidTikTokUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
-    const validHosts = [
-      "tiktok.com",
-      "www.tiktok.com",
-      "vm.tiktok.com",
-      "vt.tiktok.com",
-      "m.tiktok.com",
-    ];
-    return validHosts.some(
-      (host) => parsed.hostname === host || parsed.hostname.endsWith("." + host)
+    const host = parsed.hostname.replace(/^www\./, "");
+    // Short-link hosts use opaque paths; any non-empty path is a shared post.
+    if (host === "vm.tiktok.com" || host === "vt.tiktok.com") {
+      return parsed.pathname.length > 1;
+    }
+    if (host !== "tiktok.com" && host !== "m.tiktok.com") return false;
+    // Require an actual post path, not a bare profile or the homepage.
+    return (
+      /^\/@[^/]+\/(?:video|photo)\/\d+/.test(parsed.pathname) ||
+      /^\/(?:v|t|embed)\/[A-Za-z0-9._-]+/.test(parsed.pathname)
     );
   } catch {
     return false;

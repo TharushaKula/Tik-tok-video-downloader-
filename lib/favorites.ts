@@ -8,6 +8,8 @@ export interface FavoriteEntry {
   platform: PlatformId;
   thumbnail?: string;
   ts: number;
+  /** User-assigned collection tags */
+  tags?: string[];
 }
 
 const STORAGE_KEY = "snapload:favorites";
@@ -62,4 +64,37 @@ export function clearFavorites(): void {
   } catch {
     // ignore
   }
+}
+
+const MAX_TAG_LEN = 24;
+
+/** Normalize a raw tag: trimmed, collapsed, lowercased, length-capped. */
+export function normalizeTag(raw: string): string {
+  return raw.trim().replace(/\s+/g, " ").slice(0, MAX_TAG_LEN).toLowerCase();
+}
+
+/** Replace the tag set for one saved video. Returns the updated list. */
+export function setFavoriteTags(url: string, tags: string[]): FavoriteEntry[] {
+  const cleaned: string[] = [];
+  for (const t of tags) {
+    const n = normalizeTag(t);
+    if (n && !cleaned.includes(n)) cleaned.push(n);
+  }
+  const list = loadFavorites().map((e) =>
+    e.url === url ? { ...e, tags: cleaned } : e
+  );
+  write(list);
+  return list;
+}
+
+/** Every distinct tag across saved videos, sorted by frequency then name. */
+export function allTags(list: FavoriteEntry[]): string[] {
+  const counts = new Map<string, number>();
+  for (const e of list) {
+    for (const t of e.tags ?? []) counts.set(t, (counts.get(t) ?? 0) + 1);
+  }
+  return Array.from(counts.keys()).sort((a, b) => {
+    const d = (counts.get(b) ?? 0) - (counts.get(a) ?? 0);
+    return d !== 0 ? d : a.localeCompare(b);
+  });
 }

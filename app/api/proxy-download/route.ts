@@ -114,7 +114,10 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const contentType = upstream.headers["content-type"] || defaultContentType;
+    // axios types headers as a broad union; coerce to a string for our use.
+    const rawContentType = upstream.headers["content-type"];
+    const contentType =
+      typeof rawContentType === "string" ? rawContentType : defaultContentType;
 
     const nodeStream: NodeJS.ReadableStream = upstream.data;
     const webStream = new ReadableStream({

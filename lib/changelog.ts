@@ -8,6 +8,14 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-08-27",
+    title: "Organize your saves, and hop to your phone",
+    items: [
+      "Tag saved videos and filter your Saved list by tag",
+      "Send any video to your phone: scan a QR code to continue the download there",
+    ],
+  },
+  {
+    date: "2026-08-27",
     title: "A command palette, and the fine print",
     items: [
       "Press Cmd/Ctrl+K to open a command palette: search, jump to saved and recent videos, switch theme, or navigate anywhere",

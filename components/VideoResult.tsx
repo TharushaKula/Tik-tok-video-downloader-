@@ -12,11 +12,13 @@ import {
   Loader2,
   MessageCircle,
   Play,
+  QrCode,
   RotateCcw,
   Share2,
   Star,
   X,
 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import toast from "react-hot-toast";
 import type { VideoInfo } from "@/lib/types";
 import PlatformBadge from "./PlatformBadge";
@@ -24,6 +26,66 @@ import DownloadOptionRow, {
   proxyUrlFor,
   startOptionDownload,
 } from "./DownloadOptionRow";
+
+// Phone handoff: a QR encoding a SnapLoad deep link that re-fetches this
+// video, so scanning it opens the download already in progress on a phone.
+function QrHandoff({
+  sourceUrl,
+  onClose,
+}: {
+  sourceUrl: string;
+  onClose: () => void;
+}) {
+  const [href, setHref] = useState("");
+  useEffect(() => {
+    setHref(`${window.location.origin}/?url=${encodeURIComponent(sourceUrl)}`);
+  }, [sourceUrl]);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Send to phone"
+    >
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+        aria-hidden
+      />
+      <div className="relative w-full max-w-xs rounded-2xl border border-veil/10 bg-raised p-6 text-center shadow-2xl">
+        <button
+          onClick={onClose}
+          className="focus-ring absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full text-ink-3 transition-colors hover:bg-veil/[0.06] hover:text-ink-1"
+          aria-label="Close"
+        >
+          <X size={14} />
+        </button>
+        <h3 className="text-sm font-semibold text-ink-hi">Continue on your phone</h3>
+        <p className="mt-1 text-xs leading-relaxed text-ink-3">
+          Scan to open this video in SnapLoad on another device.
+        </p>
+        <div className="mt-4 flex justify-center">
+          <div className="rounded-xl bg-white p-3">
+            {href ? (
+              <QRCodeSVG value={href} size={168} marginSize={0} />
+            ) : (
+              <div className="h-[168px] w-[168px]" />
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /** Bundle a multi-image post (carousel / slideshow) into one ZIP. */
 function ZipAllButton({ info }: { info: VideoInfo }) {
@@ -115,6 +177,8 @@ interface VideoResultProps {
   onReset: () => void;
   favorited: boolean;
   onToggleFavorite: () => void;
+  /** Original link the user pasted  used for the phone-handoff QR code */
+  sourceUrl: string;
 }
 
 export default function VideoResult({
@@ -122,8 +186,10 @@ export default function VideoResult({
   onReset,
   favorited,
   onToggleFavorite,
+  sourceUrl,
 }: VideoResultProps) {
   const [previewing, setPreviewing] = useState(false);
+  const [showQr, setShowQr] = useState(false);
 
   const statItems = [
     { icon: Eye, label: "views", value: info.stats?.views },
@@ -247,6 +313,14 @@ export default function VideoResult({
                 </button>
               )}
               <button
+                onClick={() => setShowQr(true)}
+                className="focus-ring flex h-[30px] w-[30px] items-center justify-center rounded-lg border border-veil/[0.08] text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1"
+                aria-label="Send to phone with a QR code"
+                title="Send to phone"
+              >
+                <QrCode size={13} />
+              </button>
+              <button
                 onClick={onReset}
                 className="focus-ring flex items-center gap-1.5 rounded-lg border border-veil/[0.08] px-2.5 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1"
                 aria-label="Start a new download"
@@ -316,6 +390,8 @@ export default function VideoResult({
             : "Files are fetched through our server, so nothing is installed and no app is needed."}
         </p>
       </div>
+
+      {showQr && <QrHandoff sourceUrl={sourceUrl} onClose={() => setShowQr(false)} />}
     </div>
   );
 }

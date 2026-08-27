@@ -40,6 +40,8 @@ Check items off as they ship: `[x]`
 - [x] YouTube full-channel downloads, custom filename templates, first-visit hint
 - [x] Zero-friction input funnel: drag-and-drop, paste-anywhere, clipboard detection on focus
 - [x] Command palette (⌘K) + real legal pages (Terms, Privacy, DMCA)
+- [x] Collections & tags on the Saved list + QR phone handoff
+- [x] Hardening: 55-test vitest suite (validators/parsers/favorites/templates/hosts), resolver health-check script (`npm run health`), axios security patch, tightened TikTok URL validation
 
 ---
 
@@ -110,7 +112,7 @@ Check items off as they ship: `[x]`
 - [ ] Browser extension (one-click download from the video page)
 - [x] Video preview player in the result card (watch before saving)
 - [x] Drag-and-drop a link anywhere on the page (full-page drop target)
-- [ ] QR code handoff (scan to continue the download on your phone)
+- [x] QR handoff  scan to continue a download on your phone (encodes a ?url= deep link)
 - [x] Command palette (⌘K) for power users (search, saved/recent, theme, navigation)
 - [x] Paste anywhere on the page to fetch (no need to focus the input)
 - [x] Full keyboard shortcut set (⌘K palette with arrow/enter/escape nav)
@@ -124,7 +126,7 @@ Check items off as they ship: `[x]`
 
 - [ ] Optional accounts with cloud-synced download history
 - [x] Favorites  star any video to keep it in a persistent Saved list
-- [ ] Collections / tags to organize saved videos
+- [x] Collections / tags to organize saved videos (per-video tags + tag filter bar)
 - [ ] Creator subscriptions ("notify me / auto-fetch new videos from this account")
 - [ ] Scheduled & recurring downloads
 - [ ] Save directly to Google Drive / Dropbox / OneDrive
@@ -153,22 +155,24 @@ Check items off as they ship: `[x]`
 - [ ] Fallback resolvers for the remaining platforms (investigated 2026-08: fdown, getfvid, snapinsta, snapins, getmyfb, and oceansaver are all dead or bot-walled from server contexts  revisit when a viable candidate appears)
 - [ ] Server-side caching of recently resolved links
 - [x] Background job queue for long YouTube conversions (client polls with live progress)
-- [ ] Health monitoring + alerting when a platform resolver breaks
+- [~] Health monitoring: `npm run health` probes every resolver and exits
+      non-zero if any is down (ready to wire to CI/cron; alerting TBD)
+- [x] Automated test suite (vitest) over validators, parsers, and stores
 - [ ] Smart link cleanup (strip tracking params, resolve shortlinks client-side)
 
 ---
 
 ## 🎯 Suggested quick wins
 
-Eight full rounds of quick wins have shipped. Next highest-impact candidates:
+Nine full rounds of quick wins have shipped. Next highest-impact candidates:
 
-1. Collections & tags on top of the Saved list
-2. Multi-language UI (i18n)
-3. QR handoff to continue a download on your phone
-4. Usage stats dashboard ("you've saved N videos")
-5. Bulk download by username/profile (other platforms)
-6. Onboarding tour beyond the first-visit hint
-7. Status page / uptime badge
+1. Multi-language UI (i18n)  its own dedicated pass
+2. Usage stats ("you've saved N videos", by platform)
+3. Bulk download by username/profile (other platforms)
+4. Blog + how-to guides (organic traffic)
+5. Status page / uptime badge
+6. Browser extension (one-click from the video page)
+7. Audio format/bitrate choices (M4A, WAV, 320kbps)
 
 ---
 

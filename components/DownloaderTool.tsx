@@ -34,6 +34,7 @@ import {
   toggleFavorite,
   removeFavorite,
   clearFavorites,
+  setFavoriteTags,
 } from "@/lib/favorites";
 import type { PlatformId, VideoInfo } from "@/lib/types";
 import toast from "react-hot-toast";
@@ -499,6 +500,10 @@ export default function DownloaderTool() {
     setFavorites(removeFavorite(url));
   }
 
+  function handleSetFavoriteTags(url: string, tags: string[]) {
+    setFavorites(setFavoriteTags(url, tags));
+  }
+
   function handleClearFavorites() {
     clearFavorites();
     setFavorites([]);
@@ -602,6 +607,7 @@ export default function DownloaderTool() {
                 onToggleFavorite={() =>
                   handleToggleFavorite(state.info, state.url)
                 }
+                sourceUrl={state.url}
               />
             </motion.div>
           )}
@@ -631,6 +637,7 @@ export default function DownloaderTool() {
           onSelect={(u) => handleSubmit(u)}
           onRemove={handleRemoveFavorite}
           onClear={handleClearFavorites}
+          onSetTags={handleSetFavoriteTags}
           disabled={busy}
         />
       )}
