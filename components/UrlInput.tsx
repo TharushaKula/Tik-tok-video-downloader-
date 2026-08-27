@@ -2,7 +2,15 @@
 
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { Clipboard, X, Download, Music2, Link2, Instagram } from "lucide-react";
+import {
+  Clipboard,
+  X,
+  Download,
+  Music2,
+  Link2,
+  Instagram,
+  Facebook,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import { detectPlatform } from "@/lib/validators";
 
@@ -25,6 +33,7 @@ export default function UrlInput({
   const platform = value.trim() ? detectPlatform(value.trim()) : null;
   const isTikTok = platform === "tiktok";
   const isInstagram = platform === "instagram";
+  const isFacebook = platform === "facebook";
 
   async function handlePaste() {
     try {
@@ -50,6 +59,8 @@ export default function UrlInput({
     ? "rgba(236,72,153,0.5)"
     : isInstagram
     ? "rgba(217,70,239,0.5)"
+    : isFacebook
+    ? "rgba(59,130,246,0.5)"
     : "rgba(139,92,246,0.5)";
 
   return (
@@ -68,6 +79,8 @@ export default function UrlInput({
           <Music2 size={18} className="text-pink-400 shrink-0" />
         ) : isInstagram ? (
           <Instagram size={18} className="text-fuchsia-400 shrink-0" />
+        ) : isFacebook ? (
+          <Facebook size={18} className="text-blue-400 shrink-0" />
         ) : (
           <Link2 size={18} className="text-slate-500 shrink-0" />
         )}
@@ -80,7 +93,7 @@ export default function UrlInput({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           onKeyDown={handleKeyDown}
-          placeholder="Paste a TikTok or Instagram URL..."
+          placeholder="Paste a TikTok, Instagram, or Facebook URL..."
           disabled={loading}
           className="flex-1 bg-transparent text-slate-200 placeholder-slate-500 outline-none text-sm min-w-0"
           aria-label="Video URL"

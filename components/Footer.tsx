@@ -24,7 +24,8 @@ export default function Footer() {
               </span>
             </a>
             <p className="text-xs text-slate-500 leading-relaxed max-w-[200px]">
-              Download TikTok videos without watermark. Free, fast, and in HD quality.
+              Download TikTok, Instagram, and Facebook videos without watermark.
+              Free, fast, and in HD quality.
             </p>
           </div>
 

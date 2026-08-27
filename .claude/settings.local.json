@@ -49,7 +49,12 @@
       "WebFetch(domain:www.nasa.gov)",
       "Bash(curl -sL -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36\" \"https://instasupersave.com/\")",
       "Bash(curl -sL \"https://instasupersave.com/js/app.js?id=011749336a01534174ecb83d131a64a2\")",
-      "Bash(curl -sL -o /tmp/snap_real.html -w 'status=%{http_code} size=%{size_download}\\\\n' -X POST https://snapsave.app/action.php?lang=en -H 'User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Referer: https://snapsave.app/' -H 'Origin: https://snapsave.app' -H 'X-Requested-With: XMLHttpRequest' --data url=https%3A%2F%2Fwww.instagram.com%2Freel%2FDY1JTfLNr_H%2F)"
+      "Bash(curl -sL -o /tmp/snap_real.html -w 'status=%{http_code} size=%{size_download}\\\\n' -X POST https://snapsave.app/action.php?lang=en -H 'User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Referer: https://snapsave.app/' -H 'Origin: https://snapsave.app' -H 'X-Requested-With: XMLHttpRequest' --data url=https%3A%2F%2Fwww.instagram.com%2Freel%2FDY1JTfLNr_H%2F)",
+      "Bash(git checkout *)",
+      "Bash(git reset *)",
+      "Bash(git stash *)",
+      "Bash(command -v gh)",
+      "Bash(gh auth *)"
     ]
   }
 }

@@ -6,12 +6,16 @@ import { ChevronDown } from "lucide-react";
 
 const FAQS = [
   {
-    q: "Is it free to use?",
-    a: "Yes, SnapLoad is completely free to use with no hidden charges or subscription fees. You can download as many TikTok videos as you like.",
+    q: "Which platforms are supported?",
+    a: "SnapLoad supports TikTok videos, Instagram Reels and posts, and Facebook videos and Reels — including short links like fb.watch and share links.",
   },
   {
-    q: "How do I download TikTok videos without watermark?",
-    a: "Simply paste your TikTok video URL into the input field and click Download. We fetch the watermark-free HD version directly, giving you a clean video file.",
+    q: "Is it free to use?",
+    a: "Yes, SnapLoad is completely free to use with no hidden charges or subscription fees. You can download as many TikTok, Instagram, and Facebook videos as you like.",
+  },
+  {
+    q: "How do I download videos without watermark?",
+    a: "Simply paste your TikTok, Instagram, or Facebook video URL into the input field and click Download. We fetch the watermark-free HD version directly, giving you a clean video file.",
   },
   {
     q: "Can I download private videos?",

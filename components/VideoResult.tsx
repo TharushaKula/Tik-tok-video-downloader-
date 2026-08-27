@@ -15,7 +15,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import type { VideoInfo, DownloadOption } from "@/lib/types";
+import type { VideoInfo, DownloadOption, PlatformId } from "@/lib/types";
 import PlatformBadge from "./PlatformBadge";
 
 function formatCount(n: number): string {
@@ -37,7 +37,7 @@ function triggerProxyDownload(
   url: string,
   type: "video" | "audio" | "image",
   format: string,
-  platform: "tiktok" | "instagram"
+  platform: PlatformId
 ) {
   const params = new URLSearchParams({ url, type, format, platform });
   const proxyUrl = `/api/proxy-download?${params.toString()}`;
@@ -57,7 +57,7 @@ function DownloadButton({
   platform,
 }: {
   option: DownloadOption;
-  platform: "tiktok" | "instagram";
+  platform: PlatformId;
 }) {
   const [downloading, setDownloading] = useState(false);
   const [done, setDone] = useState(false);
@@ -218,6 +218,8 @@ export default function VideoResult({ info }: { info: VideoInfo }) {
               className={`relative h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 ${
                 info.platform === "instagram"
                   ? "border-fuchsia-500/40"
+                  : info.platform === "facebook"
+                  ? "border-blue-500/40"
                   : "border-pink-500/40"
               }`}
             >

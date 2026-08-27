@@ -12,11 +12,15 @@ const TIKTOK_HOSTS = [
   "tiktokv.com",
 ];
 
-const INSTAGRAM_HOSTS = [
+// Instagram and Facebook downloads both resolve through Snapsave, so they
+// share the same set of CDN hosts (fbcdn.net serves both platforms).
+const SNAP_MEDIA_HOSTS = [
   "cdninstagram.com",
   "fbcdn.net",
   "instagram.com",
+  "facebook.com",
   "rapidcdn.app",
+  "snapcdn.app",
   "snapsave.app",
 ];
 
@@ -30,7 +34,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const videoUrl = searchParams.get("url");
   const type = searchParams.get("type") || "video";
-  // const platform = searchParams.get("platform") || "tiktok";
+  const requestedPlatform = searchParams.get("platform");
   const format = searchParams.get("format") || "";
 
   if (!videoUrl) {
@@ -45,17 +49,26 @@ export async function GET(req: NextRequest) {
   }
 
   const isTikTok = matchHost(parsedUrl.hostname, TIKTOK_HOSTS);
-  const isInstagram = matchHost(parsedUrl.hostname, INSTAGRAM_HOSTS);
+  const isSnapMedia = matchHost(parsedUrl.hostname, SNAP_MEDIA_HOSTS);
 
-  if (!isTikTok && !isInstagram) {
+  if (!isTikTok && !isSnapMedia) {
     return NextResponse.json({ error: "URL not allowed" }, { status: 403 });
   }
 
-  const referer = isInstagram
-    ? "https://www.instagram.com/"
-    : "https://www.tiktok.com/";
+  // The shared CDN hosts can't distinguish Instagram from Facebook, so trust
+  // the client's platform hint there (it only affects referer and filename).
+  const platformLabel = isTikTok
+    ? "tiktok"
+    : requestedPlatform === "facebook"
+    ? "facebook"
+    : "instagram";
 
-  const platformLabel = isInstagram ? "instagram" : "tiktok";
+  const referer =
+    platformLabel === "facebook"
+      ? "https://www.facebook.com/"
+      : platformLabel === "instagram"
+      ? "https://www.instagram.com/"
+      : "https://www.tiktok.com/";
   let ext: string;
   let defaultContentType: string;
   if (type === "audio") {

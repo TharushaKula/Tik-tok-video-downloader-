@@ -25,12 +25,12 @@ export default function HomePage() {
   async function handleSubmit() {
     const trimmed = url.trim();
     if (!trimmed) {
-      toast.error("Please enter a TikTok or Instagram URL");
+      toast.error("Please enter a TikTok, Instagram, or Facebook URL");
       return;
     }
 
     if (!isValidUrl(trimmed)) {
-      toast.error("Please enter a valid TikTok or Instagram URL");
+      toast.error("Please enter a valid TikTok, Instagram, or Facebook URL");
       return;
     }
 
@@ -78,7 +78,7 @@ export default function HomePage() {
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-pink-500/10 px-4 py-1.5 text-pink-300 text-xs font-medium">
               <Sparkles size={12} />
-              TikTok + Instagram — No Watermark · HD Quality · Free
+              TikTok · Instagram · Facebook — No Watermark · HD Quality · Free
             </div>
           </motion.div>
 
@@ -89,7 +89,7 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.08 }}
             className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-center"
           >
-            Download TikTok & Instagram Videos{" "}
+            Download TikTok, Instagram & Facebook Videos{" "}
             <span className="bg-gradient-to-r from-pink-400 via-purple-300 to-cyan-400 bg-clip-text text-transparent">
               Without Watermark
             </span>
@@ -102,8 +102,9 @@ export default function HomePage() {
             transition={{ duration: 0.5, delay: 0.18 }}
             className="text-center text-slate-400 text-base sm:text-lg max-w-md leading-relaxed"
           >
-            Paste any TikTok or Instagram link and download it in HD or SD
-            quality, completely watermark-free. Audio downloads for TikTok too.
+            Paste any TikTok, Instagram, or Facebook link and download it in HD
+            or SD quality, completely watermark-free. Audio downloads for
+            TikTok too.
           </motion.p>
 
           {/* Input card */}

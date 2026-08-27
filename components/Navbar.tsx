@@ -23,7 +23,7 @@ export default function Navbar() {
           {/* Center */}
           <div className="hidden sm:flex items-center gap-2 text-sm text-slate-400">
             <Music2 size={14} className="text-pink-400" />
-            TikTok Video Downloader
+            TikTok · Instagram · Facebook Downloader
           </div>
 
           {/* Right side */}

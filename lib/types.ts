@@ -1,3 +1,5 @@
+export type PlatformId = 'tiktok' | 'instagram' | 'facebook';
+
 export interface DownloadOption {
   label: string;
   url: string;
@@ -8,7 +10,7 @@ export interface DownloadOption {
 }
 
 export interface VideoInfo {
-  platform: 'tiktok' | 'instagram';
+  platform: PlatformId;
   title: string;
   author: string;
   authorAvatar?: string;
