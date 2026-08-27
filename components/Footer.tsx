@@ -1,76 +1,51 @@
 import { Download } from "lucide-react";
 
-const FEATURES = ["HD Download", "No Watermark", "Free Forever", "Fast & Secure"];
-const LEGAL = ["Terms of Service", "Privacy Policy", "Contact Us"];
+const LINKS = [
+  { href: "#platforms", label: "Platforms" },
+  { href: "#how-it-works", label: "How it works" },
+  { href: "#faq", label: "FAQ" },
+];
 
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-white/[0.06] bg-[#080810]">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 mb-10">
-          {/* Col 1: Brand */}
-          <div>
-            <a href="/" className="flex items-center gap-2.5 mb-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500 to-cyan-500">
-                <Download size={16} className="text-white" />
-              </div>
-              <span className="text-base font-bold">
-                <span className="bg-gradient-to-r from-pink-400 to-cyan-400 bg-clip-text text-transparent">
-                  Snap
-                </span>
-                <span className="text-white">Load</span>
-              </span>
-            </a>
-            <p className="text-xs text-slate-500 leading-relaxed max-w-[200px]">
-              Download TikTok, Instagram, Facebook, and YouTube videos. Free,
-              fast, and in HD quality.
-            </p>
-          </div>
+    <footer className="border-t border-white/[0.06]">
+      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+        <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
+          <a
+            href="#top"
+            className="focus-ring flex items-center gap-2.5 rounded-lg"
+            aria-label="SnapLoad — back to top"
+          >
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500">
+              <Download size={14} className="text-white" strokeWidth={2.5} />
+            </span>
+            <span className="text-[15px] font-semibold tracking-tight text-white">
+              SnapLoad
+            </span>
+          </a>
 
-          {/* Col 2: Features */}
-          <div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-slate-400">
-              Features
-            </p>
-            <ul className="space-y-2.5">
-              {FEATURES.map((f) => (
-                <li key={f}>
-                  <span className="text-sm text-slate-500">{f}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Col 3: Legal */}
-          <div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-slate-400">
-              Legal
-            </p>
-            <ul className="space-y-2.5">
-              {LEGAL.map((l) => (
-                <li key={l}>
-                  <a
-                    href="#"
-                    className="text-sm text-slate-500 hover:text-slate-300 transition-colors"
-                  >
-                    {l}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <nav className="flex items-center gap-1" aria-label="Footer">
+            {LINKS.map(({ href, label }) => (
+              <a
+                key={href}
+                href={href}
+                className="focus-ring rounded-lg px-3 py-1.5 text-sm text-slate-500 transition-colors hover:text-slate-200"
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
         </div>
 
-        {/* Bottom bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/[0.05] pt-6">
-          <p className="text-xs text-slate-600">
-            &copy; {year} SnapLoad. All rights reserved.
+        <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-white/[0.05] pt-6 text-center sm:flex-row sm:text-left">
+          <p className="max-w-lg text-xs leading-relaxed text-slate-600">
+            SnapLoad isn&apos;t affiliated with TikTok, Instagram, Facebook, or
+            YouTube. Download only content you own or have permission to save.
           </p>
-          <p className="text-xs text-slate-600">
-            Powered by{" "}
-            <span className="text-slate-500">TikWM API</span>
+          <p className="shrink-0 text-xs text-slate-600">
+            © {year} SnapLoad
           </p>
         </div>
       </div>

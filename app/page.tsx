@@ -1,120 +1,149 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles } from "lucide-react";
-import toast from "react-hot-toast";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import Navbar from "@/components/Navbar";
-import AnimatedBackground from "@/components/AnimatedBackground";
+import Backdrop from "@/components/Backdrop";
 import UrlInput from "@/components/UrlInput";
 import VideoResult from "@/components/VideoResult";
+import ResultSkeleton from "@/components/ResultSkeleton";
+import ErrorCard from "@/components/ErrorCard";
+import RecentDownloads, {
+  type RecentEntry,
+  loadRecent,
+  saveRecent,
+  clearRecent,
+} from "@/components/RecentDownloads";
+import PlatformsSection from "@/components/PlatformsSection";
 import HowItWorks from "@/components/HowItWorks";
 import FaqSection from "@/components/FaqSection";
 import Footer from "@/components/Footer";
 
-import { isValidUrl } from "@/lib/validators";
-import type { VideoInfo } from "@/lib/types";
+import { detectPlatform } from "@/lib/validators";
+import type { PlatformId, VideoInfo } from "@/lib/types";
+
+type FetchState =
+  | { kind: "idle" }
+  | { kind: "loading"; platform: PlatformId | null }
+  | { kind: "error"; message: string; url: string }
+  | { kind: "success"; info: VideoInfo };
 
 export default function HomePage() {
   const [url, setUrl] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [state, setState] = useState<FetchState>({ kind: "idle" });
+  const [recent, setRecent] = useState<RecentEntry[]>([]);
+  const resultRef = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
 
-  async function handleSubmit() {
-    const trimmed = url.trim();
-    if (!trimmed) {
-      toast.error("Please enter a TikTok, Instagram, Facebook, or YouTube URL");
+  const loading = state.kind === "loading";
+
+  // History lives in localStorage — read it after mount to keep SSR markup stable.
+  useEffect(() => {
+    setRecent(loadRecent());
+  }, []);
+
+  useEffect(() => {
+    if (state.kind === "success" || state.kind === "error") {
+      resultRef.current?.scrollIntoView({
+        behavior: reduce ? "auto" : "smooth",
+        block: "nearest",
+      });
+    }
+  }, [state.kind, reduce]);
+
+  async function handleSubmit(explicitUrl?: string) {
+    const target = (explicitUrl ?? url).trim();
+    if (!target || loading) return;
+
+    const platform = detectPlatform(target);
+    if (!platform) {
+      setState({
+        kind: "error",
+        message:
+          "That link isn't from a supported platform. Paste a TikTok, Instagram, Facebook, or YouTube video link.",
+        url: target,
+      });
       return;
     }
 
-    if (!isValidUrl(trimmed)) {
-      toast.error(
-        "Please enter a valid TikTok, Instagram, Facebook, or YouTube URL"
-      );
-      return;
-    }
-
-    setLoading(true);
-    setVideoInfo(null);
-    setError(null);
+    if (explicitUrl) setUrl(explicitUrl);
+    setState({ kind: "loading", platform });
 
     try {
       const res = await fetch("/api/download", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: trimmed }),
+        body: JSON.stringify({ url: target }),
       });
-
-      const json = await res.json();
-
-      if (!res.ok || !json.success) {
-        throw new Error(json.error || "Something went wrong");
+      // The body may not be JSON if the server hits a hard failure.
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json?.success) {
+        throw new Error(
+          json?.error ||
+            "The server hit an unexpected problem. Give it a second and try again."
+        );
       }
 
-      setVideoInfo(json.data as VideoInfo);
-      toast.success("Video info fetched!");
+      const info = json.data as VideoInfo;
+      setState({ kind: "success", info });
+      setRecent(
+        saveRecent({
+          url: target,
+          title: info.title,
+          platform: info.platform,
+          ts: Date.now(),
+        })
+      );
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Unexpected error";
-      setError(msg);
-      toast.error(msg);
-    } finally {
-      setLoading(false);
+      setState({
+        kind: "error",
+        message: err instanceof Error ? err.message : "Unexpected error",
+        url: target,
+      });
     }
   }
 
+  function handleReset() {
+    setState({ kind: "idle" });
+    setUrl("");
+  }
+
+  function handleClearRecent() {
+    clearRecent();
+    setRecent([]);
+  }
+
   return (
-    <div className="relative min-h-screen bg-[#080810] text-slate-200">
-      <AnimatedBackground />
+    <div id="top" className="relative min-h-screen text-slate-300">
+      <Backdrop />
       <Navbar />
 
-      <main className="relative z-10 flex flex-col items-center">
-        {/* Hero section */}
-        <section className="w-full max-w-2xl mx-auto px-4 pt-16 pb-8 flex flex-col items-center gap-6">
-          {/* Pill badge */}
+      <main className="relative z-10">
+        {/* Hero + tool */}
+        <section className="mx-auto flex w-full max-w-2xl flex-col items-center gap-8 px-4 pb-6 pt-16 sm:px-6 sm:pt-24">
           <motion.div
-            initial={{ opacity: 0, y: -12 }}
+            initial={reduce ? false : { opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.55, ease: "easeOut" }}
+            className="text-center"
           >
-            <div className="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-pink-500/10 px-4 py-1.5 text-pink-300 text-xs font-medium">
-              <Sparkles size={12} />
-              TikTok · Instagram · Facebook · YouTube — HD Quality · Free
-            </div>
+            <h1 className="text-4xl font-semibold leading-[1.1] tracking-tight text-white sm:text-5xl">
+              Download any video,
+              <br />
+              <span className="text-slate-500">clean and watermark-free.</span>
+            </h1>
+            <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-slate-400">
+              Paste a link from TikTok, Instagram, Facebook, or YouTube and
+              save it in HD — or grab just the audio as MP3.
+            </p>
           </motion.div>
 
-          {/* Headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.08 }}
-            className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-center"
-          >
-            Download TikTok, Instagram, Facebook & YouTube Videos{" "}
-            <span className="bg-gradient-to-r from-pink-400 via-purple-300 to-cyan-400 bg-clip-text text-transparent">
-              in HD, for Free
-            </span>
-          </motion.h1>
-
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.18 }}
-            className="text-center text-slate-400 text-base sm:text-lg max-w-md leading-relaxed"
-          >
-            Paste any TikTok, Instagram, Facebook, or YouTube link and download
-            it in HD or SD quality — watermark-free for social videos, with MP3
-            audio for TikTok and YouTube.
-          </motion.p>
-
-          {/* Input card */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.22 }}
-            className="w-full rounded-2xl border border-white/[0.07] bg-white/[0.03] backdrop-blur-xl p-6 sm:p-8 space-y-5"
+            initial={reduce ? false : { opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.1, ease: "easeOut" }}
+            className="w-full"
           >
             <UrlInput
               value={url}
@@ -122,40 +151,82 @@ export default function HomePage() {
               onSubmit={handleSubmit}
               loading={loading}
             />
+          </motion.div>
 
-            {/* Inline error */}
-            <AnimatePresence mode="wait">
-              {!loading && error && (
+          {/* Fetch state — skeleton, error, or result */}
+          <div ref={resultRef} className="w-full scroll-mt-24" aria-live="polite">
+            <AnimatePresence mode="wait" initial={false}>
+              {state.kind === "loading" && (
                 <motion.div
-                  key="error"
-                  initial={{ opacity: 0, y: 6 }}
+                  key="skeleton"
+                  initial={reduce ? false : { opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="rounded-xl border border-red-500/30 bg-red-900/20 p-4 text-red-300 text-sm text-center"
+                  transition={{ duration: 0.25 }}
                 >
-                  {error}
+                  <ResultSkeleton platform={state.platform} />
+                </motion.div>
+              )}
+              {state.kind === "error" && (
+                <motion.div
+                  key="error"
+                  initial={reduce ? false : { opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <ErrorCard
+                    message={state.message}
+                    onRetry={() => handleSubmit(state.url)}
+                    onDismiss={handleReset}
+                  />
+                </motion.div>
+              )}
+              {state.kind === "success" && (
+                <motion.div
+                  key="result"
+                  initial={reduce ? false : { opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <VideoResult info={state.info} onReset={handleReset} />
                 </motion.div>
               )}
             </AnimatePresence>
-          </motion.div>
+          </div>
 
-          {/* Video result */}
-          <AnimatePresence mode="wait">
-            {!loading && videoInfo && (
-              <motion.div
-                key="result"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="w-full"
-              >
-                <VideoResult info={videoInfo} />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Recent history */}
+          {state.kind !== "loading" && (
+            <RecentDownloads
+              entries={recent}
+              onSelect={(u) => handleSubmit(u)}
+              onClear={handleClearRecent}
+              disabled={loading}
+            />
+          )}
+
+          {/* Trust row */}
+          <p className="flex flex-wrap items-center justify-center gap-x-2 text-xs text-slate-600">
+            <span>Free forever</span>
+            <span aria-hidden>·</span>
+            <span>No sign-up</span>
+            <span aria-hidden>·</span>
+            <span>Unlimited downloads</span>
+            <span aria-hidden className="hidden sm:inline">
+              ·
+            </span>
+            <span className="hidden items-center gap-1 sm:inline-flex">
+              Press{" "}
+              <kbd className="rounded border border-white/10 bg-white/[0.04] px-1 py-0.5 font-mono text-[10px] text-slate-500">
+                /
+              </kbd>{" "}
+              to jump to the link box
+            </span>
+          </p>
         </section>
 
-        {/* Below-fold sections */}
+        <PlatformsSection />
         <HowItWorks />
         <FaqSection />
       </main>

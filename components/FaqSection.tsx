@@ -1,74 +1,67 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
 const FAQS = [
   {
-    q: "Which platforms are supported?",
-    a: "SnapLoad supports TikTok videos, Instagram Reels and posts, Facebook videos and Reels (including fb.watch and share links), and YouTube videos and Shorts — downloadable as MP4 in up to 1080p or as MP3 audio.",
+    q: "Which platforms and formats are supported?",
+    a: "TikTok videos (watermark-free, with MP3 audio), Instagram Reels and posts, Facebook videos and Reels — including fb.watch and share links — and YouTube videos and Shorts as MP4 up to 1080p or MP3 audio.",
   },
   {
-    q: "Is it free to use?",
-    a: "Yes, SnapLoad is completely free to use with no hidden charges or subscription fees. You can download as many TikTok, Instagram, Facebook, and YouTube videos as you like.",
-  },
-  {
-    q: "How do I download videos without watermark?",
-    a: "Simply paste your video URL into the input field and click Download. For TikTok, Instagram, and Facebook we fetch the watermark-free HD version directly. YouTube videos download exactly as published, with a choice of quality.",
+    q: "Is it really free?",
+    a: "Yes — every download, in every quality, with no account, no limits, and no hidden fees.",
   },
   {
     q: "Why do YouTube downloads take longer to start?",
-    a: "YouTube files are converted to your chosen quality on the fly. Most downloads begin within a few seconds, but long HD videos can take up to a minute to start — keep the tab open and it will land in your downloads automatically.",
+    a: "YouTube files are converted to your chosen quality on the fly. Most start within seconds, but long HD videos can take up to a minute — keep the tab open and the file will land in your downloads automatically.",
   },
   {
     q: "Can I download private videos?",
-    a: "No. SnapLoad can only download public videos. Private or friends-only videos are not accessible through our service — and that's by design to respect privacy.",
+    a: "No. Only public posts can be fetched. Private, followers-only, or age-restricted content is not accessible — by design, to respect creators' privacy.",
   },
   {
-    q: "What quality formats are supported?",
-    a: "We offer HD and SD video downloads in MP4 format, plus MP3 audio extraction. The HD option gives you the best quality available for the video.",
+    q: "Is downloading videos allowed?",
+    a: "Downloading is fine for your own content, content you have permission to save, and public-domain or Creative Commons media. Always respect creators' rights and each platform's terms of service.",
   },
   {
-    q: "How many videos can I download per day?",
-    a: "There is no strict daily limit for casual use. However, excessive automated usage may be rate-limited by the underlying API.",
-  },
-  {
-    q: "Is my data safe?",
-    a: "Absolutely. We never store the URLs you paste or any personal information. All requests are processed server-side on-the-fly and discarded immediately after the download.",
+    q: "Do you store my links or downloads?",
+    a: "No. Links are processed on the fly and discarded immediately. Your recent-downloads list lives only in your own browser and can be cleared anytime.",
   },
 ];
 
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
+  const reduce = useReducedMotion();
 
   return (
-    <div className="rounded-xl border border-white/[0.07] bg-white/[0.03] overflow-hidden">
+    <div>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+        aria-expanded={open}
+        className="focus-ring flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-white/[0.02]"
       >
-        <span className="font-medium text-slate-200 text-sm">{q}</span>
-        <motion.div
+        <span className="text-sm font-medium text-slate-200">{q}</span>
+        <motion.span
           animate={{ rotate: open ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: reduce ? 0 : 0.2 }}
           className="shrink-0"
         >
-          <ChevronDown size={16} className="text-slate-400" />
-        </motion.div>
+          <ChevronDown size={15} className="text-slate-500" />
+        </motion.span>
       </button>
-
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
             key="content"
-            initial={{ height: 0, opacity: 0 }}
+            initial={reduce ? false : { height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
+            exit={reduce ? undefined : { height: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <p className="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-white/[0.05] pt-3">
+            <p className="px-5 pb-4 text-sm leading-relaxed text-slate-400">
               {a}
             </p>
           </motion.div>
@@ -79,40 +72,34 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 }
 
 export default function FaqSection() {
+  const reduce = useReducedMotion();
+
   return (
-    <section className="w-full max-w-2xl mx-auto px-4 py-16">
+    <section id="faq" className="mx-auto w-full max-w-2xl scroll-mt-20 px-4 py-20 sm:px-6">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={reduce ? false : { opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="text-center mb-10"
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.5 }}
+        className="mb-10 text-center"
       >
-        <p className="text-xs font-semibold uppercase tracking-widest text-pink-400 mb-3">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-violet-400">
           FAQ
         </p>
-        <h2 className="text-2xl sm:text-3xl font-bold text-white">
-          Frequently Asked Questions
+        <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+          Questions, answered
         </h2>
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 0.15 }}
-        className="flex flex-col gap-3"
+        initial={reduce ? false : { opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.5, delay: 0.08 }}
+        className="card divide-y divide-white/[0.06] overflow-hidden"
       >
-        {FAQS.map((faq, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.3, delay: i * 0.06 }}
-          >
-            <FaqItem q={faq.q} a={faq.a} />
-          </motion.div>
+        {FAQS.map((faq) => (
+          <FaqItem key={faq.q} q={faq.q} a={faq.a} />
         ))}
       </motion.div>
     </section>

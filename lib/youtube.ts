@@ -34,14 +34,26 @@ export async function fetchYouTubeData(url: string): Promise<VideoInfo> {
     url
   )}&format=json`;
 
-  let oembed: OEmbedResponse;
-  try {
-    const res = await axios.get<OEmbedResponse>(oembedUrl, {
+  // The maxres-thumbnail probe only needs the video id, so it runs in
+  // parallel with the oEmbed request instead of after it. Older/low-res
+  // videos only have hqdefault, where maxresdefault 404s.
+  const videoId = extractYouTubeId(url);
+  const maxres = videoId
+    ? `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`
+    : null;
+
+  const [oembedResult, maxresResult] = await Promise.allSettled([
+    axios.get<OEmbedResponse>(oembedUrl, {
       timeout: 10000,
       headers: { "User-Agent": UA },
-    });
-    oembed = res.data;
-  } catch (err) {
+    }),
+    maxres
+      ? axios.head(maxres, { timeout: 4000 })
+      : Promise.reject(new Error("no video id")),
+  ]);
+
+  if (oembedResult.status === "rejected") {
+    const err = oembedResult.reason;
     if (axios.isAxiosError(err) && err.response?.status === 400) {
       throw new Error("YouTube video not found or unavailable");
     }
@@ -55,19 +67,11 @@ export async function fetchYouTubeData(url: string): Promise<VideoInfo> {
     );
   }
 
-  // Prefer the full-res thumbnail when it exists (older/low-res videos only
-  // have hqdefault, where maxresdefault 404s).
-  const videoId = extractYouTubeId(url);
-  let thumbnail = oembed.thumbnail_url || "";
-  if (videoId) {
-    const maxres = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
-    try {
-      await axios.head(maxres, { timeout: 4000 });
-      thumbnail = maxres;
-    } catch {
-      // keep hqdefault
-    }
-  }
+  const oembed = oembedResult.value.data;
+  const thumbnail =
+    maxresResult.status === "fulfilled" && maxres
+      ? maxres
+      : oembed.thumbnail_url || "";
 
   // The urls here are the original watch URL: the proxy-download route
   // resolves the actual stream at download time, so there are no expiring

@@ -1,24 +1,34 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import {
+  ArrowRight,
   Clipboard,
-  X,
-  Download,
-  Music2,
-  Link2,
-  Instagram,
   Facebook,
+  Instagram,
+  Link2,
+  Loader2,
+  Music2,
+  X,
   Youtube,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { detectPlatform } from "@/lib/validators";
+import { PLATFORMS, PLATFORM_IDS } from "@/lib/platforms";
+import type { PlatformId } from "@/lib/types";
+
+const PLATFORM_ICONS: Record<PlatformId, typeof Music2> = {
+  tiktok: Music2,
+  instagram: Instagram,
+  facebook: Facebook,
+  youtube: Youtube,
+};
 
 interface UrlInputProps {
   value: string;
   onChange: (v: string) => void;
-  onSubmit: () => void;
+  /** Fetch video info. Pass a url to submit a value set in the same tick. */
+  onSubmit: (url?: string) => void;
   loading: boolean;
 }
 
@@ -31,20 +41,54 @@ export default function UrlInput({
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const platform = value.trim() ? detectPlatform(value.trim()) : null;
-  const isTikTok = platform === "tiktok";
-  const isInstagram = platform === "instagram";
-  const isFacebook = platform === "facebook";
-  const isYouTube = platform === "youtube";
+  const trimmed = value.trim();
+  const platform = trimmed ? detectPlatform(trimmed) : null;
+  const meta = platform ? PLATFORMS[platform] : null;
+  const PlatformIcon = platform ? PLATFORM_ICONS[platform] : Link2;
 
-  async function handlePaste() {
+  // "/" focuses the input from anywhere on the page
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      const target = e.target as HTMLElement;
+      const typing =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable;
+      if (e.key === "/" && !typing) {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  async function handlePasteButton() {
     try {
-      const text = await navigator.clipboard.readText();
+      const text = (await navigator.clipboard.readText()).trim();
+      if (!text) {
+        toast("Your clipboard is empty");
+        return;
+      }
       onChange(text);
-      toast.success("Pasted from clipboard!");
-      inputRef.current?.focus();
+      // Zero-friction path: a valid link starts fetching immediately
+      if (detectPlatform(text) && !loading) {
+        onSubmit(text);
+      } else {
+        inputRef.current?.focus();
+      }
     } catch {
-      toast.error("Clipboard access denied");
+      toast.error("Clipboard access was denied by the browser");
+      inputRef.current?.focus();
+    }
+  }
+
+  function handleNativePaste(e: React.ClipboardEvent<HTMLInputElement>) {
+    const text = e.clipboardData.getData("text").trim();
+    if (text && detectPlatform(text) && !loading) {
+      e.preventDefault();
+      onChange(text);
+      onSubmit(text);
     }
   }
 
@@ -53,102 +97,133 @@ export default function UrlInput({
     inputRef.current?.focus();
   }
 
-  function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === "Enter" && !loading) onSubmit();
-  }
+  const glowShadow =
+    focused && meta
+      ? `0 0 0 1px ${meta.glow.replace("0.18", "0.6")}, 0 0 32px ${meta.glow}`
+      : focused
+      ? "0 0 0 1px rgba(139,92,246,0.5), 0 0 32px rgba(139,92,246,0.14)"
+      : "none";
 
-  const glowColor = isTikTok
-    ? "rgba(236,72,153,0.5)"
-    : isInstagram
-    ? "rgba(217,70,239,0.5)"
-    : isFacebook
-    ? "rgba(59,130,246,0.5)"
-    : isYouTube
-    ? "rgba(239,68,68,0.5)"
-    : "rgba(139,92,246,0.5)";
+  const hint = !trimmed
+    ? "Paste a link — the platform is detected automatically"
+    : meta
+    ? `${meta.name} link detected — press Enter to fetch`
+    : trimmed.length > 12
+    ? "This doesn't look like a supported link yet"
+    : " ";
 
   return (
-    <div className="w-full space-y-3">
-      {/* Input wrapper */}
-      <motion.div
-        animate={
-          focused
-            ? { boxShadow: `0 0 0 2px ${glowColor}, 0 0 24px ${glowColor}55` }
-            : { boxShadow: "0 0 0 1px rgba(255,255,255,0.08)" }
-        }
-        transition={{ duration: 0.2 }}
-        className="flex items-center gap-2 rounded-xl bg-[#0E0E1C] px-4 py-3"
+    <div className="w-full space-y-4">
+      {/* Command bar */}
+      <div
+        className="flex flex-col gap-1.5 rounded-2xl border border-white/[0.09] bg-[#101017] p-1.5 transition-shadow duration-200 sm:flex-row sm:items-center"
+        style={{ boxShadow: glowShadow }}
       >
-        {isTikTok ? (
-          <Music2 size={18} className="text-pink-400 shrink-0" />
-        ) : isInstagram ? (
-          <Instagram size={18} className="text-fuchsia-400 shrink-0" />
-        ) : isFacebook ? (
-          <Facebook size={18} className="text-blue-400 shrink-0" />
-        ) : isYouTube ? (
-          <Youtube size={18} className="text-red-400 shrink-0" />
-        ) : (
-          <Link2 size={18} className="text-slate-500 shrink-0" />
-        )}
-
-        <input
-          ref={inputRef}
-          type="url"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          onKeyDown={handleKeyDown}
-          placeholder="Paste a TikTok, Instagram, Facebook, or YouTube URL..."
-          disabled={loading}
-          className="flex-1 bg-transparent text-slate-200 placeholder-slate-500 outline-none text-sm min-w-0"
-          aria-label="Video URL"
-        />
-
-        {value && (
+        <div className="flex min-w-0 flex-1 items-center gap-2.5 px-3">
+          <PlatformIcon
+            size={17}
+            className={`shrink-0 transition-colors ${
+              meta ? meta.text : "text-slate-500"
+            }`}
+            aria-hidden
+          />
+          <input
+            ref={inputRef}
+            type="url"
+            inputMode="url"
+            enterKeyHint="go"
+            autoComplete="off"
+            spellCheck={false}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            onPaste={handleNativePaste}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !loading) onSubmit();
+              if (e.key === "Escape") handleClear();
+            }}
+            placeholder="Paste a video link…"
+            disabled={loading}
+            className="h-11 min-w-0 flex-1 bg-transparent text-[15px] text-slate-100 placeholder-slate-500 outline-none disabled:opacity-60"
+            aria-label="Video URL"
+          />
+          {value && !loading && (
+            <button
+              onClick={handleClear}
+              className="focus-ring shrink-0 rounded-md p-1 text-slate-500 transition-colors hover:text-slate-200"
+              aria-label="Clear link"
+            >
+              <X size={15} />
+            </button>
+          )}
           <button
-            onClick={handleClear}
-            className="shrink-0 rounded-md p-1 text-slate-500 hover:text-slate-300 transition-colors"
-            aria-label="Clear URL"
+            onClick={handlePasteButton}
+            disabled={loading}
+            className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-white/[0.08] px-2.5 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:border-white/20 hover:text-slate-100 disabled:opacity-50"
+            aria-label="Paste link from clipboard"
           >
-            <X size={15} />
+            <Clipboard size={12} />
+            Paste
           </button>
-        )}
+        </div>
 
         <button
-          onClick={handlePaste}
-          className="shrink-0 flex items-center gap-1.5 rounded-lg border border-pink-500/30 px-2.5 py-1.5 text-xs text-pink-400 hover:border-pink-400/60 hover:text-pink-200 transition-colors"
-          aria-label="Paste from clipboard"
+          onClick={() => onSubmit()}
+          disabled={loading || !trimmed}
+          className="focus-ring flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-5 text-sm font-semibold text-[#0a0a0f] transition-all hover:bg-slate-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
         >
-          <Clipboard size={12} />
-          Paste
+          {loading ? (
+            <>
+              <Loader2 size={15} className="animate-spin" />
+              Fetching…
+            </>
+          ) : (
+            <>
+              Get video
+              <ArrowRight size={15} />
+            </>
+          )}
         </button>
-      </motion.div>
+      </div>
 
-      {/* Download button */}
-      <motion.button
-        onClick={onSubmit}
-        disabled={loading || !value.trim()}
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.98 }}
-        className="relative w-full overflow-hidden rounded-xl py-3.5 font-semibold text-white text-sm tracking-wide
-          bg-gradient-to-r from-pink-600 via-purple-600 to-cyan-600
-          hover:from-pink-500 hover:via-purple-500 hover:to-cyan-500
-          disabled:opacity-40 disabled:cursor-not-allowed
-          transition-all duration-200 shadow-lg shadow-pink-900/30"
-      >
-        {loading ? (
-          <span className="flex items-center justify-center gap-2">
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-            Fetching video info...
-          </span>
-        ) : (
-          <span className="flex items-center justify-center gap-2">
-            <Download size={16} />
-            Download
-          </span>
-        )}
-      </motion.button>
+      {/* Platform detection chips + hint */}
+      <div className="flex flex-col items-center gap-2.5">
+        <div className="flex flex-wrap items-center justify-center gap-1.5">
+          {PLATFORM_IDS.map((id) => {
+            const p = PLATFORMS[id];
+            const active = platform === id;
+            const dimmed = platform !== null && !active;
+            return (
+              <span
+                key={id}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-all duration-200 ${
+                  active
+                    ? p.activeChip
+                    : "border-white/[0.07] text-slate-500"
+                } ${dimmed ? "opacity-40" : ""}`}
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${
+                    active ? p.dot : "bg-slate-600"
+                  }`}
+                />
+                {p.name}
+              </span>
+            );
+          })}
+        </div>
+        <p
+          className={`text-xs ${
+            trimmed && !meta && trimmed.length > 12
+              ? "text-amber-400/90"
+              : "text-slate-500"
+          }`}
+          aria-live="polite"
+        >
+          {hint}
+        </p>
+      </div>
     </div>
   );
 }

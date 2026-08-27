@@ -1,87 +1,75 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Copy, Zap, Download } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { Link2, Sparkles, Download } from "lucide-react";
 
 const STEPS = [
   {
     number: "01",
-    icon: Copy,
-    title: "Copy Link",
-    desc: "Copy the TikTok, Instagram, Facebook, or YouTube video URL from the app or browser.",
-    gradient: "from-pink-500 to-purple-500",
-    glow: "shadow-pink-500/20",
+    icon: Link2,
+    title: "Copy a link",
+    desc: "Use the share button in TikTok, Instagram, Facebook, or YouTube and copy the video link.",
   },
   {
     number: "02",
-    icon: Zap,
-    title: "Paste & Fetch",
-    desc: "Paste it into the input above. We fetch the video info instantly.",
-    gradient: "from-purple-500 to-cyan-500",
-    glow: "shadow-purple-500/20",
+    icon: Sparkles,
+    title: "Paste it here",
+    desc: "The platform is detected automatically and the video details appear in seconds.",
   },
   {
     number: "03",
     icon: Download,
-    title: "Download",
-    desc: "Choose HD, SD, or audio and download without watermark.",
-    gradient: "from-cyan-500 to-teal-500",
-    glow: "shadow-cyan-500/20",
+    title: "Save your file",
+    desc: "Pick a quality — MP4 in HD or MP3 audio — and it lands straight in your downloads.",
   },
 ];
 
 export default function HowItWorks() {
+  const reduce = useReducedMotion();
+
   return (
-    <section className="w-full max-w-4xl mx-auto px-4 py-16">
+    <section
+      id="how-it-works"
+      className="mx-auto w-full max-w-4xl scroll-mt-20 px-4 py-20 sm:px-6"
+    >
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={reduce ? false : { opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="text-center mb-12"
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.5 }}
+        className="mb-10 text-center"
       >
-        <p className="text-xs font-semibold uppercase tracking-widest text-pink-400 mb-3">
-          Simple Process
-        </p>
-        <h2 className="text-2xl sm:text-3xl font-bold text-white">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-violet-400">
           How it works
+        </p>
+        <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+          Three steps, ten seconds
         </h2>
-        <p className="mt-3 text-slate-400 text-sm max-w-md mx-auto">
-          Download any TikTok, Instagram, Facebook, or YouTube video in three
-          simple steps. No sign-up required.
+        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-400">
+          No account, no app, no browser extension.
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        {STEPS.map(({ number, icon: Icon, title, desc, gradient, glow }, i) => (
+      <div className="relative grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {STEPS.map(({ number, icon: Icon, title, desc }, i) => (
           <motion.div
-            key={title}
-            initial={{ opacity: 0, y: 24 }}
+            key={number}
+            initial={reduce ? false : { opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: i * 0.12 }}
-            className="relative flex flex-col items-center text-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.03] p-6 backdrop-blur-sm"
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4, delay: i * 0.08 }}
+            className="card relative p-5"
           >
-            <span className="absolute top-3 right-4 text-5xl font-black text-white/[0.04] select-none">
+            <span className="absolute right-4 top-4 font-mono text-xs text-slate-600">
               {number}
             </span>
-
-            <div
-              className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${gradient} shadow-lg ${glow}`}
-            >
-              <Icon size={22} className="text-white" />
-            </div>
-
-            <div>
-              <h3 className="mb-1.5 font-semibold text-slate-100">{title}</h3>
-              <p className="text-xs leading-relaxed text-slate-500">{desc}</p>
-            </div>
-
-            {i < STEPS.length - 1 && (
-              <div className="hidden sm:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
-                <div className="h-px w-6 bg-gradient-to-r from-white/20 to-transparent" />
-              </div>
-            )}
+            <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-violet-400/20 bg-violet-400/10">
+              <Icon size={17} className="text-violet-300" />
+            </span>
+            <h3 className="mb-1.5 text-sm font-semibold text-slate-100">
+              {title}
+            </h3>
+            <p className="text-xs leading-relaxed text-slate-500">{desc}</p>
           </motion.div>
         ))}
       </div>
