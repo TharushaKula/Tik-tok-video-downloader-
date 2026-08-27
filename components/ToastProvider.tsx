@@ -10,19 +10,25 @@ export default function ToastProvider() {
       toastOptions={{
         duration: 3500,
         style: {
-          background: "#15151c",
-          color: "#e2e8f0",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
+          background: "rgb(var(--c-raised))",
+          color: "rgb(var(--c-ink-1))",
+          border: "1px solid rgb(var(--c-veil) / 0.1)",
           borderRadius: "12px",
           fontSize: "13.5px",
           padding: "10px 14px",
-          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.45)",
+          boxShadow: "0 8px 30px rgb(var(--c-veil) / 0.14)",
         },
         success: {
-          iconTheme: { primary: "#34d399", secondary: "#15151c" },
+          iconTheme: {
+            primary: "rgb(var(--c-ok))",
+            secondary: "rgb(var(--c-raised))",
+          },
         },
         error: {
-          iconTheme: { primary: "#f87171", secondary: "#15151c" },
+          iconTheme: {
+            primary: "rgb(var(--c-danger))",
+            secondary: "rgb(var(--c-raised))",
+          },
         },
       }}
     />

@@ -2,61 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 import { isValidYouTubeUrl } from "@/lib/validators";
 import { resolveYouTubeDownload, type YouTubeFormat } from "@/lib/youtube";
+import {
+  TIKTOK_HOSTS,
+  MEDIA_HOSTS,
+  HINTABLE_PLATFORMS,
+  REFERERS,
+  matchHost,
+  sanitizeFilename,
+} from "@/lib/proxy-hosts";
 
 export const runtime = "nodejs";
 // YouTube conversions run server-side at the resolver and can take a few
 // minutes for long HD videos, so give this route the full budget.
 export const maxDuration = 300;
-
-const TIKTOK_HOSTS = [
-  "tikwm.com",
-  "tiktok.com",
-  "tiktokcdn.com",
-  "tiktokcdn-us.com",
-  "tiktokv.com",
-];
-
-// Every non-TikTok platform's media/CDN hosts. Several platforms share CDNs
-// (fbcdn serves both Meta apps; rapidcdn tokens front the Snapsave family),
-// so the platform hint from the client decides referer and filename.
-const MEDIA_HOSTS = [
-  "cdninstagram.com",
-  "fbcdn.net",
-  "instagram.com",
-  "facebook.com",
-  "rapidcdn.app",
-  "snapcdn.app",
-  "snapsave.app",
-  "twimg.com",
-  "rapidsave.com",
-  "redd.it",
-  "pinimg.com",
-  "pinterest.com",
-];
-
-const HINTABLE_PLATFORMS = new Set([
-  "tiktok",
-  "instagram",
-  "facebook",
-  "twitter",
-  "reddit",
-  "pinterest",
-]);
-
-const REFERERS: Record<string, string> = {
-  tiktok: "https://www.tiktok.com/",
-  instagram: "https://www.instagram.com/",
-  facebook: "https://www.facebook.com/",
-  twitter: "https://x.com/",
-  reddit: "https://www.reddit.com/",
-  pinterest: "https://www.pinterest.com/",
-};
-
-function matchHost(hostname: string, suffixes: string[]): boolean {
-  return suffixes.some(
-    (suffix) => hostname === suffix || hostname.endsWith("." + suffix)
-  );
-}
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -67,6 +25,8 @@ export async function GET(req: NextRequest) {
   const quality = searchParams.get("quality") || "";
   // inline=1 serves the file for in-page playback instead of download
   const inline = searchParams.get("inline") === "1";
+  // Optional human-readable filename (video title), sanitized server-side
+  const requestedName = searchParams.get("filename") || "";
 
   if (!videoUrl) {
     return NextResponse.json({ error: "Missing url parameter" }, { status: 400 });
@@ -76,7 +36,8 @@ export async function GET(req: NextRequest) {
   // The stored option URL is the original watch URL; the conversion job is
   // started only when the user actually clicks download. Redirecting (rather
   // than proxying) keeps multi-GB files off this function entirely.
-  if (requestedPlatform === "youtube") {
+  // (Thumbnails are plain images and fall through to the media proxy below.)
+  if (requestedPlatform === "youtube" && type !== "image") {
     if (!isValidYouTubeUrl(videoUrl)) {
       return NextResponse.json({ error: "URL not allowed" }, { status: 403 });
     }
@@ -134,7 +95,10 @@ export async function GET(req: NextRequest) {
     ext = "mp4";
     defaultContentType = "video/mp4";
   }
-  const filename = `${platformLabel}-${type}.${ext}`;
+  const filename = `${sanitizeFilename(
+    requestedName,
+    `${platformLabel}-${type}`
+  )}.${ext}`;
 
   try {
     // Forward Range requests so in-page video previews can seek
@@ -161,9 +125,14 @@ export async function GET(req: NextRequest) {
       },
     });
 
+    // Header values must be Latin-1: ASCII fallback + RFC 5987 UTF-8 name
+    // eslint-disable-next-line no-control-regex
+    const asciiName =
+      filename.replace(/[^\x20-\x7e]/g, "").replace(/"/g, "").trim() ||
+      `${platformLabel}-${type}.${ext}`;
     const headers: Record<string, string> = {
       "Content-Type": contentType,
-      "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${filename}"`,
+      "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${asciiName}"; filename*=UTF-8''${encodeURIComponent(filename)}`,
       "Cache-Control": "no-store",
     };
     for (const h of ["content-range", "accept-ranges", "content-length"]) {

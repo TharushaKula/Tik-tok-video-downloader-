@@ -36,7 +36,7 @@ interface BatchResultsProps {
 function ItemThumb({ item }: { item: BatchItem }) {
   if (item.status === "success" && item.info?.thumbnail) {
     return (
-      <span className="relative h-10 w-16 shrink-0 overflow-hidden rounded-md border border-white/[0.06] bg-black/50">
+      <span className="relative h-10 w-16 shrink-0 overflow-hidden rounded-md border border-veil/[0.06] bg-black/50">
         <Image
           src={item.info.thumbnail}
           alt=""
@@ -49,16 +49,16 @@ function ItemThumb({ item }: { item: BatchItem }) {
   }
   return (
     <span
-      className={`flex h-10 w-16 shrink-0 items-center justify-center rounded-md border border-white/[0.06] ${
+      className={`flex h-10 w-16 shrink-0 items-center justify-center rounded-md border border-veil/[0.06] ${
         item.status === "error"
-          ? "bg-red-400/[0.06]"
-          : "bg-white/[0.03]"
+          ? "bg-danger/[0.06]"
+          : "bg-veil/[0.03]"
       } ${item.status === "loading" ? "animate-pulse" : ""}`}
     >
       {item.status === "error" ? (
-        <AlertTriangle size={13} className="text-red-400" />
+        <AlertTriangle size={13} className="text-danger" />
       ) : (
-        <Film size={13} className="text-slate-600" />
+        <Film size={13} className="text-ink-4" />
       )}
     </span>
   );
@@ -87,7 +87,12 @@ export default function BatchResults({
     );
     // Stagger the triggers so the browser registers each one
     for (const item of ready) {
-      startOptionDownload(item.info!.downloads[0], item.info!.platform, false);
+      startOptionDownload(
+        item.info!.downloads[0],
+        item.info!.platform,
+        false,
+        item.info!.title
+      );
       await new Promise((r) => setTimeout(r, 900));
     }
     setSavingAll(false);
@@ -96,13 +101,13 @@ export default function BatchResults({
   return (
     <div className="card w-full overflow-hidden">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] px-4 py-3 sm:px-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-veil/[0.06] px-4 py-3 sm:px-5">
         <div className="flex items-center gap-2.5 text-sm">
           {running ? (
-            <Loader2 size={14} className="animate-spin text-slate-400" />
+            <Loader2 size={14} className="animate-spin text-ink-2" />
           ) : null}
-          <span className="font-medium text-slate-200">Batch download</span>
-          <span className="text-xs text-slate-500" aria-live="polite">
+          <span className="font-medium text-ink-1">Batch download</span>
+          <span className="text-xs text-ink-3" aria-live="polite">
             {done} of {items.length} fetched
             {failed.length > 0 ? ` · ${failed.length} failed` : ""}
           </span>
@@ -111,7 +116,7 @@ export default function BatchResults({
           <button
             onClick={handleSaveAll}
             disabled={ready.length === 0 || savingAll}
-            className="focus-ring flex h-8 items-center gap-1.5 rounded-lg bg-white px-3 text-xs font-semibold text-[#0a0a0f] transition-all hover:bg-slate-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+            className="focus-ring flex h-8 items-center gap-1.5 rounded-lg bg-btn px-3 text-xs font-semibold text-btn-ink transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
           >
             {savingAll ? (
               <Loader2 size={12} className="animate-spin" />
@@ -122,7 +127,7 @@ export default function BatchResults({
           </button>
           <button
             onClick={onReset}
-            className="focus-ring flex h-8 items-center gap-1.5 rounded-lg border border-white/[0.08] px-3 text-xs font-medium text-slate-400 transition-colors hover:border-white/20 hover:text-slate-200"
+            className="focus-ring flex h-8 items-center gap-1.5 rounded-lg border border-veil/[0.08] px-3 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1"
             aria-label="Start a new download"
           >
             <RotateCcw size={12} />
@@ -132,7 +137,7 @@ export default function BatchResults({
       </div>
 
       {/* Items */}
-      <ul className="divide-y divide-white/[0.05]">
+      <ul className="divide-y divide-veil/[0.05]">
         {items.map((item) => {
           const meta = PLATFORMS[item.platform];
           const expandable = item.status === "success" && !!item.info;
@@ -161,7 +166,7 @@ export default function BatchResults({
                 aria-expanded={expandable ? expanded : undefined}
                 className={`focus-ring flex w-full items-center gap-3 px-4 py-3 text-left sm:px-5 ${
                   expandable
-                    ? "cursor-pointer transition-colors hover:bg-white/[0.03]"
+                    ? "cursor-pointer transition-colors hover:bg-veil/[0.03]"
                     : ""
                 }`}
               >
@@ -176,8 +181,8 @@ export default function BatchResults({
                     <span
                       className={`truncate text-sm ${
                         item.status === "success"
-                          ? "font-medium text-slate-200"
-                          : "text-slate-400"
+                          ? "font-medium text-ink-1"
+                          : "text-ink-2"
                       }`}
                     >
                       {item.info?.title ?? item.url}
@@ -186,8 +191,8 @@ export default function BatchResults({
                   <span
                     className={`mt-0.5 block truncate text-xs ${
                       item.status === "error"
-                        ? "text-red-300/80"
-                        : "text-slate-600"
+                        ? "text-danger-ink"
+                        : "text-ink-4"
                     }`}
                   >
                     {item.status === "queued" && "Waiting…"}
@@ -201,12 +206,12 @@ export default function BatchResults({
 
                 <span className="flex shrink-0 items-center gap-2">
                   {item.status === "queued" && (
-                    <Clock size={13} className="text-slate-600" aria-hidden />
+                    <Clock size={13} className="text-ink-4" aria-hidden />
                   )}
                   {item.status === "loading" && (
                     <Loader2
                       size={13}
-                      className="animate-spin text-slate-500"
+                      className="animate-spin text-ink-3"
                       aria-hidden
                     />
                   )}
@@ -216,7 +221,7 @@ export default function BatchResults({
                         e.stopPropagation();
                         onRetry(item.id);
                       }}
-                      className="focus-ring flex h-7 items-center gap-1 rounded-lg border border-white/[0.08] px-2.5 text-xs font-medium text-slate-400 transition-colors hover:border-white/20 hover:text-slate-200"
+                      className="focus-ring flex h-7 items-center gap-1 rounded-lg border border-veil/[0.08] px-2.5 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1"
                     >
                       <RotateCcw size={11} />
                       Retry
@@ -229,10 +234,12 @@ export default function BatchResults({
                           e.stopPropagation();
                           startOptionDownload(
                             item.info!.downloads[0],
-                            item.info!.platform
+                            item.info!.platform,
+                            true,
+                            item.info!.title
                           );
                         }}
-                        className="focus-ring flex h-7 items-center gap-1 rounded-lg bg-white px-2.5 text-xs font-semibold text-[#0a0a0f] transition-all hover:bg-slate-200 active:scale-[0.98]"
+                        className="focus-ring flex h-7 items-center gap-1 rounded-lg bg-btn px-2.5 text-xs font-semibold text-btn-ink transition-all hover:opacity-90 active:scale-[0.98]"
                         aria-label={`Save ${item.info.title}`}
                       >
                         <Download size={11} />
@@ -243,7 +250,7 @@ export default function BatchResults({
                         transition={{ duration: reduce ? 0 : 0.2 }}
                         aria-hidden
                       >
-                        <ChevronDown size={14} className="text-slate-500" />
+                        <ChevronDown size={14} className="text-ink-3" />
                       </motion.span>
                     </>
                   )}
@@ -266,6 +273,7 @@ export default function BatchResults({
                           key={i}
                           option={option}
                           platform={item.info!.platform}
+                          title={item.info!.title}
                         />
                       ))}
                     </div>
@@ -277,7 +285,7 @@ export default function BatchResults({
         })}
       </ul>
 
-      <p className="border-t border-white/[0.06] px-4 py-3 text-xs leading-relaxed text-slate-600 sm:px-5">
+      <p className="border-t border-veil/[0.06] px-4 py-3 text-xs leading-relaxed text-ink-4 sm:px-5">
         Save all grabs the best quality for each video. Expand a row to pick a
         different format.
       </p>

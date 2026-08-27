@@ -7,13 +7,14 @@ const LINKS = [
   { href: "/#platforms", label: "Platforms" },
   { href: "/#how-it-works", label: "How it works" },
   { href: "/#faq", label: "FAQ" },
+  { href: "/changelog", label: "What's new" },
 ];
 
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-white/[0.06]">
+    <footer className="border-t border-veil/[0.06]">
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
           <a
@@ -24,7 +25,7 @@ export default function Footer() {
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500">
               <Download size={14} className="text-white" strokeWidth={2.5} />
             </span>
-            <span className="text-[15px] font-semibold tracking-tight text-white">
+            <span className="text-[15px] font-semibold tracking-tight text-ink-hi">
               SnapLoad
             </span>
           </a>
@@ -34,7 +35,7 @@ export default function Footer() {
               <a
                 key={href}
                 href={href}
-                className="focus-ring rounded-lg px-3 py-1.5 text-sm text-slate-500 transition-colors hover:text-slate-200"
+                className="focus-ring rounded-lg px-3 py-1.5 text-sm text-ink-3 transition-colors hover:text-ink-1"
               >
                 {label}
               </a>
@@ -44,26 +45,26 @@ export default function Footer() {
 
         {/* Per-platform downloader pages */}
         <nav
-          className="mt-8 flex flex-wrap items-center justify-center gap-x-1 gap-y-1 border-t border-white/[0.05] pt-6 sm:justify-start"
+          className="mt-8 flex flex-wrap items-center justify-center gap-x-1 gap-y-1 border-t border-veil/[0.05] pt-6 sm:justify-start"
           aria-label="Downloaders"
         >
           {LANDING_SLUGS.map((slug) => (
             <Link
               key={slug}
               href={`/${slug}`}
-              className="focus-ring rounded-lg px-2.5 py-1 text-xs text-slate-600 transition-colors hover:text-slate-300"
+              className="focus-ring rounded-lg px-2.5 py-1 text-xs text-ink-4 transition-colors hover:text-ink-1"
             >
               {PLATFORMS[LANDING_PAGES[slug].platform].name} Downloader
             </Link>
           ))}
         </nav>
 
-        <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-white/[0.05] pt-6 text-center sm:flex-row sm:text-left">
-          <p className="max-w-lg text-xs leading-relaxed text-slate-600">
+        <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-veil/[0.05] pt-6 text-center sm:flex-row sm:text-left">
+          <p className="max-w-lg text-xs leading-relaxed text-ink-4">
             SnapLoad isn&apos;t affiliated with any of the supported platforms.
             Download only content you own or have permission to save.
           </p>
-          <p className="shrink-0 text-xs text-slate-600">
+          <p className="shrink-0 text-xs text-ink-4">
             © {year} SnapLoad
           </p>
         </div>

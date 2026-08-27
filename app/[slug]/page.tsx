@@ -60,7 +60,7 @@ export default function LandingPage({ params }: LandingParams) {
   };
 
   return (
-    <div id="top" className="relative min-h-screen text-slate-300">
+    <div id="top" className="relative min-h-screen text-ink-1">
       <Backdrop />
       <Navbar />
 
@@ -69,10 +69,10 @@ export default function LandingPage({ params }: LandingParams) {
         <section className="mx-auto flex w-full max-w-2xl flex-col items-center gap-8 px-4 pb-6 pt-16 sm:px-6 sm:pt-20">
           <div className="flex flex-col items-center gap-4 text-center">
             <PlatformBadge platform={copy.platform} />
-            <h1 className="text-3xl font-semibold leading-[1.15] tracking-tight text-white sm:text-[2.6rem]">
+            <h1 className="text-3xl font-semibold leading-[1.15] tracking-tight text-ink-hi sm:text-[2.6rem]">
               {copy.h1}
             </h1>
-            <p className="mx-auto max-w-md text-[15px] leading-relaxed text-slate-400">
+            <p className="mx-auto max-w-md text-[15px] leading-relaxed text-ink-2">
               {copy.sub}
             </p>
           </div>
@@ -84,7 +84,7 @@ export default function LandingPage({ params }: LandingParams) {
             {copy.highlights.map((h) => (
               <li
                 key={h}
-                className="flex items-center gap-1.5 text-xs text-slate-500"
+                className="flex items-center gap-1.5 text-xs text-ink-3"
               >
                 <Check size={12} className={meta.text} aria-hidden />
                 {h}
@@ -97,13 +97,13 @@ export default function LandingPage({ params }: LandingParams) {
 
         {/* Internal links to the other downloaders */}
         <section className="mx-auto w-full max-w-2xl px-4 pb-20 sm:px-6">
-          <p className="mb-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">
+          <p className="mb-3 text-center text-xs font-medium uppercase tracking-wider text-ink-3">
             More downloaders
           </p>
           <div className="flex flex-wrap items-center justify-center gap-1.5">
             <Link
               href="/"
-              className="focus-ring inline-flex items-center gap-1.5 rounded-full border border-white/[0.07] px-3 py-1.5 text-xs text-slate-400 transition-colors hover:border-white/20 hover:text-slate-100"
+              className="focus-ring inline-flex items-center gap-1.5 rounded-full border border-veil/[0.07] px-3 py-1.5 text-xs text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1"
             >
               All platforms
             </Link>
@@ -114,7 +114,7 @@ export default function LandingPage({ params }: LandingParams) {
                 <Link
                   key={slug}
                   href={`/${slug}`}
-                  className="focus-ring inline-flex items-center gap-1.5 rounded-full border border-white/[0.07] px-3 py-1.5 text-xs text-slate-400 transition-colors hover:border-white/20 hover:text-slate-100"
+                  className="focus-ring inline-flex items-center gap-1.5 rounded-full border border-veil/[0.07] px-3 py-1.5 text-xs text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1"
                 >
                   <span
                     className={`h-1.5 w-1.5 rounded-full ${otherMeta.dot}`}

@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    // archiver's package exports map trips webpack — load it at runtime
+    serverComponentsExternalPackages: ["archiver"],
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "**.tikwm.com" },

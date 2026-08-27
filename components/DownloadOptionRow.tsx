@@ -23,7 +23,8 @@ export function optionKind(
 export function proxyUrlFor(
   option: DownloadOption,
   platform: PlatformId,
-  inline = false
+  inline = false,
+  title?: string
 ): string {
   const params = new URLSearchParams({
     url: option.url,
@@ -33,17 +34,23 @@ export function proxyUrlFor(
   });
   if (option.quality) params.set("quality", option.quality);
   if (inline) params.set("inline", "1");
+  // The server sanitizes this into the saved filename
+  if (title) params.set("filename", title.slice(0, 150));
   return `/api/proxy-download?${params.toString()}`;
 }
 
-function triggerProxyDownload(option: DownloadOption, platform: PlatformId) {
+function triggerProxyDownload(
+  option: DownloadOption,
+  platform: PlatformId,
+  title?: string
+) {
   const type = optionKind(option);
   const ext =
     option.format === "mp3" ? "mp3" : option.format === "jpg" ? "jpg" : "mp4";
-  const filename = `${platform}-${type}.${ext}`;
+  const filename = `${title || `${platform}-${type}`}.${ext}`;
 
   const a = document.createElement("a");
-  a.href = proxyUrlFor(option, platform);
+  a.href = proxyUrlFor(option, platform, false, title);
   a.download = filename;
   document.body.appendChild(a);
   a.click();
@@ -51,9 +58,13 @@ function triggerProxyDownload(option: DownloadOption, platform: PlatformId) {
 }
 
 /** The plain server-proxied download path (non-YouTube, and YT fallback). */
-function proxyDownloadOption(option: DownloadOption, platform: PlatformId) {
+function proxyDownloadOption(
+  option: DownloadOption,
+  platform: PlatformId,
+  title?: string
+) {
   if (option.isProxy) {
-    triggerProxyDownload(option, platform);
+    triggerProxyDownload(option, platform, title);
   } else {
     window.open(option.url, "_blank", "noopener,noreferrer");
   }
@@ -63,12 +74,13 @@ function proxyDownloadOption(option: DownloadOption, platform: PlatformId) {
 export function startOptionDownload(
   option: DownloadOption,
   platform: PlatformId,
-  notify = true
+  notify = true,
+  title?: string
 ) {
   if (platform === "youtube" && option.isProxy) {
     // Fire-and-forget client conversion; server redirect flow as fallback
     void downloadYouTubeOption(option).catch(() =>
-      proxyDownloadOption(option, platform)
+      proxyDownloadOption(option, platform, title)
     );
     if (notify) {
       toast.success(
@@ -78,7 +90,7 @@ export function startOptionDownload(
     }
     return;
   }
-  proxyDownloadOption(option, platform);
+  proxyDownloadOption(option, platform, title);
   if (notify) {
     toast.success("Download started — check your browser downloads");
   }
@@ -89,9 +101,12 @@ type OptionStatus = "idle" | "working" | "started";
 export default function DownloadOptionRow({
   option,
   platform,
+  title,
 }: {
   option: DownloadOption;
   platform: PlatformId;
+  /** Video title — becomes the saved filename */
+  title?: string;
 }) {
   const [status, setStatus] = useState<OptionStatus>("idle");
   const [percent, setPercent] = useState<number | null>(null);
@@ -131,7 +146,7 @@ export default function DownloadOptionRow({
       if (!mounted.current) return;
       if (err instanceof PollBlockedError) {
         // Browser can't reach the resolver (adblock) — server flow instead
-        proxyDownloadOption(option, platform);
+        proxyDownloadOption(option, platform, title);
         setPercent(null);
         toast.success(
           "Preparing your file — the download starts when it's ready",
@@ -156,7 +171,7 @@ export default function DownloadOptionRow({
     }
     try {
       setStatus("working");
-      proxyDownloadOption(option, platform);
+      proxyDownloadOption(option, platform, title);
       toast.success("Download started — check your browser downloads");
       timers.current.push(
         setTimeout(() => {
@@ -176,18 +191,18 @@ export default function DownloadOptionRow({
     <button
       onClick={handleClick}
       disabled={status === "working"}
-      className={`focus-ring group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 text-left transition-all hover:border-white/[0.18] hover:bg-white/[0.05] active:scale-[0.99] ${
+      className={`focus-ring group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border border-veil/[0.07] bg-veil/[0.02] p-3 text-left transition-all hover:border-veil/[0.18] hover:bg-veil/[0.05] active:scale-[0.99] ${
         status === "working" ? "cursor-wait" : ""
       }`}
     >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.04]">
-        <Icon size={15} className="text-slate-300" />
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-veil/[0.06] bg-veil/[0.04]">
+        <Icon size={15} className="text-ink-1" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-medium text-slate-200">
+        <span className="block truncate text-sm font-medium text-ink-1">
           {option.label}
         </span>
-        <span className="block text-[11px] uppercase tracking-wider text-slate-500">
+        <span className="block text-[11px] uppercase tracking-wider text-ink-3">
           {option.format}
           {option.quality ? ` · ${option.quality}` : ""}
         </span>
@@ -195,10 +210,10 @@ export default function DownloadOptionRow({
       <span
         className={`flex shrink-0 items-center gap-1.5 text-xs font-medium ${
           status === "started"
-            ? "text-emerald-400"
+            ? "text-ok"
             : status === "working"
-            ? "text-slate-300"
-            : "text-slate-500 transition-colors group-hover:text-slate-200"
+            ? "text-ink-1"
+            : "text-ink-3 transition-colors group-hover:text-ink-1"
         }`}
       >
         {status === "working" ? (
@@ -221,9 +236,9 @@ export default function DownloadOptionRow({
 
       {/* Live conversion progress track */}
       {converting && (
-        <span className="absolute inset-x-0 bottom-0 h-0.5 bg-white/[0.06]">
+        <span className="absolute inset-x-0 bottom-0 h-0.5 bg-veil/[0.06]">
           <span
-            className="block h-full bg-violet-400 transition-[width] duration-500 ease-out"
+            className="block h-full bg-accent transition-[width] duration-500 ease-out"
             style={{ width: `${percent}%` }}
           />
         </span>

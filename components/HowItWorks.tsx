@@ -39,13 +39,13 @@ export default function HowItWorks() {
         transition={{ duration: 0.5 }}
         className="mb-10 text-center"
       >
-        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-violet-400">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">
           How it works
         </p>
-        <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+        <h2 className="text-2xl font-semibold tracking-tight text-ink-hi sm:text-3xl">
           Three steps, ten seconds
         </h2>
-        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-400">
+        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-ink-2">
           No account, no app, no browser extension.
         </p>
       </motion.div>
@@ -60,16 +60,16 @@ export default function HowItWorks() {
             transition={{ duration: 0.4, delay: i * 0.08 }}
             className="card relative p-5"
           >
-            <span className="absolute right-4 top-4 font-mono text-xs text-slate-600">
+            <span className="absolute right-4 top-4 font-mono text-xs text-ink-4">
               {number}
             </span>
-            <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-violet-400/20 bg-violet-400/10">
-              <Icon size={17} className="text-violet-300" />
+            <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-accent/20 bg-accent/10">
+              <Icon size={17} className="text-accent" />
             </span>
-            <h3 className="mb-1.5 text-sm font-semibold text-slate-100">
+            <h3 className="mb-1.5 text-sm font-semibold text-ink-1">
               {title}
             </h3>
-            <p className="text-xs leading-relaxed text-slate-500">{desc}</p>
+            <p className="text-xs leading-relaxed text-ink-3">{desc}</p>
           </motion.div>
         ))}
       </div>

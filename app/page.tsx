@@ -14,7 +14,7 @@ export default function HomePage() {
   const reduce = useReducedMotion();
 
   return (
-    <div id="top" className="relative min-h-screen text-slate-300">
+    <div id="top" className="relative min-h-screen text-ink-1">
       <Backdrop />
       <Navbar />
 
@@ -27,12 +27,12 @@ export default function HomePage() {
             transition={{ duration: 0.55, ease: "easeOut" }}
             className="text-center"
           >
-            <h1 className="text-4xl font-semibold leading-[1.1] tracking-tight text-white sm:text-5xl">
+            <h1 className="text-4xl font-semibold leading-[1.1] tracking-tight text-ink-hi sm:text-5xl">
               Download any video,
               <br />
-              <span className="text-slate-500">clean and watermark-free.</span>
+              <span className="text-ink-3">clean and watermark-free.</span>
             </h1>
-            <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-slate-400">
+            <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-ink-2">
               Paste a link from TikTok, Instagram, YouTube, Facebook, X,
               Reddit, or Pinterest and save it in HD — or grab just the audio
               as MP3.

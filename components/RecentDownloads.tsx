@@ -75,19 +75,19 @@ export default function RecentDownloads({
   return (
     <section className="w-full" aria-label="Recent downloads">
       <div className="mb-2 flex items-center justify-between px-1">
-        <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-slate-500">
+        <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-ink-3">
           <History size={12} />
           Recent
         </p>
         <button
           onClick={onClear}
-          className="focus-ring flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-slate-600 transition-colors hover:text-slate-300"
+          className="focus-ring flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-ink-4 transition-colors hover:text-ink-1"
         >
           <Trash2 size={11} />
           Clear
         </button>
       </div>
-      <ul className="card divide-y divide-white/[0.05] overflow-hidden">
+      <ul className="card divide-y divide-veil/[0.05] overflow-hidden">
         {entries.map((entry) => {
           const meta = PLATFORMS[entry.platform];
           return (
@@ -95,22 +95,22 @@ export default function RecentDownloads({
               <button
                 onClick={() => onSelect(entry.url)}
                 disabled={disabled}
-                className="focus-ring group flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-white/[0.04] disabled:opacity-50"
+                className="focus-ring group flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-veil/[0.04] disabled:opacity-50"
                 title={entry.url}
               >
                 <span
                   className={`h-1.5 w-1.5 shrink-0 rounded-full ${meta.dot}`}
                   aria-hidden
                 />
-                <span className="min-w-0 flex-1 truncate text-sm text-slate-300">
+                <span className="min-w-0 flex-1 truncate text-sm text-ink-1">
                   {entry.title}
                 </span>
-                <span className="shrink-0 text-[11px] text-slate-600">
+                <span className="shrink-0 text-[11px] text-ink-4">
                   {timeAgo(entry.ts)}
                 </span>
                 <RotateCcw
                   size={12}
-                  className="shrink-0 text-slate-600 opacity-0 transition-opacity group-hover:opacity-100"
+                  className="shrink-0 text-ink-4 opacity-0 transition-opacity group-hover:opacity-100"
                   aria-hidden
                 />
               </button>

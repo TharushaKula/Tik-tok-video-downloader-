@@ -44,15 +44,15 @@ function FaqItem({ q, a }: { q: string; a: string }) {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="focus-ring flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-white/[0.02]"
+        className="focus-ring flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-veil/[0.02]"
       >
-        <span className="text-sm font-medium text-slate-200">{q}</span>
+        <span className="text-sm font-medium text-ink-1">{q}</span>
         <motion.span
           animate={{ rotate: open ? 180 : 0 }}
           transition={{ duration: reduce ? 0 : 0.2 }}
           className="shrink-0"
         >
-          <ChevronDown size={15} className="text-slate-500" />
+          <ChevronDown size={15} className="text-ink-3" />
         </motion.span>
       </button>
       <AnimatePresence initial={false}>
@@ -65,7 +65,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
             transition={{ duration: 0.22, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <p className="px-5 pb-4 text-sm leading-relaxed text-slate-400">
+            <p className="px-5 pb-4 text-sm leading-relaxed text-ink-2">
               {a}
             </p>
           </motion.div>
@@ -92,10 +92,10 @@ export default function FaqSection({ faqs = FAQS }: FaqSectionProps) {
         transition={{ duration: 0.5 }}
         className="mb-10 text-center"
       >
-        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-violet-400">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">
           FAQ
         </p>
-        <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+        <h2 className="text-2xl font-semibold tracking-tight text-ink-hi sm:text-3xl">
           Questions, answered
         </h2>
       </motion.div>
@@ -105,7 +105,7 @@ export default function FaqSection({ faqs = FAQS }: FaqSectionProps) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-60px" }}
         transition={{ duration: 0.5, delay: 0.08 }}
-        className="card divide-y divide-white/[0.06] overflow-hidden"
+        className="card divide-y divide-veil/[0.06] overflow-hidden"
       >
         {faqs.map((faq) => (
           <FaqItem key={faq.q} q={faq.q} a={faq.a} />

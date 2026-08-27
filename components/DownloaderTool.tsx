@@ -344,7 +344,7 @@ export default function DownloaderTool() {
       )}
 
       {/* Trust row */}
-      <p className="flex flex-wrap items-center justify-center gap-x-2 text-xs text-slate-600">
+      <p className="flex flex-wrap items-center justify-center gap-x-2 text-xs text-ink-4">
         <span>Free forever</span>
         <span aria-hidden>·</span>
         <span>No sign-up</span>
@@ -355,7 +355,7 @@ export default function DownloaderTool() {
         </span>
         <span className="hidden items-center gap-1 sm:inline-flex">
           Press{" "}
-          <kbd className="rounded border border-white/10 bg-white/[0.04] px-1 py-0.5 font-mono text-[10px] text-slate-500">
+          <kbd className="rounded border border-veil/10 bg-veil/[0.04] px-1 py-0.5 font-mono text-[10px] text-ink-3">
             /
           </kbd>{" "}
           to jump to the link box

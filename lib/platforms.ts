@@ -1,7 +1,12 @@
 import type { PlatformId } from "./types";
 
 // Single source of truth for how each platform is presented in the UI.
-// All Tailwind classes are complete literals so the JIT compiler sees them.
+// Colors reference per-platform CSS variables (--p-<name>, defined for both
+// themes in globals.css) so dark mode gets bright 400-tier tints and light
+// mode gets readable 600-tier ones automatically.
+//
+// IMPORTANT: every Tailwind class below must be a COMPLETE LITERAL string —
+// the JIT compiler only emits CSS for class names it can see verbatim.
 export interface PlatformMeta {
   name: string;
   /** Colored identity dot */
@@ -21,65 +26,72 @@ export interface PlatformMeta {
 export const PLATFORMS: Record<PlatformId, PlatformMeta> = {
   tiktok: {
     name: "TikTok",
-    dot: "bg-rose-400",
-    text: "text-rose-400",
-    activeChip: "border-rose-400/40 bg-rose-400/10 text-rose-300",
-    hoverBorder: "hover:border-rose-400/30",
-    glow: "rgba(251, 113, 133, 0.18)",
-    supports: ["Videos without watermark", "HD & SD quality", "MP3 audio"],
+    dot: "bg-[rgb(var(--p-tiktok))]",
+    text: "text-[rgb(var(--p-tiktok))]",
+    activeChip:
+      "border-[rgb(var(--p-tiktok)/0.45)] bg-[rgb(var(--p-tiktok)/0.12)] text-[rgb(var(--p-tiktok))]",
+    hoverBorder: "hover:border-[rgb(var(--p-tiktok)/0.35)]",
+    glow: "rgba(244, 63, 94, 0.18)",
+    supports: ["Videos without watermark", "Photo slideshows", "MP3 audio"],
   },
   instagram: {
     name: "Instagram",
-    dot: "bg-fuchsia-400",
-    text: "text-fuchsia-400",
-    activeChip: "border-fuchsia-400/40 bg-fuchsia-400/10 text-fuchsia-300",
-    hoverBorder: "hover:border-fuchsia-400/30",
-    glow: "rgba(232, 121, 249, 0.18)",
-    supports: ["Reels & video posts", "Photo posts", "HD quality"],
+    dot: "bg-[rgb(var(--p-instagram))]",
+    text: "text-[rgb(var(--p-instagram))]",
+    activeChip:
+      "border-[rgb(var(--p-instagram)/0.45)] bg-[rgb(var(--p-instagram)/0.12)] text-[rgb(var(--p-instagram))]",
+    hoverBorder: "hover:border-[rgb(var(--p-instagram)/0.35)]",
+    glow: "rgba(217, 70, 239, 0.18)",
+    supports: ["Reels & video posts", "Photo posts", "Stories & highlights"],
   },
   facebook: {
     name: "Facebook",
-    dot: "bg-blue-400",
-    text: "text-blue-400",
-    activeChip: "border-blue-400/40 bg-blue-400/10 text-blue-300",
-    hoverBorder: "hover:border-blue-400/30",
-    glow: "rgba(96, 165, 250, 0.18)",
+    dot: "bg-[rgb(var(--p-facebook))]",
+    text: "text-[rgb(var(--p-facebook))]",
+    activeChip:
+      "border-[rgb(var(--p-facebook)/0.45)] bg-[rgb(var(--p-facebook)/0.12)] text-[rgb(var(--p-facebook))]",
+    hoverBorder: "hover:border-[rgb(var(--p-facebook)/0.35)]",
+    glow: "rgba(59, 130, 246, 0.18)",
     supports: ["Videos & Reels", "Watch & share links", "HD quality"],
   },
   youtube: {
     name: "YouTube",
-    dot: "bg-red-500",
-    text: "text-red-500",
-    activeChip: "border-red-400/40 bg-red-400/10 text-red-300",
-    hoverBorder: "hover:border-red-400/30",
-    glow: "rgba(248, 113, 113, 0.18)",
-    supports: ["Videos & Shorts", "MP4 up to 1080p", "MP3 audio"],
+    dot: "bg-[rgb(var(--p-youtube))]",
+    text: "text-[rgb(var(--p-youtube))]",
+    activeChip:
+      "border-[rgb(var(--p-youtube)/0.45)] bg-[rgb(var(--p-youtube)/0.12)] text-[rgb(var(--p-youtube))]",
+    hoverBorder: "hover:border-[rgb(var(--p-youtube)/0.35)]",
+    glow: "rgba(239, 68, 68, 0.18)",
+    supports: ["Videos, Shorts & playlists", "MP4 up to 1080p", "MP3 audio"],
   },
   twitter: {
     name: "X (Twitter)",
-    dot: "bg-sky-400",
-    text: "text-sky-400",
-    activeChip: "border-sky-400/40 bg-sky-400/10 text-sky-300",
-    hoverBorder: "hover:border-sky-400/30",
-    glow: "rgba(56, 189, 248, 0.18)",
+    dot: "bg-[rgb(var(--p-twitter))]",
+    text: "text-[rgb(var(--p-twitter))]",
+    activeChip:
+      "border-[rgb(var(--p-twitter)/0.45)] bg-[rgb(var(--p-twitter)/0.12)] text-[rgb(var(--p-twitter))]",
+    hoverBorder: "hover:border-[rgb(var(--p-twitter)/0.35)]",
+    glow: "rgba(14, 165, 233, 0.18)",
     supports: ["Tweet videos", "GIFs as MP4", "HD quality"],
   },
   reddit: {
     name: "Reddit",
-    dot: "bg-orange-400",
-    text: "text-orange-400",
-    activeChip: "border-orange-400/40 bg-orange-400/10 text-orange-300",
-    hoverBorder: "hover:border-orange-400/30",
-    glow: "rgba(251, 146, 60, 0.18)",
+    dot: "bg-[rgb(var(--p-reddit))]",
+    text: "text-[rgb(var(--p-reddit))]",
+    activeChip:
+      "border-[rgb(var(--p-reddit)/0.45)] bg-[rgb(var(--p-reddit)/0.12)] text-[rgb(var(--p-reddit))]",
+    hoverBorder: "hover:border-[rgb(var(--p-reddit)/0.35)]",
+    glow: "rgba(249, 115, 22, 0.18)",
     supports: ["Videos with sound", "GIFs as MP4", "Share links & redd.it"],
   },
   pinterest: {
     name: "Pinterest",
-    dot: "bg-red-400",
-    text: "text-red-400",
-    activeChip: "border-red-400/40 bg-red-400/10 text-red-300",
-    hoverBorder: "hover:border-red-400/30",
-    glow: "rgba(248, 113, 113, 0.18)",
+    dot: "bg-[rgb(var(--p-pinterest))]",
+    text: "text-[rgb(var(--p-pinterest))]",
+    activeChip:
+      "border-[rgb(var(--p-pinterest)/0.45)] bg-[rgb(var(--p-pinterest)/0.12)] text-[rgb(var(--p-pinterest))]",
+    hoverBorder: "hover:border-[rgb(var(--p-pinterest)/0.35)]",
+    glow: "rgba(225, 29, 72, 0.18)",
     supports: ["Video pins", "Image pins in HD", "pin.it short links"],
   },
 };

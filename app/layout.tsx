@@ -8,6 +8,10 @@ import { SITE_URL } from "@/lib/site";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
+// Resolves the saved theme preference before first paint so the page never
+// flashes the wrong theme. Kept tiny and inline on purpose.
+const THEME_INIT = `(function(){try{var p=localStorage.getItem("snapload:theme");var t=p==="light"||p==="dark"?p:(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme="dark"}})()`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "SnapLoad — Free Video Downloader for TikTok, YouTube & More",
@@ -39,16 +43,22 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0f",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0f" },
+    { media: "(prefers-color-scheme: light)", color: "#f8f9fc" },
+  ],
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
+      </head>
       <body
-        className={`${inter.variable} font-sans antialiased bg-[#0a0a0f] text-slate-300`}
+        className={`${inter.variable} font-sans antialiased bg-base text-ink-1`}
       >
         <ToastProvider />
         <PwaSetup />

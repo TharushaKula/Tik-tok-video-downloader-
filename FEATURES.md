@@ -100,7 +100,7 @@ Check items off as they ship: `[x]`
 - [ ] QR code handoff (scan to continue the download on your phone)
 - [ ] Command palette (⌘K) for power users
 - [ ] Full keyboard shortcut set
-- [ ] Light theme + system theme toggle
+- [x] Light theme + system theme toggle (semantic design tokens, no-flicker init, per-theme platform colors)
 - [ ] Multi-language UI (i18n) with localized SEO pages
 - [ ] Onboarding tour / first-visit hints
 - [x] Browser notification when a YouTube conversion finishes while the tab is in the background
@@ -145,15 +145,16 @@ Check items off as they ship: `[x]`
 
 ## 🎯 Suggested quick wins
 
-Two full rounds of quick wins have shipped. Next highest-impact candidates:
+Three full rounds of quick wins have shipped (including the light theme). Next
+highest-impact candidates:
 
-1. Light theme + system toggle (deferred — deserves its own design pass over the whole color system)
-2. Fallback resolvers for Instagram/Facebook/YouTube
-3. Instagram carousel downloads (all slides, zipped)
-4. Thumbnail & cover-image download button
-5. Twitch clips / SoundCloud / Vimeo support
-6. Collections & favorites
-7. Changelog / "What's new" panel
+1. Fallback resolvers for Instagram/Facebook/YouTube
+2. Instagram carousel downloads (all slides, zipped)
+3. Thumbnail & cover-image download button
+4. Twitch clips / SoundCloud / Vimeo support
+5. Collections & favorites
+6. Changelog / "What's new" panel
+7. Custom filename templates
 
 ---
 

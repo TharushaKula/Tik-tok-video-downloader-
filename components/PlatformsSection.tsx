@@ -36,13 +36,13 @@ export default function PlatformsSection() {
         transition={{ duration: 0.5 }}
         className="mb-10 text-center"
       >
-        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-violet-400">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">
           Supported platforms
         </p>
-        <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+        <h2 className="text-2xl font-semibold tracking-tight text-ink-hi sm:text-3xl">
           One tool for every feed
         </h2>
-        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-400">
+        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-ink-2">
           Paste a link from any of these platforms — SnapLoad detects it and
           fetches the best quality available.
         </p>
@@ -61,19 +61,19 @@ export default function PlatformsSection() {
               transition={{ duration: 0.4, delay: i * 0.06 }}
               className={`card p-5 transition-colors duration-300 ${meta.hoverBorder}`}
             >
-              <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.04]">
+              <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-veil/[0.06] bg-veil/[0.04]">
                 <Icon size={18} className={meta.text} />
               </span>
-              <h3 className="mb-2.5 text-sm font-semibold text-slate-100">
+              <h3 className="mb-2.5 text-sm font-semibold text-ink-1">
                 {meta.name}
               </h3>
               <ul className="space-y-1.5">
                 {meta.supports.map((line) => (
                   <li
                     key={line}
-                    className="flex items-start gap-1.5 text-xs leading-relaxed text-slate-500"
+                    className="flex items-start gap-1.5 text-xs leading-relaxed text-ink-3"
                   >
-                    <Check size={12} className="mt-0.5 shrink-0 text-slate-600" />
+                    <Check size={12} className="mt-0.5 shrink-0 text-ink-4" />
                     {line}
                   </li>
                 ))}

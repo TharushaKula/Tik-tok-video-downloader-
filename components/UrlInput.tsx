@@ -196,7 +196,7 @@ export default function UrlInput({
     <div className="w-full space-y-4">
       {/* Command bar */}
       <div
-        className="rounded-2xl border border-white/[0.09] bg-[#101017] p-1.5 transition-shadow duration-200"
+        className="rounded-2xl border border-veil/[0.09] bg-raised p-1.5 transition-shadow duration-200"
         style={{ boxShadow: glowShadow }}
       >
         {batchMode ? (
@@ -219,7 +219,7 @@ export default function UrlInput({
               rows={4}
               disabled={loading}
               spellCheck={false}
-              className="min-h-[96px] w-full resize-y rounded-xl bg-transparent px-3 py-2.5 text-sm leading-relaxed text-slate-100 placeholder-slate-500 outline-none disabled:opacity-60"
+              className="min-h-[96px] w-full resize-y rounded-xl bg-transparent px-3 py-2.5 text-sm leading-relaxed text-ink-1 placeholder-ink-3 outline-none disabled:opacity-60"
               aria-label="Video URLs, one per line"
             />
             <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
@@ -227,7 +227,7 @@ export default function UrlInput({
                 <button
                   onClick={handlePasteButton}
                   disabled={loading}
-                  className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-white/[0.08] px-2.5 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:border-white/20 hover:text-slate-100 disabled:opacity-50"
+                  className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-veil/[0.08] px-2.5 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1 disabled:opacity-50"
                   aria-label="Paste links from clipboard"
                 >
                   <Clipboard size={12} />
@@ -236,7 +236,7 @@ export default function UrlInput({
                 <button
                   onClick={exitBatchMode}
                   disabled={loading}
-                  className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-white/[0.08] px-2.5 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:border-white/20 hover:text-slate-100 disabled:opacity-50"
+                  className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-veil/[0.08] px-2.5 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1 disabled:opacity-50"
                   aria-label="Back to single link"
                 >
                   <ListX size={12} />
@@ -246,7 +246,7 @@ export default function UrlInput({
               <button
                 onClick={() => onBatchSubmit(batch.urls)}
                 disabled={loading || batch.urls.length === 0}
-                className="focus-ring flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-5 text-sm font-semibold text-[#0a0a0f] transition-all hover:bg-slate-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+                className="focus-ring flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-btn px-5 text-sm font-semibold text-btn-ink transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {loading ? (
                   <>
@@ -271,7 +271,7 @@ export default function UrlInput({
               <PlatformIcon
                 size={17}
                 className={`shrink-0 transition-colors ${
-                  meta ? meta.text : "text-slate-500"
+                  meta ? meta.text : "text-ink-3"
                 }`}
                 aria-hidden
               />
@@ -293,13 +293,13 @@ export default function UrlInput({
                 }}
                 placeholder="Paste a video link…"
                 disabled={loading}
-                className="h-11 min-w-0 flex-1 bg-transparent text-[15px] text-slate-100 placeholder-slate-500 outline-none disabled:opacity-60"
+                className="h-11 min-w-0 flex-1 bg-transparent text-[15px] text-ink-1 placeholder-ink-3 outline-none disabled:opacity-60"
                 aria-label="Video URL"
               />
               {value && !loading && (
                 <button
                   onClick={handleClear}
-                  className="focus-ring shrink-0 rounded-md p-1 text-slate-500 transition-colors hover:text-slate-200"
+                  className="focus-ring shrink-0 rounded-md p-1 text-ink-3 transition-colors hover:text-ink-1"
                   aria-label="Clear link"
                 >
                   <X size={15} />
@@ -308,7 +308,7 @@ export default function UrlInput({
               <button
                 onClick={handlePasteButton}
                 disabled={loading}
-                className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-white/[0.08] px-2.5 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:border-white/20 hover:text-slate-100 disabled:opacity-50"
+                className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-veil/[0.08] px-2.5 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1 disabled:opacity-50"
                 aria-label="Paste link from clipboard"
               >
                 <Clipboard size={12} />
@@ -317,7 +317,7 @@ export default function UrlInput({
               <button
                 onClick={enterBatchMode}
                 disabled={loading}
-                className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-white/[0.08] px-2.5 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:border-white/20 hover:text-slate-100 disabled:opacity-50"
+                className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-veil/[0.08] px-2.5 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1 disabled:opacity-50"
                 aria-label="Batch mode — paste several links"
                 title="Batch mode — paste several links"
               >
@@ -329,7 +329,7 @@ export default function UrlInput({
             <button
               onClick={() => onSubmit()}
               disabled={loading || !trimmed}
-              className="focus-ring flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-5 text-sm font-semibold text-[#0a0a0f] transition-all hover:bg-slate-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+              className="focus-ring flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-btn px-5 text-sm font-semibold text-btn-ink transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
             >
               {loading ? (
                 <>
@@ -361,12 +361,12 @@ export default function UrlInput({
               <span
                 key={id}
                 className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-all duration-200 ${
-                  active ? p.activeChip : "border-white/[0.07] text-slate-500"
+                  active ? p.activeChip : "border-veil/[0.07] text-ink-3"
                 } ${dimmed ? "opacity-40" : ""}`}
               >
                 <span
                   className={`h-1.5 w-1.5 rounded-full ${
-                    active ? p.dot : "bg-slate-600"
+                    active ? p.dot : "bg-ink-4"
                   }`}
                 />
                 {p.name}
@@ -378,7 +378,7 @@ export default function UrlInput({
           })}
         </div>
         <p
-          className={`text-xs ${showWarn ? "text-amber-400/90" : "text-slate-500"}`}
+          className={`text-xs ${showWarn ? "text-warn" : "text-ink-3"}`}
           aria-live="polite"
         >
           {batchMode ? batchHint : singleHint}
