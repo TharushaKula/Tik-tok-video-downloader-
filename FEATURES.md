@@ -35,6 +35,9 @@ Check items off as they ship: `[x]`
 - [x] TikTok resolver failover (TikWM → SnapTik)
 - [x] Background-tab notification when YouTube conversions finish
 - [x] Vercel Analytics (privacy-friendly, cookie-less)
+- [x] Twitch clips + SoundCloud tracks (9 platforms total)
+- [x] Favorites  star videos to a persistent Saved list
+- [x] YouTube full-channel downloads, custom filename templates, first-visit hint
 
 ---
 
@@ -43,13 +46,15 @@ Check items off as they ship: `[x]`
 - [x] Twitter/X video & GIF downloads
 - [x] Reddit video downloads (with sound  video+audio muxed)
 - [x] Pinterest video & image pin downloads
+- [x] Twitch clip downloads (MP4 up to 1080p; VODs/streams not supported)
+- [x] SoundCloud audio downloads (tracks as MP3, with cover art)
+- [~] Vimeo downloads (investigated 2026-08: the player config endpoint now
+      returns 0 progressive files or 403s on effectively every video, gated
+      behind a per-video JWT; not shippable, revisit if that changes)
 - [ ] Snapchat Spotlight downloads
 - [ ] Threads video downloads
 - [ ] LinkedIn video downloads
-- [ ] Vimeo downloads
 - [ ] Dailymotion downloads
-- [ ] Twitch clips & VOD downloads
-- [ ] SoundCloud audio downloads
 - [ ] Bilibili downloads
 - [x] TikTok photo slideshows → all slides as images + soundtrack MP3
 - [ ] TikTok slideshow auto-merge → single MP4 with music (needs server-side rendering)
@@ -58,7 +63,7 @@ Check items off as they ship: `[x]`
 - [x] Carousel & slideshow ZIP downloads (Instagram carousels, TikTok slideshows  one click, one archive)
 - [ ] Profile-picture / avatar downloader (full HD)
 - [x] YouTube playlist batch downloads (via official RSS  latest 10 videos into the batch queue)
-- [ ] YouTube full-channel batch downloads
+- [x] YouTube full-channel batch downloads (paste a channel/@handle, latest uploads via RSS)
 - [ ] YouTube chapters support (split video by chapter)
 - [ ] Live stream / ongoing broadcast capture
 - [ ] Anonymous story viewer mode
@@ -88,7 +93,7 @@ Check items off as they ship: `[x]`
 - [ ] Video compressor (target file size)
 - [ ] Format converter (MP4 ↔ WebM/MKV/MOV)
 - [x] Smart filenames  downloads named after the video title (sanitized, unicode-safe)
-- [ ] User-configurable filename templates (author, date variables)
+- [x] User-configurable filename templates ({title}/{author}/{platform}/{quality}/{date}, live preview)
 - [ ] Embedded metadata & chapters in output files (title, artist, artwork)
 - [ ] SponsorBlock integration (auto-remove sponsor segments from YouTube)
 - [ ] Watermark/branding overlay option (for creators saving their own content)
@@ -105,14 +110,15 @@ Check items off as they ship: `[x]`
 - [ ] Full keyboard shortcut set
 - [x] Light theme + system theme toggle (semantic design tokens, no-flicker init, per-theme platform colors)
 - [ ] Multi-language UI (i18n) with localized SEO pages
-- [ ] Onboarding tour / first-visit hints
+- [x] First-visit onboarding hint (dismissible, auto-hides after first download)
 - [x] Browser notification when a YouTube conversion finishes while the tab is in the background
 - [ ] Sound/haptic feedback on completion
 
 ## ☁️ Accounts, retention & cloud
 
 - [ ] Optional accounts with cloud-synced download history
-- [ ] Collections / favorites / tags for saved videos
+- [x] Favorites  star any video to keep it in a persistent Saved list
+- [ ] Collections / tags to organize saved videos
 - [ ] Creator subscriptions ("notify me / auto-fetch new videos from this account")
 - [ ] Scheduled & recurring downloads
 - [ ] Save directly to Google Drive / Dropbox / OneDrive
@@ -148,15 +154,15 @@ Check items off as they ship: `[x]`
 
 ## 🎯 Suggested quick wins
 
-Four full rounds of quick wins have shipped. Next highest-impact candidates:
+Six full rounds of quick wins have shipped. Next highest-impact candidates:
 
-1. Twitch clips / SoundCloud / Vimeo support
-2. Collections & favorites
-3. User-configurable filename templates
-4. Subtitle downloads for YouTube
-5. Onboarding tour / first-visit hints
-6. Multi-language UI (i18n)
-7. Fallback resolvers (blocked on viable candidates  see note above)
+1. Collections & tags on top of the Saved list
+2. Subtitle downloads for YouTube
+3. Multi-language UI (i18n)
+4. Bulk download by username/profile (other platforms)
+5. Snapchat / Threads / Dailymotion support
+6. Command palette (Cmd+K) for power users
+7. QR handoff to continue a download on your phone
 
 ---
 

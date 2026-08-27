@@ -2,6 +2,7 @@
 
 import { Download } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
+import FilenameSettings from "./FilenameSettings";
 
 const NAV_LINKS = [
   { href: "#platforms", label: "Platforms" },
@@ -45,6 +46,7 @@ export default function Navbar() {
             <span className="h-1.5 w-1.5 rounded-full bg-ok" />
             Free forever
           </span>
+          <FilenameSettings />
           <ThemeToggle />
         </div>
       </div>

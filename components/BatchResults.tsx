@@ -91,7 +91,7 @@ export default function BatchResults({
         item.info!.downloads[0],
         item.info!.platform,
         false,
-        item.info!.title
+        { title: item.info!.title, author: item.info!.author }
       );
       await new Promise((r) => setTimeout(r, 900));
     }
@@ -236,7 +236,7 @@ export default function BatchResults({
                             item.info!.downloads[0],
                             item.info!.platform,
                             true,
-                            item.info!.title
+                            { title: item.info!.title, author: item.info!.author }
                           );
                         }}
                         className="focus-ring flex h-7 items-center gap-1 rounded-lg bg-btn px-2.5 text-xs font-semibold text-btn-ink transition-all hover:opacity-90 active:scale-[0.98]"
@@ -274,6 +274,7 @@ export default function BatchResults({
                           option={option}
                           platform={item.info!.platform}
                           title={item.info!.title}
+                          author={item.info!.author}
                         />
                       ))}
                     </div>

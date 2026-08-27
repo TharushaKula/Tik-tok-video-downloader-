@@ -2,12 +2,14 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import {
+  AudioLines,
   Bot,
   Check,
   Facebook,
   Instagram,
   Music2,
   Pin,
+  Twitch,
   Twitter,
   Youtube,
 } from "lucide-react";
@@ -22,6 +24,8 @@ const ICONS: Record<PlatformId, typeof Music2> = {
   twitter: Twitter,
   reddit: Bot,
   pinterest: Pin,
+  twitch: Twitch,
+  soundcloud: AudioLines,
 };
 
 export default function PlatformsSection() {

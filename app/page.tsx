@@ -33,9 +33,9 @@ export default function HomePage() {
               <span className="text-ink-3">clean and watermark-free.</span>
             </h1>
             <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-ink-2">
-              Paste a link from TikTok, Instagram, YouTube, Facebook, X,
-              Reddit, or Pinterest and save it in HD  or grab just the audio
-              as MP3.
+              TikTok, Instagram, YouTube, Facebook, X, Reddit, Pinterest,
+              Twitch, and SoundCloud. Paste a link and save it in HD, or grab
+              just the audio as MP3.
             </p>
           </motion.div>
 

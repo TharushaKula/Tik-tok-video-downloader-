@@ -27,6 +27,11 @@ export const MEDIA_HOSTS = [
   "pinimg.com",
   "pinterest.com",
   "ytimg.com", // YouTube thumbnails
+  "sndcdn.com", // SoundCloud audio
+  "cloudfront.net", // Twitch clip MP4s
+  "ttvnw.net",
+  "jtvnw.net",
+  "twitch.tv", // Twitch clip thumbnails
 ];
 
 export const HINTABLE_PLATFORMS = new Set([
@@ -37,6 +42,8 @@ export const HINTABLE_PLATFORMS = new Set([
   "reddit",
   "pinterest",
   "youtube",
+  "twitch",
+  "soundcloud",
 ]);
 
 export const REFERERS: Record<string, string> = {
@@ -47,6 +54,8 @@ export const REFERERS: Record<string, string> = {
   reddit: "https://www.reddit.com/",
   pinterest: "https://www.pinterest.com/",
   youtube: "https://www.youtube.com/",
+  twitch: "https://clips.twitch.tv/",
+  soundcloud: "https://soundcloud.com/",
 };
 
 export function matchHost(hostname: string, suffixes: string[]): boolean {

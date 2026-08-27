@@ -141,6 +141,54 @@ export function extractYouTubePlaylistId(url: string): string | null {
   }
 }
 
+const YT_HOSTS = [
+  "youtube.com",
+  "www.youtube.com",
+  "m.youtube.com",
+  "music.youtube.com",
+];
+
+/** Channel, handle, custom (/c/), or /user/ pages  not videos or playlists. */
+export function isYouTubeChannelUrl(url: string): boolean {
+  return extractYouTubeChannelRef(url) !== null;
+}
+
+/**
+ * Returns how to resolve a YouTube channel to its uploads feed:
+ * - {kind:"id"}    already a channel id (UC…), no lookup needed
+ * - {kind:"lookup"} a handle/custom/user URL the server must resolve
+ * Null for anything that isn't a channel page.
+ */
+export function extractYouTubeChannelRef(
+  url: string
+): { kind: "id"; value: string } | { kind: "lookup"; value: string } | null {
+  try {
+    const parsed = new URL(url);
+    const hostOk = YT_HOSTS.some(
+      (host) => parsed.hostname === host || parsed.hostname.endsWith("." + host)
+    );
+    if (!hostOk) return null;
+
+    const channelMatch = parsed.pathname.match(
+      /^\/channel\/(UC[A-Za-z0-9_-]{22})(?:\/|$)/
+    );
+    if (channelMatch) return { kind: "id", value: channelMatch[1] };
+
+    // /@handle, /c/name, /user/name (optionally with a tab like /videos)
+    if (
+      /^\/@[A-Za-z0-9_.-]+/.test(parsed.pathname) ||
+      /^\/c\/[A-Za-z0-9_.-]+/.test(parsed.pathname) ||
+      /^\/user\/[A-Za-z0-9_.-]+/.test(parsed.pathname)
+    ) {
+      // Strip query so the lookup fetches a clean channel page
+      return { kind: "lookup", value: `${parsed.origin}${parsed.pathname}` };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export function isValidRedditUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
@@ -172,6 +220,36 @@ export function isValidPinterestUrl(url: string): boolean {
   }
 }
 
+export function isValidTwitchUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace(/^www\./, "");
+    if (host === "clips.twitch.tv") return parsed.pathname.length > 1;
+    if (host === "twitch.tv" || host === "m.twitch.tv") {
+      return /\/clip\/[^/?#]+/.test(parsed.pathname);
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+export function isValidSoundCloudUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace(/^www\./, "");
+    if (host === "on.soundcloud.com") return parsed.pathname.length > 1;
+    if (host !== "soundcloud.com" && host !== "m.soundcloud.com") return false;
+    // /<user>/<track> — exclude bare profiles, sets, and reserved routes
+    const parts = parsed.pathname.split("/").filter(Boolean);
+    if (parts.length < 2) return false;
+    if (parts[1] === "sets") return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export type Platform =
   | "tiktok"
   | "instagram"
@@ -180,6 +258,8 @@ export type Platform =
   | "twitter"
   | "reddit"
   | "pinterest"
+  | "twitch"
+  | "soundcloud"
   | null;
 
 export function detectPlatform(url: string): Platform {
@@ -190,6 +270,8 @@ export function detectPlatform(url: string): Platform {
   if (isValidTwitterUrl(url)) return "twitter";
   if (isValidRedditUrl(url)) return "reddit";
   if (isValidPinterestUrl(url)) return "pinterest";
+  if (isValidTwitchUrl(url)) return "twitch";
+  if (isValidSoundCloudUrl(url)) return "soundcloud";
   return null;
 }
 

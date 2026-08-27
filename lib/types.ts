@@ -5,7 +5,9 @@ export type PlatformId =
   | 'youtube'
   | 'twitter'
   | 'reddit'
-  | 'pinterest';
+  | 'pinterest'
+  | 'twitch'
+  | 'soundcloud';
 
 export interface DownloadOption {
   label: string;

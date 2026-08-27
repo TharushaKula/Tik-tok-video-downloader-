@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
+  AudioLines,
   Bot,
   Clipboard,
   Facebook,
@@ -13,6 +14,7 @@ import {
   Loader2,
   Music2,
   Pin,
+  Twitch,
   Twitter,
   X,
   Youtube,
@@ -22,6 +24,7 @@ import {
   detectPlatform,
   extractSupportedUrls,
   isYouTubePlaylistUrl,
+  isYouTubeChannelUrl,
   MAX_BATCH_SIZE,
 } from "@/lib/validators";
 import { PLATFORMS, PLATFORM_IDS } from "@/lib/platforms";
@@ -35,6 +38,8 @@ const PLATFORM_ICONS: Record<PlatformId, typeof Music2> = {
   twitter: Twitter,
   reddit: Bot,
   pinterest: Pin,
+  twitch: Twitch,
+  soundcloud: AudioLines,
 };
 
 interface UrlInputProps {
@@ -68,7 +73,13 @@ export default function UrlInput({
 
   const trimmed = value.trim();
   const isPlaylist = trimmed ? isYouTubePlaylistUrl(trimmed) : false;
-  const platform = isPlaylist ? "youtube" : trimmed ? detectPlatform(trimmed) : null;
+  const isChannel = trimmed ? isYouTubeChannelUrl(trimmed) : false;
+  const platform =
+    isPlaylist || isChannel
+      ? "youtube"
+      : trimmed
+      ? detectPlatform(trimmed)
+      : null;
   const meta = platform ? PLATFORMS[platform] : null;
   const PlatformIcon = platform ? PLATFORM_ICONS[platform] : Link2;
 
@@ -173,6 +184,8 @@ export default function UrlInput({
     ? "Paste a link  or several at once  platforms are detected automatically"
     : isPlaylist
     ? "YouTube playlist detected  we'll fetch its latest videos as a batch"
+    : isChannel
+    ? "YouTube channel detected  we'll fetch its latest uploads as a batch"
     : meta
     ? `${meta.name} link detected  press Enter to fetch`
     : trimmed.length > 12

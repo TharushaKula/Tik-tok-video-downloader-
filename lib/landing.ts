@@ -270,4 +270,76 @@ LANDING_PAGES["pinterest-downloader"] = {
   ],
 };
 
+LANDING_PAGES["twitch-clip-downloader"] = {
+  slug: "twitch-clip-downloader",
+  platform: "twitch",
+  metaTitle: "Twitch Clip Downloader  Save Clips in HD | SnapLoad",
+  metaDescription:
+    "Download Twitch clips as MP4 in up to 1080p. Paste any clips.twitch.tv or twitch.tv/clip link. Free, no sign-up.",
+  keywords: [
+    "twitch clip downloader",
+    "download twitch clip",
+    "twitch clip to mp4",
+    "clips.twitch.tv downloader",
+  ],
+  h1: "Download Twitch clips in HD.",
+  sub: "Paste any clip link and save it as an MP4, in your choice of quality up to 1080p.",
+  highlights: [
+    "Clips as MP4",
+    "Up to 1080p",
+    "clips.twitch.tv & /clip links",
+    "No account needed",
+  ],
+  faqs: [
+    {
+      q: "How do I get a Twitch clip link?",
+      a: "On the clip, click Share and copy the link  both clips.twitch.tv/... and twitch.tv/<channel>/clip/... links work.",
+    },
+    {
+      q: "Which qualities can I download?",
+      a: "Whatever the clip offers, usually 360p up to 1080p. SnapLoad lists each available quality separately.",
+    },
+    {
+      q: "Can I download full VODs or live streams?",
+      a: "Not yet  only clips are supported. Channels, VODs, and live streams can't be downloaded.",
+    },
+  ],
+};
+
+LANDING_PAGES["soundcloud-downloader"] = {
+  slug: "soundcloud-downloader",
+  platform: "soundcloud",
+  metaTitle: "SoundCloud Downloader  Save Tracks as MP3 | SnapLoad",
+  metaDescription:
+    "Download SoundCloud tracks as MP3 in original quality, with cover art. Paste any track link. Free, no sign-up.",
+  keywords: [
+    "soundcloud downloader",
+    "soundcloud to mp3",
+    "download soundcloud track",
+    "soundcloud mp3 downloader",
+  ],
+  h1: "Download SoundCloud tracks as MP3.",
+  sub: "Paste a track link and save the audio in the best quality the uploader allows.",
+  highlights: [
+    "Tracks as MP3",
+    "Original quality",
+    "Cover art included",
+    "No account needed",
+  ],
+  faqs: [
+    {
+      q: "How do I copy a SoundCloud track link?",
+      a: "Tap Share on the track and choose Copy Link. Both soundcloud.com and on.soundcloud.com short links work.",
+    },
+    {
+      q: "Why can't some tracks be downloaded?",
+      a: "Some uploaders disable downloads or offer preview-only streams. Those tracks can't be saved.",
+    },
+    {
+      q: "Can I download whole playlists?",
+      a: "Not yet  paste individual track links. Playlist and profile links aren't supported.",
+    },
+  ],
+};
+
 export const LANDING_SLUGS = Object.keys(LANDING_PAGES);

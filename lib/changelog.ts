@@ -8,6 +8,25 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-08-27",
+    title: "Whole channels & custom filenames",
+    items: [
+      "Paste a YouTube channel or @handle to grab its latest uploads as a batch",
+      "Name your downloads your way with a custom filename pattern",
+      "A first-visit tip helps newcomers get started",
+    ],
+  },
+  {
+    date: "2026-08-27",
+    title: "Twitch, SoundCloud & saved videos",
+    items: [
+      "Download Twitch clips as MP4 in up to 1080p",
+      "Save SoundCloud tracks as MP3 with cover art",
+      "Star any video to keep it in your Saved list for later",
+      "Light and dark themes with a system-aware toggle",
+    ],
+  },
+  {
+    date: "2026-08-27",
     title: "Bundles, smart filenames & thumbnails",
     items: [
       "Photo carousels and slideshows can now be saved in one click as a ZIP",

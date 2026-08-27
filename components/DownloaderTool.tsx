@@ -14,13 +14,26 @@ import RecentDownloads, {
   saveRecent,
   clearRecent,
 } from "@/components/RecentDownloads";
+import Favorites from "@/components/Favorites";
+import OnboardingHint, {
+  hasOnboarded,
+  markOnboarded,
+} from "@/components/OnboardingHint";
 
 import {
   detectPlatform,
   extractSupportedUrls,
   extractYouTubePlaylistId,
+  isYouTubeChannelUrl,
   MAX_BATCH_SIZE,
 } from "@/lib/validators";
+import {
+  type FavoriteEntry,
+  loadFavorites,
+  toggleFavorite,
+  removeFavorite,
+  clearFavorites,
+} from "@/lib/favorites";
 import type { PlatformId, VideoInfo } from "@/lib/types";
 import toast from "react-hot-toast";
 
@@ -28,7 +41,7 @@ type FetchState =
   | { kind: "idle" }
   | { kind: "loading"; platform: PlatformId | null }
   | { kind: "error"; message: string; url: string }
-  | { kind: "success"; info: VideoInfo }
+  | { kind: "success"; info: VideoInfo; url: string }
   | { kind: "batch" };
 
 const BATCH_CONCURRENCY = 3;
@@ -60,6 +73,8 @@ export default function DownloaderTool() {
   const [batchItems, setBatchItems] = useState<BatchItem[]>([]);
   const [state, setState] = useState<FetchState>({ kind: "idle" });
   const [recent, setRecent] = useState<RecentEntry[]>([]);
+  const [favorites, setFavorites] = useState<FavoriteEntry[]>([]);
+  const [showHint, setShowHint] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
 
@@ -68,9 +83,13 @@ export default function DownloaderTool() {
     batchItems.some((i) => i.status === "queued" || i.status === "loading");
   const busy = state.kind === "loading" || batchRunning;
 
-  // History lives in localStorage  read it after mount to keep SSR markup stable.
+  // History + favorites live in localStorage  read after mount to keep SSR
+  // markup stable.
   useEffect(() => {
     setRecent(loadRecent());
+    setFavorites(loadFavorites());
+    // First-visit tip: only for users with no history at all
+    setShowHint(!hasOnboarded() && loadRecent().length === 0);
   }, []);
 
   // PWA share target / deep link: links shared into the installed app land
@@ -120,35 +139,59 @@ export default function DownloaderTool() {
     );
   }
 
+  // Expand a YouTube playlist or channel into a batch of its latest videos.
+  async function expandYouTubeFeed(
+    endpoint: string,
+    target: string,
+    kind: "playlist" | "channel"
+  ) {
+    setState({ kind: "loading", platform: "youtube" });
+    try {
+      const res = await fetch(endpoint);
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json?.success) {
+        throw new Error(json?.error || `Couldn't load that ${kind}`);
+      }
+      const urls: string[] = json.urls;
+      const label = kind === "playlist" ? "Playlist" : "Channel";
+      toast.success(
+        json.total > urls.length
+          ? `${label} loaded  fetching the ${urls.length} most recent videos`
+          : `${label} loaded  fetching ${urls.length} ${urls.length === 1 ? "video" : "videos"}`
+      );
+      await handleBatchSubmit(urls);
+    } catch (err: unknown) {
+      setState({
+        kind: "error",
+        message:
+          err instanceof Error ? err.message : `Couldn't load that ${kind}`,
+        url: target,
+      });
+    }
+  }
+
   async function handleSubmit(explicitUrl?: string) {
     const target = (explicitUrl ?? url).trim();
     if (!target || busy) return;
 
-    // YouTube playlists expand into a batch of their videos
+    // YouTube playlists and channels expand into a batch of their videos
     const playlistId = extractYouTubePlaylistId(target);
     if (playlistId) {
       if (explicitUrl) setUrl(explicitUrl);
-      try {
-        const res = await fetch(`/api/youtube/playlist?list=${playlistId}`);
-        const json = await res.json().catch(() => null);
-        if (!res.ok || !json?.success) {
-          throw new Error(json?.error || "Couldn't load that playlist");
-        }
-        const urls: string[] = json.urls;
-        toast.success(
-          json.total > urls.length
-            ? `Playlist loaded  fetching the ${urls.length} most recent videos`
-            : `Playlist loaded  fetching ${urls.length} ${urls.length === 1 ? "video" : "videos"}`
-        );
-        await handleBatchSubmit(urls);
-      } catch (err: unknown) {
-        setState({
-          kind: "error",
-          message:
-            err instanceof Error ? err.message : "Couldn't load that playlist",
-          url: target,
-        });
-      }
+      await expandYouTubeFeed(
+        `/api/youtube/playlist?list=${playlistId}`,
+        target,
+        "playlist"
+      );
+      return;
+    }
+    if (isYouTubeChannelUrl(target)) {
+      if (explicitUrl) setUrl(explicitUrl);
+      await expandYouTubeFeed(
+        `/api/youtube/channel?url=${encodeURIComponent(target)}`,
+        target,
+        "channel"
+      );
       return;
     }
 
@@ -157,7 +200,7 @@ export default function DownloaderTool() {
       setState({
         kind: "error",
         message:
-          "That link isn't from a supported platform. Paste a TikTok, Instagram, Facebook, YouTube, X, Reddit, or Pinterest link.",
+          "That link isn't from a supported platform. Paste a link from TikTok, Instagram, Facebook, YouTube, X, Reddit, Pinterest, Twitch, or SoundCloud.",
         url: target,
       });
       return;
@@ -169,8 +212,12 @@ export default function DownloaderTool() {
 
     try {
       const info = await fetchVideoInfo(target);
-      setState({ kind: "success", info });
+      setState({ kind: "success", info, url: target });
       rememberDownload(target, info);
+      if (showHint) {
+        setShowHint(false);
+        markOnboarded();
+      }
     } catch (err: unknown) {
       setState({
         kind: "error",
@@ -253,8 +300,36 @@ export default function DownloaderTool() {
     setRecent([]);
   }
 
+  function handleToggleFavorite(info: VideoInfo, sourceUrl: string) {
+    const { list, favorited } = toggleFavorite({
+      url: sourceUrl,
+      title: info.title,
+      platform: info.platform,
+      thumbnail: info.thumbnail,
+      ts: Date.now(),
+    });
+    setFavorites(list);
+    toast.success(favorited ? "Saved to favorites" : "Removed from favorites");
+  }
+
+  function handleRemoveFavorite(url: string) {
+    setFavorites(removeFavorite(url));
+  }
+
+  function handleClearFavorites() {
+    clearFavorites();
+    setFavorites([]);
+  }
+
   return (
     <div className="flex w-full flex-col items-center gap-8">
+      <OnboardingHint
+        visible={showHint}
+        onDismiss={() => {
+          setShowHint(false);
+          markOnboarded();
+        }}
+      />
       <motion.div
         initial={reduce ? false : { opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
@@ -311,7 +386,14 @@ export default function DownloaderTool() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <VideoResult info={state.info} onReset={handleReset} />
+              <VideoResult
+                info={state.info}
+                onReset={handleReset}
+                favorited={favorites.some((f) => f.url === state.url)}
+                onToggleFavorite={() =>
+                  handleToggleFavorite(state.info, state.url)
+                }
+              />
             </motion.div>
           )}
           {state.kind === "batch" && (
@@ -332,6 +414,17 @@ export default function DownloaderTool() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Saved videos */}
+      {state.kind !== "loading" && (
+        <Favorites
+          entries={favorites}
+          onSelect={(u) => handleSubmit(u)}
+          onRemove={handleRemoveFavorite}
+          onClear={handleClearFavorites}
+          disabled={busy}
+        />
+      )}
 
       {/* Recent history */}
       {state.kind !== "loading" && (

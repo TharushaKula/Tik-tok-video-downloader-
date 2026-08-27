@@ -94,6 +94,26 @@ export const PLATFORMS: Record<PlatformId, PlatformMeta> = {
     glow: "rgba(225, 29, 72, 0.18)",
     supports: ["Video pins", "Image pins in HD", "pin.it short links"],
   },
+  twitch: {
+    name: "Twitch",
+    dot: "bg-[rgb(var(--p-twitch))]",
+    text: "text-[rgb(var(--p-twitch))]",
+    activeChip:
+      "border-[rgb(var(--p-twitch)/0.45)] bg-[rgb(var(--p-twitch)/0.12)] text-[rgb(var(--p-twitch))]",
+    hoverBorder: "hover:border-[rgb(var(--p-twitch)/0.35)]",
+    glow: "rgba(145, 70, 255, 0.18)",
+    supports: ["Clips in HD", "Up to 1080p", "clips.twitch.tv links"],
+  },
+  soundcloud: {
+    name: "SoundCloud",
+    dot: "bg-[rgb(var(--p-soundcloud))]",
+    text: "text-[rgb(var(--p-soundcloud))]",
+    activeChip:
+      "border-[rgb(var(--p-soundcloud)/0.45)] bg-[rgb(var(--p-soundcloud)/0.12)] text-[rgb(var(--p-soundcloud))]",
+    hoverBorder: "hover:border-[rgb(var(--p-soundcloud)/0.35)]",
+    glow: "rgba(255, 85, 0, 0.18)",
+    supports: ["Tracks as MP3", "Original quality", "Cover art"],
+  },
 };
 
 export const PLATFORM_IDS: PlatformId[] = [
@@ -104,4 +124,6 @@ export const PLATFORM_IDS: PlatformId[] = [
   "twitter",
   "reddit",
   "pinterest",
+  "twitch",
+  "soundcloud",
 ];

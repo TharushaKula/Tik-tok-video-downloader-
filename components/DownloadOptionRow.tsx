@@ -12,6 +12,13 @@ import {
 import toast from "react-hot-toast";
 import type { DownloadOption, PlatformId } from "@/lib/types";
 import { downloadYouTubeOption, PollBlockedError } from "@/lib/youtube-client";
+import { applyTemplate, loadTemplate } from "@/lib/filename-template";
+
+/** Video identity used to build the download filename via the user's template. */
+export interface NameInfo {
+  title: string;
+  author?: string;
+}
 
 export function optionKind(
   option: DownloadOption
@@ -19,12 +26,26 @@ export function optionKind(
   return option.isAudio ? "audio" : option.format === "jpg" ? "image" : "video";
 }
 
+/** Resolve the filename base for an option from the user's current template. */
+function filenameBaseFor(
+  option: DownloadOption,
+  platform: PlatformId,
+  nameInfo?: NameInfo
+): string | undefined {
+  if (!nameInfo) return undefined;
+  return applyTemplate(
+    loadTemplate(),
+    { title: nameInfo.title, author: nameInfo.author ?? "", platform },
+    { quality: option.quality }
+  );
+}
+
 /** Build the server-proxy URL for an option (inline = in-page playback). */
 export function proxyUrlFor(
   option: DownloadOption,
   platform: PlatformId,
   inline = false,
-  title?: string
+  nameInfo?: NameInfo
 ): string {
   const params = new URLSearchParams({
     url: option.url,
@@ -35,22 +56,24 @@ export function proxyUrlFor(
   if (option.quality) params.set("quality", option.quality);
   if (inline) params.set("inline", "1");
   // The server sanitizes this into the saved filename
-  if (title) params.set("filename", title.slice(0, 150));
+  const base = filenameBaseFor(option, platform, nameInfo);
+  if (base) params.set("filename", base.slice(0, 150));
   return `/api/proxy-download?${params.toString()}`;
 }
 
 function triggerProxyDownload(
   option: DownloadOption,
   platform: PlatformId,
-  title?: string
+  nameInfo?: NameInfo
 ) {
   const type = optionKind(option);
   const ext =
     option.format === "mp3" ? "mp3" : option.format === "jpg" ? "jpg" : "mp4";
-  const filename = `${title || `${platform}-${type}`}.${ext}`;
+  const base = filenameBaseFor(option, platform, nameInfo);
+  const filename = `${base || `${platform}-${type}`}.${ext}`;
 
   const a = document.createElement("a");
-  a.href = proxyUrlFor(option, platform, false, title);
+  a.href = proxyUrlFor(option, platform, false, nameInfo);
   a.download = filename;
   document.body.appendChild(a);
   a.click();
@@ -61,10 +84,10 @@ function triggerProxyDownload(
 function proxyDownloadOption(
   option: DownloadOption,
   platform: PlatformId,
-  title?: string
+  nameInfo?: NameInfo
 ) {
   if (option.isProxy) {
-    triggerProxyDownload(option, platform, title);
+    triggerProxyDownload(option, platform, nameInfo);
   } else {
     window.open(option.url, "_blank", "noopener,noreferrer");
   }
@@ -75,12 +98,12 @@ export function startOptionDownload(
   option: DownloadOption,
   platform: PlatformId,
   notify = true,
-  title?: string
+  nameInfo?: NameInfo
 ) {
   if (platform === "youtube" && option.isProxy) {
     // Fire-and-forget client conversion; server redirect flow as fallback
     void downloadYouTubeOption(option).catch(() =>
-      proxyDownloadOption(option, platform, title)
+      proxyDownloadOption(option, platform, nameInfo)
     );
     if (notify) {
       toast.success(
@@ -90,7 +113,7 @@ export function startOptionDownload(
     }
     return;
   }
-  proxyDownloadOption(option, platform, title);
+  proxyDownloadOption(option, platform, nameInfo);
   if (notify) {
     toast.success("Download started  check your browser downloads");
   }
@@ -102,16 +125,20 @@ export default function DownloadOptionRow({
   option,
   platform,
   title,
+  author,
 }: {
   option: DownloadOption;
   platform: PlatformId;
-  /** Video title  becomes the saved filename */
+  /** Video title  feeds the filename template */
   title?: string;
+  /** Author/channel  feeds the filename template */
+  author?: string;
 }) {
   const [status, setStatus] = useState<OptionStatus>("idle");
   const [percent, setPercent] = useState<number | null>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const mounted = useRef(true);
+  const nameInfo = title ? { title, author } : undefined;
 
   useEffect(() => {
     mounted.current = true;
@@ -146,7 +173,7 @@ export default function DownloadOptionRow({
       if (!mounted.current) return;
       if (err instanceof PollBlockedError) {
         // Browser can't reach the resolver (adblock)  server flow instead
-        proxyDownloadOption(option, platform, title);
+        proxyDownloadOption(option, platform, nameInfo);
         setPercent(null);
         toast.success(
           "Preparing your file  the download starts when it's ready",
@@ -171,7 +198,7 @@ export default function DownloadOptionRow({
     }
     try {
       setStatus("working");
-      proxyDownloadOption(option, platform, title);
+      proxyDownloadOption(option, platform, nameInfo);
       toast.success("Download started  check your browser downloads");
       timers.current.push(
         setTimeout(() => {

@@ -14,6 +14,7 @@ import {
   Play,
   RotateCcw,
   Share2,
+  Star,
   X,
 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -112,9 +113,16 @@ function formatDuration(sec: number): string {
 interface VideoResultProps {
   info: VideoInfo;
   onReset: () => void;
+  favorited: boolean;
+  onToggleFavorite: () => void;
 }
 
-export default function VideoResult({ info, onReset }: VideoResultProps) {
+export default function VideoResult({
+  info,
+  onReset,
+  favorited,
+  onToggleFavorite,
+}: VideoResultProps) {
   const [previewing, setPreviewing] = useState(false);
 
   const statItems = [
@@ -202,6 +210,19 @@ export default function VideoResult({ info, onReset }: VideoResultProps) {
               {info.title}
             </h3>
             <div className="flex shrink-0 items-center gap-1.5">
+              <button
+                onClick={onToggleFavorite}
+                aria-pressed={favorited}
+                className={`focus-ring flex h-[30px] w-[30px] items-center justify-center rounded-lg border transition-colors ${
+                  favorited
+                    ? "border-amber-400/40 text-amber-400"
+                    : "border-veil/[0.08] text-ink-2 hover:border-veil/20 hover:text-ink-1"
+                }`}
+                aria-label={favorited ? "Remove from saved" : "Save to favorites"}
+                title={favorited ? "Saved" : "Save to favorites"}
+              >
+                <Star size={13} className={favorited ? "fill-amber-400" : ""} />
+              </button>
               {info.thumbnail && (
                 <button
                   onClick={() =>
@@ -215,7 +236,7 @@ export default function VideoResult({ info, onReset }: VideoResultProps) {
                       },
                       info.platform,
                       true,
-                      `${info.title.slice(0, 80)} thumbnail`
+                      { title: `${info.title.slice(0, 80)} thumbnail` }
                     )
                   }
                   className="focus-ring flex h-[30px] w-[30px] items-center justify-center rounded-lg border border-veil/[0.08] text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1"
@@ -285,6 +306,7 @@ export default function VideoResult({ info, onReset }: VideoResultProps) {
               option={option}
               platform={info.platform}
               title={info.title}
+              author={info.author}
             />
           ))}
         </div>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { detectPlatform } from "@/lib/validators";
+import type { VideoInfo } from "@/lib/types";
 import { fetchTikTokData } from "@/lib/tikwm";
 import { fetchInstagramData } from "@/lib/instagram";
 import { fetchFacebookData } from "@/lib/facebook";
@@ -7,9 +8,24 @@ import { fetchYouTubeData } from "@/lib/youtube";
 import { fetchTwitterData } from "@/lib/twitter";
 import { fetchRedditData } from "@/lib/reddit";
 import { fetchPinterestData } from "@/lib/pinterest";
+import { fetchTwitchData } from "@/lib/twitch";
+import { fetchSoundCloudData } from "@/lib/soundcloud";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
+
+// One resolver per platform, keyed by detectPlatform()'s result.
+const RESOLVERS: Record<string, (url: string) => Promise<VideoInfo>> = {
+  tiktok: fetchTikTokData,
+  instagram: fetchInstagramData,
+  facebook: fetchFacebookData,
+  youtube: fetchYouTubeData,
+  twitter: fetchTwitterData,
+  reddit: fetchRedditData,
+  pinterest: fetchPinterestData,
+  twitch: fetchTwitchData,
+  soundcloud: fetchSoundCloudData,
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,32 +38,19 @@ export async function POST(req: NextRequest) {
 
     const trimmedUrl = url.trim();
     const platform = detectPlatform(trimmedUrl);
+    const resolver = platform ? RESOLVERS[platform] : undefined;
 
-    if (!platform) {
+    if (!resolver) {
       return NextResponse.json(
         {
           error:
-            "Invalid URL. Please paste a link from a supported platform  TikTok, Instagram, Facebook, YouTube, X, Reddit, or Pinterest.",
+            "Invalid URL. Please paste a link from a supported platform, such as TikTok, YouTube, Instagram, Twitch, or SoundCloud.",
         },
         { status: 400 }
       );
     }
 
-    const data =
-      platform === "tiktok"
-        ? await fetchTikTokData(trimmedUrl)
-        : platform === "instagram"
-        ? await fetchInstagramData(trimmedUrl)
-        : platform === "facebook"
-        ? await fetchFacebookData(trimmedUrl)
-        : platform === "twitter"
-        ? await fetchTwitterData(trimmedUrl)
-        : platform === "reddit"
-        ? await fetchRedditData(trimmedUrl)
-        : platform === "pinterest"
-        ? await fetchPinterestData(trimmedUrl)
-        : await fetchYouTubeData(trimmedUrl);
-
+    const data = await resolver(trimmedUrl);
     return NextResponse.json({ success: true, data });
   } catch (err: unknown) {
     const message =

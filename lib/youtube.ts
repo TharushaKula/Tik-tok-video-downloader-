@@ -1,8 +1,68 @@
 import axios from "axios";
 import type { VideoInfo } from "./types";
+import { MAX_BATCH_SIZE } from "./validators";
 
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
+export interface YouTubeFeed {
+  title: string;
+  urls: string[];
+  total: number;
+}
+
+/** Parse a YouTube RSS feed (playlist or channel) into watch URLs. */
+export function parseYouTubeFeed(xml: string): YouTubeFeed {
+  const videoIds = Array.from(
+    xml.matchAll(/<yt:videoId>([A-Za-z0-9_-]{6,20})<\/yt:videoId>/g),
+    (m) => m[1]
+  );
+  // First <title> is the feed's own title; entry titles follow.
+  const title = xml.match(/<title>([^<]*)<\/title>/)?.[1] ?? "";
+  return {
+    title,
+    urls: videoIds
+      .slice(0, MAX_BATCH_SIZE)
+      .map((v) => `https://www.youtube.com/watch?v=${v}`),
+    total: videoIds.length,
+  };
+}
+
+/** Fetch and parse a YouTube RSS feed by query (playlist_id or channel_id). */
+export async function fetchYouTubeFeed(
+  param: "playlist_id" | "channel_id",
+  id: string
+): Promise<YouTubeFeed> {
+  const res = await axios.get<string>(
+    `https://www.youtube.com/feeds/videos.xml?${param}=${encodeURIComponent(id)}`,
+    { timeout: 15000, responseType: "text", headers: { "User-Agent": UA } }
+  );
+  return parseYouTubeFeed(res.data);
+}
+
+/**
+ * Resolve a handle/custom/user channel URL to its UC channel id by scraping
+ * the channel page. Uses the canonical link and externalId (both reliable);
+ * the bare "channelId" JSON is skipped as it also matches unrelated channels.
+ */
+export async function resolveYouTubeChannelId(
+  channelUrl: string
+): Promise<string | null> {
+  const res = await axios.get<string>(channelUrl, {
+    timeout: 15000,
+    responseType: "text",
+    headers: { "User-Agent": UA, "Accept-Language": "en-US,en;q=0.9" },
+    validateStatus: (s) => s < 400,
+  });
+  const html = res.data;
+  const canonical = html.match(
+    /<link rel="canonical" href="https:\/\/www\.youtube\.com\/channel\/(UC[A-Za-z0-9_-]{22})"/
+  );
+  if (canonical) return canonical[1];
+  const external = html.match(/"externalId":"(UC[A-Za-z0-9_-]{22})"/);
+  if (external) return external[1];
+  return null;
+}
 
 // YouTube's official oEmbed endpoint  no API key, always available.
 interface OEmbedResponse {

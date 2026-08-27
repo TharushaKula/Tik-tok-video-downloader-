@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "SnapLoad  Free Video Downloader for TikTok, YouTube & More",
   description:
-    "Save videos from TikTok, Instagram, Facebook, YouTube, X (Twitter), Reddit, and Pinterest in HD  watermark-free, with MP3 audio. Free, no sign-up, no limits.",
+    "Save videos from TikTok, Instagram, Facebook, YouTube, X (Twitter), Reddit, Pinterest, Twitch, and SoundCloud in HD, watermark-free, with MP3 audio. Free, no sign-up, no limits.",
   keywords: [
     "video downloader",
     "tiktok downloader",
@@ -27,6 +27,8 @@ export const metadata: Metadata = {
     "x video downloader",
     "reddit video downloader",
     "pinterest video downloader",
+    "twitch clip downloader",
+    "soundcloud to mp3",
     "no watermark",
     "mp4",
     "mp3",
