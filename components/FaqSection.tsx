@@ -10,6 +10,10 @@ const FAQS = [
     a: "TikTok videos (watermark-free, with MP3 audio), Instagram Reels and posts, Facebook videos and Reels — including fb.watch and share links — and YouTube videos and Shorts as MP4 up to 1080p or MP3 audio.",
   },
   {
+    q: "Can I download several videos at once?",
+    a: "Yes — paste multiple links together (or use the Batch button) and SnapLoad fetches up to 10 at a time. Each video gets its own row with quality options, and Save all grabs the best quality for everything in one go.",
+  },
+  {
     q: "Is it really free?",
     a: "Yes — every download, in every quality, with no account, no limits, and no hidden fees.",
   },

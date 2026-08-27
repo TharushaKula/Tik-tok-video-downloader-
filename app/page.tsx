@@ -9,6 +9,7 @@ import UrlInput from "@/components/UrlInput";
 import VideoResult from "@/components/VideoResult";
 import ResultSkeleton from "@/components/ResultSkeleton";
 import ErrorCard from "@/components/ErrorCard";
+import BatchResults, { type BatchItem } from "@/components/BatchResults";
 import RecentDownloads, {
   type RecentEntry,
   loadRecent,
@@ -20,23 +21,49 @@ import HowItWorks from "@/components/HowItWorks";
 import FaqSection from "@/components/FaqSection";
 import Footer from "@/components/Footer";
 
-import { detectPlatform } from "@/lib/validators";
+import { detectPlatform, MAX_BATCH_SIZE } from "@/lib/validators";
 import type { PlatformId, VideoInfo } from "@/lib/types";
 
 type FetchState =
   | { kind: "idle" }
   | { kind: "loading"; platform: PlatformId | null }
   | { kind: "error"; message: string; url: string }
-  | { kind: "success"; info: VideoInfo };
+  | { kind: "success"; info: VideoInfo }
+  | { kind: "batch" };
+
+const BATCH_CONCURRENCY = 3;
+
+async function fetchVideoInfo(target: string): Promise<VideoInfo> {
+  const res = await fetch("/api/download", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url: target }),
+  });
+  // The body may not be JSON if the server hits a hard failure.
+  const json = await res.json().catch(() => null);
+  if (!res.ok || !json?.success) {
+    throw new Error(
+      json?.error ||
+        "The server hit an unexpected problem. Give it a second and try again."
+    );
+  }
+  return json.data as VideoInfo;
+}
 
 export default function HomePage() {
   const [url, setUrl] = useState("");
+  const [batchMode, setBatchMode] = useState(false);
+  const [batchText, setBatchText] = useState("");
+  const [batchItems, setBatchItems] = useState<BatchItem[]>([]);
   const [state, setState] = useState<FetchState>({ kind: "idle" });
   const [recent, setRecent] = useState<RecentEntry[]>([]);
   const resultRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
 
-  const loading = state.kind === "loading";
+  const batchRunning =
+    state.kind === "batch" &&
+    batchItems.some((i) => i.status === "queued" || i.status === "loading");
+  const busy = state.kind === "loading" || batchRunning;
 
   // History lives in localStorage — read it after mount to keep SSR markup stable.
   useEffect(() => {
@@ -44,7 +71,11 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    if (state.kind === "success" || state.kind === "error") {
+    if (
+      state.kind === "success" ||
+      state.kind === "error" ||
+      state.kind === "batch"
+    ) {
       resultRef.current?.scrollIntoView({
         behavior: reduce ? "auto" : "smooth",
         block: "nearest",
@@ -52,9 +83,20 @@ export default function HomePage() {
     }
   }, [state.kind, reduce]);
 
+  function rememberDownload(target: string, info: VideoInfo) {
+    setRecent(
+      saveRecent({
+        url: target,
+        title: info.title,
+        platform: info.platform,
+        ts: Date.now(),
+      })
+    );
+  }
+
   async function handleSubmit(explicitUrl?: string) {
     const target = (explicitUrl ?? url).trim();
-    if (!target || loading) return;
+    if (!target || busy) return;
 
     const platform = detectPlatform(target);
     if (!platform) {
@@ -68,33 +110,13 @@ export default function HomePage() {
     }
 
     if (explicitUrl) setUrl(explicitUrl);
+    setBatchMode(false);
     setState({ kind: "loading", platform });
 
     try {
-      const res = await fetch("/api/download", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: target }),
-      });
-      // The body may not be JSON if the server hits a hard failure.
-      const json = await res.json().catch(() => null);
-      if (!res.ok || !json?.success) {
-        throw new Error(
-          json?.error ||
-            "The server hit an unexpected problem. Give it a second and try again."
-        );
-      }
-
-      const info = json.data as VideoInfo;
+      const info = await fetchVideoInfo(target);
       setState({ kind: "success", info });
-      setRecent(
-        saveRecent({
-          url: target,
-          title: info.title,
-          platform: info.platform,
-          ts: Date.now(),
-        })
-      );
+      rememberDownload(target, info);
     } catch (err: unknown) {
       setState({
         kind: "error",
@@ -104,9 +126,72 @@ export default function HomePage() {
     }
   }
 
+  function updateBatchItem(id: string, patch: Partial<BatchItem>) {
+    setBatchItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, ...patch } : item))
+    );
+  }
+
+  async function fetchBatchItem(id: string, target: string) {
+    updateBatchItem(id, { status: "loading", error: undefined });
+    try {
+      const info = await fetchVideoInfo(target);
+      updateBatchItem(id, { status: "success", info });
+      rememberDownload(target, info);
+    } catch (err: unknown) {
+      updateBatchItem(id, {
+        status: "error",
+        error: err instanceof Error ? err.message : "Unexpected error",
+      });
+    }
+  }
+
+  async function handleBatchSubmit(urls: string[]) {
+    if (busy || urls.length === 0) return;
+
+    // A batch of one is just a normal fetch
+    if (urls.length === 1) {
+      setBatchMode(false);
+      setUrl(urls[0]);
+      void handleSubmit(urls[0]);
+      return;
+    }
+
+    const items: BatchItem[] = urls.slice(0, MAX_BATCH_SIZE).map((u, i) => ({
+      id: `${Date.now()}-${i}`,
+      url: u,
+      platform: detectPlatform(u) as PlatformId,
+      status: "queued",
+    }));
+    setBatchItems(items);
+    setState({ kind: "batch" });
+
+    // Small worker pool so slow resolvers don't serialize the whole batch
+    const queue = [...items];
+    const worker = async () => {
+      for (;;) {
+        const next = queue.shift();
+        if (!next) return;
+        await fetchBatchItem(next.id, next.url);
+      }
+    };
+    await Promise.all(
+      Array.from({ length: Math.min(BATCH_CONCURRENCY, items.length) }, worker)
+    );
+  }
+
+  function handleRetryItem(id: string) {
+    const item = batchItems.find((i) => i.id === id);
+    if (!item || item.status === "loading") return;
+    void fetchBatchItem(id, item.url);
+  }
+
   function handleReset() {
     setState({ kind: "idle" });
     setUrl("");
+    setBatchItems([]);
+    setBatchMode(false);
+    setBatchText("");
   }
 
   function handleClearRecent() {
@@ -149,11 +234,16 @@ export default function HomePage() {
               value={url}
               onChange={setUrl}
               onSubmit={handleSubmit}
-              loading={loading}
+              loading={busy}
+              batchMode={batchMode}
+              onBatchModeChange={setBatchMode}
+              batchText={batchText}
+              onBatchTextChange={setBatchText}
+              onBatchSubmit={handleBatchSubmit}
             />
           </motion.div>
 
-          {/* Fetch state — skeleton, error, or result */}
+          {/* Fetch state — skeleton, error, result, or batch queue */}
           <div ref={resultRef} className="w-full scroll-mt-24" aria-live="polite">
             <AnimatePresence mode="wait" initial={false}>
               {state.kind === "loading" && (
@@ -193,6 +283,22 @@ export default function HomePage() {
                   <VideoResult info={state.info} onReset={handleReset} />
                 </motion.div>
               )}
+              {state.kind === "batch" && (
+                <motion.div
+                  key="batch"
+                  initial={reduce ? false : { opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <BatchResults
+                    items={batchItems}
+                    running={batchRunning}
+                    onRetry={handleRetryItem}
+                    onReset={handleReset}
+                  />
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
 
@@ -202,7 +308,7 @@ export default function HomePage() {
               entries={recent}
               onSelect={(u) => handleSubmit(u)}
               onClear={handleClearRecent}
-              disabled={loading}
+              disabled={busy}
             />
           )}
 

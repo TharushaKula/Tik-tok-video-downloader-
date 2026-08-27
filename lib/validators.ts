@@ -101,6 +101,47 @@ export function detectPlatform(url: string): Platform {
   return null;
 }
 
+export const MAX_BATCH_SIZE = 10;
+
+export interface ExtractedUrls {
+  /** Supported, deduped video links in the order they appeared (capped) */
+  urls: string[];
+  /** How many http(s) links were found but aren't from a supported platform */
+  unsupported: number;
+  /** True when more supported links were found than the batch cap allows */
+  truncated: boolean;
+}
+
+/**
+ * Pull every supported video link out of a blob of text — pasted lists,
+ * share-sheet text, chat messages. Links are deduped and capped at `max`.
+ */
+export function extractSupportedUrls(
+  text: string,
+  max = MAX_BATCH_SIZE
+): ExtractedUrls {
+  const matches = text.match(/https?:\/\/[^\s<>"'`]+/gi) ?? [];
+  const seen = new Set<string>();
+  const urls: string[] = [];
+  let unsupported = 0;
+  for (const raw of matches) {
+    // Strip punctuation that commonly trails links in prose
+    const cleaned = raw.replace(/[),.;\]!?]+$/, "");
+    if (!detectPlatform(cleaned)) {
+      unsupported++;
+      continue;
+    }
+    if (seen.has(cleaned)) continue;
+    seen.add(cleaned);
+    urls.push(cleaned);
+  }
+  return {
+    urls: urls.slice(0, max),
+    unsupported,
+    truncated: urls.length > max,
+  };
+}
+
 export function isValidUrl(url: string): boolean {
   return detectPlatform(url) !== null;
 }
