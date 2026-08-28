@@ -8,6 +8,23 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-08-28",
+    title: "A browser extension",
+    items: [
+      "New Chrome/Edge extension: one click sends the video you're watching straight to SnapLoad",
+      "Right-click any link and choose Download with SnapLoad",
+      "Privacy-first: no tracking, no access to your browsing, it only acts when you click",
+    ],
+  },
+  {
+    date: "2026-08-28",
+    title: "A faster, more secure engine",
+    items: [
+      "SnapLoad now runs on the latest web stack (Next.js 16 + React 19): pages build and load faster",
+      "Every known dependency vulnerability is cleared  0 audit findings",
+    ],
+  },
+  {
+    date: "2026-08-28",
     title: "How-to guides, and a gentle chime",
     items: [
       "New Guides section: step-by-step walkthroughs for watermark-free TikToks, YouTube to MP3, Reels, X, Facebook, and batch downloading",

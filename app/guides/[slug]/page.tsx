@@ -14,7 +14,7 @@ import { PLATFORMS } from "@/lib/platforms";
 import { SITE_URL } from "@/lib/site";
 
 interface GuideParams {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export const dynamicParams = false;
@@ -23,8 +23,11 @@ export function generateStaticParams() {
   return GUIDE_SLUGS.map((slug) => ({ slug }));
 }
 
-export function generateMetadata({ params }: GuideParams): Metadata {
-  const guide = GUIDES[params.slug];
+export async function generateMetadata({
+  params,
+}: GuideParams): Promise<Metadata> {
+  const { slug } = await params;
+  const guide = GUIDES[slug];
   if (!guide) return {};
   return {
     title: guide.metaTitle,
@@ -41,8 +44,9 @@ export function generateMetadata({ params }: GuideParams): Metadata {
   };
 }
 
-export default function GuidePage({ params }: GuideParams) {
-  const guide = GUIDES[params.slug];
+export default async function GuidePage({ params }: GuideParams) {
+  const { slug } = await params;
+  const guide = GUIDES[slug];
   if (!guide) notFound();
 
   const meta = guide.platform ? PLATFORMS[guide.platform] : null;

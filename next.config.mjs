@@ -1,9 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    // archiver's package exports map trips webpack  load it at runtime
-    serverComponentsExternalPackages: ["archiver"],
-  },
+  // archiver's package exports map trips the bundler  load it at runtime
+  serverExternalPackages: ["archiver"],
+  // Pin the workspace root: a stray lockfile in the home directory would
+  // otherwise confuse Turbopack's project-root detection.
+  turbopack: { root: import.meta.dirname },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "**.tikwm.com" },

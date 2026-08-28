@@ -107,7 +107,6 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  // eslint-disable-next-line no-control-regex
   const asciiZipName =
     zipName.replace(/[^\x20-\x7e]/g, "").replace(/"/g, "").trim() ||
     `${platform}-bundle.zip`;

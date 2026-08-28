@@ -16,7 +16,7 @@ import { PLATFORMS } from "@/lib/platforms";
 import { SITE_URL } from "@/lib/site";
 
 interface LandingParams {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export const dynamicParams = false;
@@ -25,8 +25,11 @@ export function generateStaticParams() {
   return LANDING_SLUGS.map((slug) => ({ slug }));
 }
 
-export function generateMetadata({ params }: LandingParams): Metadata {
-  const copy = LANDING_PAGES[params.slug];
+export async function generateMetadata({
+  params,
+}: LandingParams): Promise<Metadata> {
+  const { slug } = await params;
+  const copy = LANDING_PAGES[slug];
   if (!copy) return {};
   return {
     title: copy.metaTitle,
@@ -43,8 +46,9 @@ export function generateMetadata({ params }: LandingParams): Metadata {
   };
 }
 
-export default function LandingPage({ params }: LandingParams) {
-  const copy = LANDING_PAGES[params.slug];
+export default async function LandingPage({ params }: LandingParams) {
+  const { slug } = await params;
+  const copy = LANDING_PAGES[slug];
   if (!copy) notFound();
 
   const meta = PLATFORMS[copy.platform];

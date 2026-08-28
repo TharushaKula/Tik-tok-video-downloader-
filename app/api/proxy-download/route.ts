@@ -136,7 +136,6 @@ export async function GET(req: NextRequest) {
     });
 
     // Header values must be Latin-1: ASCII fallback + RFC 5987 UTF-8 name
-    // eslint-disable-next-line no-control-regex
     const asciiName =
       filename.replace(/[^\x20-\x7e]/g, "").replace(/"/g, "").trim() ||
       `${platformLabel}-${type}.${ext}`;

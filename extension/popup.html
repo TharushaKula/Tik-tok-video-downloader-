@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>SnapLoad</title>
+<style>
+  :root {
+    --base: #0b0b10;
+    --raised: #15151d;
+    --border: rgba(148, 148, 180, 0.14);
+    --ink-hi: #f4f4f8;
+    --ink-1: #d6d6e0;
+    --ink-3: #8f8fa3;
+    --accent: #8b5cf6;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    width: 320px;
+    background: var(--base);
+    color: var(--ink-1);
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 16px;
+  }
+  .head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--ink-hi); font-size: 15px; letter-spacing: -0.01em; }
+  .logo {
+    width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center;
+    background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  }
+  .logo svg { display: block; }
+  #settings {
+    border: 0; background: none; color: var(--ink-3); cursor: pointer;
+    padding: 4px; border-radius: 6px; display: grid; place-items: center;
+  }
+  #settings:hover { color: var(--ink-1); background: var(--raised); }
+  .card {
+    background: var(--raised); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px; margin-bottom: 12px;
+  }
+  .status { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-3); }
+  .dot { width: 8px; height: 8px; border-radius: 99px; background: #52525e; flex: none; }
+  #page-url {
+    margin-top: 6px; font-size: 12px; color: var(--ink-1);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  #go {
+    width: 100%; border: 0; cursor: pointer; border-radius: 12px;
+    padding: 11px 14px; font-size: 14px; font-weight: 600; color: #fff;
+    background: linear-gradient(135deg, #8b5cf6, #d946ef);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  #go:hover { filter: brightness(1.08); }
+  #go:disabled { background: var(--raised); color: var(--ink-3); cursor: default; filter: none; border: 1px solid var(--border); }
+  .hint { margin-top: 10px; font-size: 11.5px; color: var(--ink-3); text-align: center; }
+  .hint a { color: var(--ink-1); text-decoration: underline; text-underline-offset: 2px; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <div class="brand">
+      <span class="logo">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+      </span>
+      SnapLoad
+    </div>
+    <button id="settings" title="Settings" aria-label="Settings">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="status"><span class="dot" id="dot"></span><span id="status-text">Checking this page…</span></div>
+    <div id="page-url"></div>
+  </div>
+
+  <button id="go" disabled>Download with SnapLoad</button>
+  <p class="hint" id="hint">Works on TikTok, YouTube, Instagram, X, Facebook, Reddit, Pinterest, Twitch &amp; SoundCloud</p>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

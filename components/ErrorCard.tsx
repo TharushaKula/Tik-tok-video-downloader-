@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AlertTriangle, RotateCcw, X } from "lucide-react";
 
 interface ErrorCardProps {
@@ -35,12 +36,12 @@ export default function ErrorCard({
             <li>· Try copying the link again from the app&apos;s share button</li>
             <li>
               · Keeps happening?{" "}
-              <a
+              <Link
                 href="/status"
                 className="focus-ring rounded font-medium text-ink-2 underline decoration-veil/30 underline-offset-2 transition-colors hover:text-ink-1"
               >
                 Check the status page
-              </a>{" "}
+              </Link>{" "}
               to see if the platform is down
             </li>
           </ul>

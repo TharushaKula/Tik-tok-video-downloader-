@@ -45,6 +45,8 @@ Check items off as they ship: `[x]`
 - [x] YouTube audio formats (M4A/WAV/FLAC), private usage tally, CI + scheduled health-check Actions
 - [x] Public /status page with live resolver health + TXT/CSV link-list import
 - [x] How-to guides section (6 SEO guides with HowTo/FAQ structured data) + completion chime/haptics
+- [x] Next.js 16 + React 19 + ESLint 9 flat-config migration (Turbopack builds, async params, 0 npm audit findings)
+- [x] Chrome/Edge browser extension (one-click send-to-SnapLoad, privacy-first MV3)
 
 ---
 
@@ -116,7 +118,9 @@ Check items off as they ship: `[x]`
 
 - [x] PWA install (add to home screen)
 - [x] Android share-target ("Share to SnapLoad" straight from the TikTok app)
-- [ ] Browser extension (one-click download from the video page)
+- [x] Browser extension (MV3, in `extension/`: toolbar popup with platform
+      detection, right-click menus, zero host permissions  sends pages to
+      the site's ?url= deep link; `npm run ext:pack` builds the Web Store zip)
 - [x] Video preview player in the result card (watch before saving)
 - [x] Drag-and-drop a link anywhere on the page (full-page drop target)
 - [x] QR handoff  scan to continue a download on your phone (encodes a ?url= deep link)
@@ -173,13 +177,12 @@ Check items off as they ship: `[x]`
 
 ## 🎯 Suggested quick wins
 
-Twelve rounds shipped. Next highest-impact candidates:
+Fourteen rounds shipped. Next highest-impact candidates:
 
 1. Multi-language UI (i18n)  its own dedicated pass
-2. Next.js 14 -> 16 upgrade (clears remaining audit items)  its own migration
-3. Browser extension (one-click from the video page)
-4. Trim/clip a section before downloading
-5. Server-side caching of recently resolved links
+2. Trim/clip a section before downloading
+3. Server-side caching of recently resolved links
+4. Publish the extension to the Chrome Web Store (account + listing assets needed)
 
 ---
 
