@@ -16,12 +16,20 @@ import {
   Moon,
   Search,
   Activity,
+  BookOpen,
   Sparkles,
   Star,
   Sun,
+  Volume2,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import { PLATFORMS } from "@/lib/platforms";
 import { LANDING_PAGES, LANDING_SLUGS } from "@/lib/landing";
+import {
+  isSoundEnabled,
+  playCompletionChime,
+  setSoundEnabled,
+} from "@/lib/sound";
 import { setThemePref } from "./ThemeToggle";
 import type { RecentEntry } from "./RecentDownloads";
 import type { FavoriteEntry } from "@/lib/favorites";
@@ -117,6 +125,24 @@ export default function CommandPalette({
           onClose();
         },
       },
+      {
+        id: "toggle-sound",
+        label: "Toggle completion sound",
+        group: "Preferences",
+        keywords: "sound chime mute audio volume ding notification quiet",
+        icon: Volume2,
+        run: () => {
+          const next = !isSoundEnabled();
+          setSoundEnabled(next);
+          if (next) playCompletionChime(); // instant preview of the chime
+          toast.success(
+            next
+              ? "Completion sound on  you'll hear a soft chime when conversions finish"
+              : "Completion sound off"
+          );
+          onClose();
+        },
+      },
     ];
 
     favorites.slice(0, 6).forEach((f, i) => {
@@ -191,6 +217,14 @@ export default function CommandPalette({
         keywords: "status up down outage broken working health",
         icon: Activity,
         run: go("/status"),
+      },
+      {
+        id: "go-guides",
+        label: "How-to guides",
+        group: "Go to",
+        keywords: "guides how to help tutorial blog watermark mp3 batch",
+        icon: BookOpen,
+        run: go("/guides"),
       }
     );
 

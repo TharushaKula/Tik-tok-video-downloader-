@@ -44,6 +44,7 @@ Check items off as they ship: `[x]`
 - [x] Hardening: 55-test vitest suite (validators/parsers/favorites/templates/hosts), resolver health-check script (`npm run health`), axios security patch, tightened TikTok URL validation
 - [x] YouTube audio formats (M4A/WAV/FLAC), private usage tally, CI + scheduled health-check Actions
 - [x] Public /status page with live resolver health + TXT/CSV link-list import
+- [x] How-to guides section (6 SEO guides with HowTo/FAQ structured data) + completion chime/haptics
 
 ---
 
@@ -126,7 +127,8 @@ Check items off as they ship: `[x]`
 - [ ] Multi-language UI (i18n) with localized SEO pages
 - [x] First-visit onboarding hint (dismissible, auto-hides after first download)
 - [x] Browser notification when a YouTube conversion finishes while the tab is in the background
-- [ ] Sound/haptic feedback on completion
+- [x] Sound/haptic feedback on completion (soft chime + vibration when a
+      conversion finishes, palette toggle to mute)
 
 ## ☁️ Accounts, retention & cloud
 
@@ -145,7 +147,7 @@ Check items off as they ship: `[x]`
 ## 📈 Growth, trust & monetization
 
 - [x] Per-platform SEO landing pages (/tiktok-downloader, /youtube-downloader, …) with canonical URLs, FAQ JSON-LD, sitemap.xml, and robots.txt
-- [ ] Blog + how-to guides (organic traffic engine for this category)
+- [x] Blog + how-to guides (organic traffic engine for this category)
 - [ ] Premium tier (batch, 4K/8K, faster conversions, no queue)
 - [ ] Donation/tip option
 - [ ] Referral link program
@@ -171,14 +173,13 @@ Check items off as they ship: `[x]`
 
 ## 🎯 Suggested quick wins
 
-Eleven rounds shipped. Next highest-impact candidates:
+Twelve rounds shipped. Next highest-impact candidates:
 
 1. Multi-language UI (i18n)  its own dedicated pass
 2. Next.js 14 -> 16 upgrade (clears remaining audit items)  its own migration
-3. Blog + how-to guides (organic traffic)
-4. Browser extension (one-click from the video page)
-5. Trim/clip a section before downloading
-6. Sound/haptic feedback on completion
+3. Browser extension (one-click from the video page)
+4. Trim/clip a section before downloading
+5. Server-side caching of recently resolved links
 
 ---
 

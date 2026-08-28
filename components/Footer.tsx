@@ -6,6 +6,7 @@ import { PLATFORMS } from "@/lib/platforms";
 const LINKS = [
   { href: "/#platforms", label: "Platforms" },
   { href: "/#how-it-works", label: "How it works" },
+  { href: "/guides", label: "Guides" },
   { href: "/#faq", label: "FAQ" },
   { href: "/changelog", label: "What's new" },
   { href: "/status", label: "Status" },

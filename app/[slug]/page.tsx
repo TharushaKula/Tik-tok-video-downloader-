@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Check } from "lucide-react";
+import { BookOpen, Check } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import Backdrop from "@/components/Backdrop";
@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import PlatformBadge from "@/components/PlatformBadge";
 
 import { LANDING_PAGES, LANDING_SLUGS } from "@/lib/landing";
+import { GUIDE_FOR_PLATFORM } from "@/lib/guides";
 import { PLATFORMS } from "@/lib/platforms";
 import { SITE_URL } from "@/lib/site";
 
@@ -48,6 +49,7 @@ export default function LandingPage({ params }: LandingParams) {
 
   const meta = PLATFORMS[copy.platform];
   const others = LANDING_SLUGS.filter((s) => s !== copy.slug);
+  const guideSlug = GUIDE_FOR_PLATFORM[copy.platform];
 
   const faqJsonLd = {
     "@context": "https://schema.org",
@@ -91,6 +93,16 @@ export default function LandingPage({ params }: LandingParams) {
               </li>
             ))}
           </ul>
+
+          {guideSlug && (
+            <Link
+              href={`/guides/${guideSlug}`}
+              className="focus-ring -mt-2 inline-flex items-center gap-1.5 rounded-lg text-xs font-medium text-ink-3 underline decoration-veil/30 underline-offset-4 transition-colors hover:text-ink-1"
+            >
+              <BookOpen size={12} aria-hidden />
+              New to this? Read the step-by-step guide
+            </Link>
+          )}
         </section>
 
         <FaqSection faqs={copy.faqs} />

@@ -4,6 +4,7 @@
 // Nothing here runs on the server.
 
 import type { DownloadOption } from "./types";
+import { playCompletionChime, vibrate } from "./sound";
 
 /** Thrown when the browser can't reach the resolver (adblock, network). */
 export class PollBlockedError extends Error {
@@ -127,6 +128,8 @@ export async function downloadYouTubeOption(
   );
   const downloadUrl = await pollYouTubeJob(progressUrl, onProgress);
   triggerBrowserDownload(downloadUrl);
+  playCompletionChime();
+  vibrate(35);
   notifyIfHidden(
     "Your download is ready",
     "The converted file is saving to your downloads now."

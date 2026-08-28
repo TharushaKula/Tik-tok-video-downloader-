@@ -7,6 +7,14 @@ export interface ChangelogEntry {
 // Newest first. Keep entries short and user-facing.
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-08-28",
+    title: "How-to guides, and a gentle chime",
+    items: [
+      "New Guides section: step-by-step walkthroughs for watermark-free TikToks, YouTube to MP3, Reels, X, Facebook, and batch downloading",
+      "A soft chime and a phone vibration tell you when a conversion finishes (toggle it in the command palette)",
+    ],
+  },
+  {
     date: "2026-08-27",
     title: "A status page, and link lists",
     items: [

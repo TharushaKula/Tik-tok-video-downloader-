@@ -14,6 +14,7 @@ import type { DownloadOption, PlatformId } from "@/lib/types";
 import { downloadYouTubeOption, PollBlockedError } from "@/lib/youtube-client";
 import { applyTemplate, loadTemplate } from "@/lib/filename-template";
 import { recordDownload } from "@/lib/stats";
+import { vibrate } from "@/lib/sound";
 
 // Fired once per started download so the page can refresh its usage tally.
 export const DOWNLOAD_EVENT = "snapload:download";
@@ -21,6 +22,7 @@ export const DOWNLOAD_EVENT = "snapload:download";
 /** Record one started download and notify listeners. Call once per action. */
 export function markDownload(platform: PlatformId) {
   recordDownload(platform);
+  vibrate(15); // light tactile ack on phones
   try {
     window.dispatchEvent(new CustomEvent(DOWNLOAD_EVENT, { detail: platform }));
   } catch {
