@@ -1,8 +1,20 @@
 import type { PlatformId } from "./types";
 
+export interface GuideImage {
+  /** Path under /public */
+  src: string;
+  alt: string;
+  /** Intrinsic pixel size (2x retina; render at half) */
+  width: number;
+  height: number;
+  caption: string;
+}
+
 export interface GuideStep {
   title: string;
   body: string;
+  /** Annotated screenshots for this step (0-2) */
+  images?: GuideImage[];
 }
 
 export interface GuideCopy {
@@ -43,6 +55,22 @@ export const GUIDES: Record<string, GuideCopy> = {
       {
         title: "Copy the video link from TikTok",
         body: "Open the video in the TikTok app or on tiktok.com, tap the Share arrow, and choose Copy link. Short vm.tiktok.com share links work too.",
+        images: [
+          {
+            src: "/guides/how-to-download-tiktok-videos-without-watermark/step-share.webp",
+            alt: "TikTok video page with the Share arrow highlighted on the action rail",
+            width: 1280,
+            height: 960,
+            caption: "The Share arrow on the action rail (tiktok.com)",
+          },
+          {
+            src: "/guides/how-to-download-tiktok-videos-without-watermark/step-copy.webp",
+            alt: "TikTok Share dialog with the Copy button highlighted",
+            width: 1280,
+            height: 800,
+            caption: "Pick Copy in the Share dialog",
+          },
+        ],
       },
       {
         title: "Paste the link into SnapLoad",
@@ -100,6 +128,22 @@ export const GUIDES: Record<string, GuideCopy> = {
       {
         title: "Copy the YouTube link",
         body: "Grab the URL from the address bar, or tap Share and Copy link in the YouTube app. Regular watch links, youtu.be short links, and Shorts all work.",
+        images: [
+          {
+            src: "/guides/how-to-convert-youtube-to-mp3/step-share.webp",
+            alt: "YouTube video page with the Share button highlighted under the title",
+            width: 780,
+            height: 660,
+            caption: "The Share button under the video",
+          },
+          {
+            src: "/guides/how-to-convert-youtube-to-mp3/step-copy.webp",
+            alt: "YouTube share sheet with the video link highlighted",
+            width: 780,
+            height: 760,
+            caption: "Tap the link in the share sheet to copy it",
+          },
+        ],
       },
       {
         title: "Paste it into SnapLoad",
@@ -156,6 +200,22 @@ export const GUIDES: Record<string, GuideCopy> = {
       {
         title: "Copy the Reel's link",
         body: "On the Reel, tap the three-dot menu (or the Share arrow) and choose Copy link. On desktop, just copy the URL from the address bar.",
+        images: [
+          {
+            src: "/guides/how-to-download-instagram-reels/step-share.webp",
+            alt: "Instagram Reel with the share (paper plane) icon highlighted",
+            width: 1240,
+            height: 860,
+            caption: "The share icon under the Reel",
+          },
+          {
+            src: "/guides/how-to-download-instagram-reels/step-copy.webp",
+            alt: "Instagram share dialog with Copy link highlighted",
+            width: 1240,
+            height: 860,
+            caption: "Copy link in the Share to dialog",
+          },
+        ],
       },
       {
         title: "Paste it into SnapLoad",
@@ -208,6 +268,15 @@ export const GUIDES: Record<string, GuideCopy> = {
       {
         title: "Copy the post link",
         body: "Tap the Share icon under the post and choose Copy link. Both x.com and twitter.com URLs work.",
+        images: [
+          {
+            src: "/guides/how-to-download-twitter-videos/step-copy.webp",
+            alt: "X post share menu with Copy link highlighted",
+            width: 1280,
+            height: 840,
+            caption: "The share icon on the post opens this menu, choose Copy link",
+          },
+        ],
       },
       {
         title: "Paste it into SnapLoad",
@@ -260,6 +329,15 @@ export const GUIDES: Record<string, GuideCopy> = {
       {
         title: "Copy the video link",
         body: "Tap Share on the video and choose Copy link. Regular facebook.com links, fb.watch short links, and share/v/ links all work.",
+        images: [
+          {
+            src: "/guides/how-to-download-facebook-videos/step-share.webp",
+            alt: "Facebook video with the Share button highlighted in the action row",
+            width: 1280,
+            height: 860,
+            caption: "Share under any public video, then choose Copy link",
+          },
+        ],
       },
       {
         title: "Paste it into SnapLoad",
@@ -320,10 +398,28 @@ export const GUIDES: Record<string, GuideCopy> = {
       {
         title: "Or import a file",
         body: "Have the links in a .txt or .csv file? Click Import file in batch mode, or simply drag the file onto the page. Spreadsheet exports with quotes and commas are handled fine.",
+        images: [
+          {
+            src: "/guides/how-to-batch-download-videos/step-import.webp",
+            alt: "SnapLoad batch mode with the Import file button highlighted",
+            width: 1440,
+            height: 722,
+            caption: "Import file accepts .txt and .csv link lists",
+          },
+        ],
       },
       {
         title: "Save everything",
         body: "Each video shows its own status and download options as it arrives. Use Save all to grab the best quality of every finished video in one go, and retry any link that failed.",
+        images: [
+          {
+            src: "/guides/how-to-batch-download-videos/step-saveall.webp",
+            alt: "SnapLoad batch results with the Save all button highlighted",
+            width: 1440,
+            height: 638,
+            caption: "Save all grabs the best quality of every finished video",
+          },
+        ],
       },
     ],
     tips: [

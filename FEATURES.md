@@ -45,6 +45,7 @@ Check items off as they ship: `[x]`
 - [x] YouTube audio formats (M4A/WAV/FLAC), private usage tally, CI + scheduled health-check Actions
 - [x] Public /status page with live resolver health + TXT/CSV link-list import
 - [x] How-to guides section (6 SEO guides with HowTo/FAQ structured data) + completion chime/haptics
+- [x] Annotated real screenshots in the guides (TikTok, YouTube, Instagram, X, Facebook share flows + batch mode)
 - [x] Next.js 16 + React 19 + ESLint 9 flat-config migration (Turbopack builds, async params, 0 npm audit findings)
 - [x] Chrome/Edge browser extension (one-click send-to-SnapLoad, privacy-first MV3)
 
@@ -177,7 +178,7 @@ Check items off as they ship: `[x]`
 
 ## 🎯 Suggested quick wins
 
-Fourteen rounds shipped. Next highest-impact candidates:
+Fifteen rounds shipped. Next highest-impact candidates:
 
 1. Multi-language UI (i18n)  its own dedicated pass
 2. Trim/clip a section before downloading

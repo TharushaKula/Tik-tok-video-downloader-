@@ -8,6 +8,13 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-08-28",
+    title: "Guides, now illustrated",
+    items: [
+      "The how-to guides now include annotated screenshots of each platform's share flow, so you can see exactly where Copy link lives",
+    ],
+  },
+  {
+    date: "2026-08-28",
     title: "A browser extension",
     items: [
       "New Chrome/Edge extension: one click sends the video you're watching straight to SnapLoad",

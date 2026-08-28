@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Lightbulb } from "lucide-react";
@@ -118,13 +119,36 @@ export default async function GuidePage({ params }: GuideParams) {
               >
                 {i + 1}
               </span>
-              <div>
+              <div className="min-w-0 flex-1">
                 <h2 className="text-[15px] font-semibold text-ink-hi">
                   {step.title}
                 </h2>
                 <p className="mt-1.5 text-sm leading-relaxed text-ink-2">
                   {step.body}
                 </p>
+                {step.images && step.images.length > 0 && (
+                  <div
+                    className={`mt-4 grid gap-3 ${
+                      step.images.length > 1 ? "sm:grid-cols-2" : ""
+                    }`}
+                  >
+                    {step.images.map((img) => (
+                      <figure key={img.src} className="min-w-0">
+                        <Image
+                          src={img.src}
+                          alt={img.alt}
+                          width={img.width}
+                          height={img.height}
+                          sizes="(max-width: 640px) 90vw, 280px"
+                          className="h-auto w-full rounded-xl border border-veil/[0.08] bg-raised"
+                        />
+                        <figcaption className="mt-1.5 text-xs leading-relaxed text-ink-4">
+                          {img.caption}
+                        </figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                )}
               </div>
             </li>
           ))}
