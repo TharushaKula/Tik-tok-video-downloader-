@@ -91,7 +91,7 @@ export default function DownloaderTool() {
     batchItems.some((i) => i.status === "queued" || i.status === "loading");
   const busy = state.kind === "loading" || batchRunning;
 
-  // History + favorites live in localStorage  read after mount to keep SSR
+  // History + favorites live in localStorage, read after mount to keep SSR
   // markup stable.
   useEffect(() => {
     setRecent(loadRecent());
@@ -109,7 +109,7 @@ export default function DownloaderTool() {
   }, []);
 
   // PWA share target / deep link: links shared into the installed app land
-  // here as ?url= / ?text= query params  pick them up and fetch right away.
+  // here as ?url= / ?text= query params, pick them up and fetch right away.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const shared = [params.get("url"), params.get("text"), params.get("title")]
@@ -159,7 +159,7 @@ export default function DownloaderTool() {
       setBatchMode(true);
       setBatchText(found.urls.join("\n"));
       void handleBatchSubmit(found.urls);
-      toast.success(`${found.urls.length} links detected  fetching all`);
+      toast.success(`${found.urls.length} links detected, fetching all`);
       return true;
     }
     if (found.urls.length === 1 && !busyRef.current) {
@@ -306,7 +306,7 @@ export default function DownloaderTool() {
       try {
         text = (await navigator.clipboard.readText()).trim();
       } catch {
-        return; // permission not granted  stay quiet
+        return; // permission not granted, stay quiet
       }
       if (!text || text === lastClipboard.current) return;
       lastClipboard.current = text;
@@ -373,8 +373,8 @@ export default function DownloaderTool() {
       const label = kind === "playlist" ? "Playlist" : "Channel";
       toast.success(
         json.total > urls.length
-          ? `${label} loaded  fetching the ${urls.length} most recent videos`
-          : `${label} loaded  fetching ${urls.length} ${urls.length === 1 ? "video" : "videos"}`
+          ? `${label} loaded, fetching the ${urls.length} most recent videos`
+          : `${label} loaded, fetching ${urls.length} ${urls.length === 1 ? "video" : "videos"}`
       );
       await handleBatchSubmit(urls);
     } catch (err: unknown) {
@@ -596,7 +596,7 @@ export default function DownloaderTool() {
         />
       </motion.div>
 
-      {/* Fetch state  skeleton, error, result, or batch queue */}
+      {/* Fetch state, skeleton, error, result, or batch queue */}
       <div ref={resultRef} className="w-full scroll-mt-24" aria-live="polite">
         <AnimatePresence mode="wait" initial={false}>
           {state.kind === "loading" && (
@@ -694,7 +694,7 @@ export default function DownloaderTool() {
         <span aria-hidden>·</span>
         <span>No sign-up</span>
         <span aria-hidden>·</span>
-        <span>Unlimited downloads</span>
+        <span>Nothing stored</span>
         <span aria-hidden className="hidden sm:inline">
           ·
         </span>

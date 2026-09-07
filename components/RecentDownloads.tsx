@@ -11,7 +11,7 @@ export interface RecentEntry {
   ts: number;
 }
 
-const STORAGE_KEY = "snapload:recent";
+const STORAGE_KEY = "clipkoala:recent";
 const MAX_ENTRIES = 6;
 
 export function loadRecent(): RecentEntry[] {
@@ -33,7 +33,7 @@ export function saveRecent(entry: RecentEntry): RecentEntry[] {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   } catch {
-    // storage full / private mode  history is best-effort
+    // storage full / private mode, history is best-effort
   }
   return next;
 }

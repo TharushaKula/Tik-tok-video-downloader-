@@ -17,7 +17,7 @@ import { recordDownload } from "@/lib/stats";
 import { vibrate } from "@/lib/sound";
 
 // Fired once per started download so the page can refresh its usage tally.
-export const DOWNLOAD_EVENT = "snapload:download";
+export const DOWNLOAD_EVENT = "clipkoala:download";
 
 /** Record one started download and notify listeners. Call once per action. */
 export function markDownload(platform: PlatformId) {
@@ -26,7 +26,7 @@ export function markDownload(platform: PlatformId) {
   try {
     window.dispatchEvent(new CustomEvent(DOWNLOAD_EVENT, { detail: platform }));
   } catch {
-    // SSR / no window  ignore
+    // SSR / no window, ignore
   }
 }
 
@@ -130,7 +130,7 @@ export function startOptionDownload(
     );
     if (notify) {
       toast.success(
-        "Preparing your file  the download starts when it's ready",
+        "Preparing your file, the download starts when it's ready",
         { duration: 5000 }
       );
     }
@@ -138,7 +138,7 @@ export function startOptionDownload(
   }
   proxyDownloadOption(option, platform, nameInfo);
   if (notify) {
-    toast.success("Download started  check your browser downloads");
+    toast.success("Download started, check your browser downloads");
   }
 }
 
@@ -152,9 +152,9 @@ export default function DownloadOptionRow({
 }: {
   option: DownloadOption;
   platform: PlatformId;
-  /** Video title  feeds the filename template */
+  /** Video title, feeds the filename template */
   title?: string;
-  /** Author/channel  feeds the filename template */
+  /** Author/channel, feeds the filename template */
   author?: string;
 }) {
   const [status, setStatus] = useState<OptionStatus>("idle");
@@ -191,15 +191,15 @@ export default function DownloadOptionRow({
       await downloadYouTubeOption(option, (p) => {
         if (mounted.current) setPercent(p);
       });
-      finish("Download started  check your browser downloads");
+      finish("Download started, check your browser downloads");
     } catch (err) {
       if (!mounted.current) return;
       if (err instanceof PollBlockedError) {
-        // Browser can't reach the resolver (adblock)  server flow instead
+        // Browser can't reach the resolver (adblock), server flow instead
         proxyDownloadOption(option, platform, nameInfo);
         setPercent(null);
         toast.success(
-          "Preparing your file  the download starts when it's ready",
+          "Preparing your file, the download starts when it's ready",
           { duration: 5000 }
         );
         timers.current.push(setTimeout(() => finish(), 8000));
@@ -223,7 +223,7 @@ export default function DownloadOptionRow({
     try {
       setStatus("working");
       proxyDownloadOption(option, platform, nameInfo);
-      toast.success("Download started  check your browser downloads");
+      toast.success("Download started, check your browser downloads");
       timers.current.push(
         setTimeout(() => {
           setStatus("started");

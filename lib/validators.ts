@@ -149,7 +149,7 @@ const YT_HOSTS = [
   "music.youtube.com",
 ];
 
-/** Channel, handle, custom (/c/), or /user/ pages  not videos or playlists. */
+/** Channel, handle, custom (/c/), or /user/ pages, not videos or playlists. */
 export function isYouTubeChannelUrl(url: string): boolean {
   return extractYouTubeChannelRef(url) !== null;
 }
@@ -288,7 +288,7 @@ export interface ExtractedUrls {
 }
 
 /**
- * Pull every supported video link out of a blob of text  pasted lists,
+ * Pull every supported video link out of a blob of text: pasted lists,
  * share-sheet text, chat messages. Links are deduped and capped at `max`.
  */
 /**

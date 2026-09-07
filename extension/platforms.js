@@ -32,7 +32,7 @@ function path(url) {
 
 /**
  * Returns a platform id when the URL looks like a downloadable post/page
- * SnapLoad can handle (including YouTube playlists and channels, which the
+ * ClipKoala can handle (including YouTube playlists and channels, which the
  * site expands into batches), or null.
  */
 export function detectPlatform(url) {
@@ -84,10 +84,10 @@ export function detectPlatform(url) {
   return null;
 }
 
-export const DEFAULT_BASE_URL = "https://snapload.app";
+export const DEFAULT_BASE_URL = "https://clipkoala.com";
 
-/** The SnapLoad deep link that prefills and auto-fetches a URL. */
-export function snapLoadUrl(base, videoUrl) {
+/** The ClipKoala deep link that prefills and auto-fetches a URL. */
+export function clipKoalaUrl(base, videoUrl) {
   const origin = (base || DEFAULT_BASE_URL).replace(/\/+$/, "");
   return `${origin}/?url=${encodeURIComponent(videoUrl)}`;
 }

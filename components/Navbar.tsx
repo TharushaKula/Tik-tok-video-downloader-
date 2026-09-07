@@ -1,53 +1,56 @@
-"use client";
-
-import { Download } from "lucide-react";
+import Link from "next/link";
+import Logo from "./brand/Logo";
 import ThemeToggle from "./ThemeToggle";
 import FilenameSettings from "./FilenameSettings";
+import MobileMenu from "./MobileMenu";
 
-const NAV_LINKS = [
-  { href: "#platforms", label: "Platforms" },
-  { href: "#how-it-works", label: "How it works" },
-  { href: "#faq", label: "FAQ" },
+export const NAV_LINKS = [
+  { href: "/#platforms", label: "Downloaders" },
+  { href: "/features", label: "Features" },
+  { href: "/guides", label: "Guides" },
+  { href: "/faq", label: "FAQ" },
 ];
 
-export default function Navbar() {
-  return (
-    <header className="sticky top-0 z-50 border-b border-veil/[0.06] bg-base/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
-        {/* Brand */}
-        <a
-          href="#top"
-          className="focus-ring flex shrink-0 items-center gap-2.5 rounded-lg"
-          aria-label="SnapLoad  back to top"
-        >
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-[0_0_18px_rgba(139,92,246,0.35)]">
-            <Download size={14} className="text-white" strokeWidth={2.5} />
-          </span>
-          <span className="text-[15px] font-semibold tracking-tight text-ink-hi">
-            SnapLoad
-          </span>
-        </a>
+interface NavbarProps {
+  /** Show the filename-template settings (only useful next to the tool) */
+  tool?: boolean;
+}
 
-        {/* Section navigation */}
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Sections">
+// Server component: no JS shipped for the links themselves. The theme
+// toggle, filename settings, and the mobile menu are small client islands.
+export default function Navbar({ tool = false }: NavbarProps) {
+  return (
+    <header className="sticky top-0 z-50 border-b border-veil/[0.06] bg-base/75 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 max-w-page items-center justify-between gap-4 px-4 sm:px-6">
+        <Link
+          href="/"
+          className="focus-ring shrink-0 rounded-lg"
+          aria-label="ClipKoala home"
+        >
+          <Logo />
+        </Link>
+
+        <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
           {NAV_LINKS.map(({ href, label }) => (
-            <a
+            <Link
               key={href}
               href={href}
-              className="focus-ring rounded-lg px-3 py-1.5 text-sm text-ink-2 transition-colors hover:bg-veil/[0.04] hover:text-ink-1"
+              className="focus-ring rounded-lg px-3 py-2 text-sm font-medium text-ink-2 transition-colors hover:bg-veil/[0.05] hover:text-ink-hi"
             >
               {label}
-            </a>
+            </Link>
           ))}
         </nav>
 
         <div className="flex items-center gap-2">
-          <span className="hidden items-center gap-1.5 rounded-full border border-veil/[0.08] px-2.5 py-1 text-xs font-medium text-ink-2 sm:inline-flex">
-            <span className="h-1.5 w-1.5 rounded-full bg-ok" />
-            Free forever
-          </span>
-          <FilenameSettings />
+          {tool ? <FilenameSettings /> : null}
           <ThemeToggle />
+          {!tool ? (
+            <Link href="/" className="btn-primary btn-sm hidden sm:inline-flex">
+              Download a video
+            </Link>
+          ) : null}
+          <MobileMenu links={NAV_LINKS} />
         </div>
       </div>
     </header>

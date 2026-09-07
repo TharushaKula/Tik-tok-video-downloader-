@@ -1,116 +1,65 @@
-"use client";
-
-import { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 
-const FAQS = [
-  {
-    q: "Which platforms and formats are supported?",
-    a: "TikTok (watermark-free videos, photo slideshows, MP3), Instagram Reels and posts, Facebook videos and Reels, YouTube videos, Shorts and playlists (MP4 up to 1080p or MP3), X (Twitter) videos and GIFs, Reddit videos with sound, Pinterest video and image pins, Twitch clips, and SoundCloud tracks as MP3.",
-  },
-  {
-    q: "Can I download several videos at once?",
-    a: "Yes  paste multiple links together (or use the Batch button) and SnapLoad fetches up to 10 at a time. Each video gets its own row with quality options, and Save all grabs the best quality for everything in one go.",
-  },
-  {
-    q: "Is it really free?",
-    a: "Yes  every download, in every quality, with no account, no limits, and no hidden fees.",
-  },
-  {
-    q: "Why do YouTube downloads take longer to start?",
-    a: "YouTube files are converted to your chosen quality on the fly. Most start within seconds, but long HD videos can take up to a minute  keep the tab open and the file will land in your downloads automatically.",
-  },
-  {
-    q: "Can I download private videos?",
-    a: "No. Only public posts can be fetched. Private, followers-only, or age-restricted content is not accessible  by design, to respect creators' privacy.",
-  },
-  {
-    q: "Is downloading videos allowed?",
-    a: "Downloading is fine for your own content, content you have permission to save, and public-domain or Creative Commons media. Always respect creators' rights and each platform's terms of service.",
-  },
-  {
-    q: "Do you store my links or downloads?",
-    a: "No. Links are processed on the fly and discarded immediately. Your recent-downloads list lives only in your own browser and can be cleared anytime.",
-  },
-];
-
-function FaqItem({ q, a }: { q: string; a: string }) {
-  const [open, setOpen] = useState(false);
-  const reduce = useReducedMotion();
-
-  return (
-    <div>
-      <button
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        className="focus-ring flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-veil/[0.02]"
-      >
-        <span className="text-sm font-medium text-ink-1">{q}</span>
-        <motion.span
-          animate={{ rotate: open ? 180 : 0 }}
-          transition={{ duration: reduce ? 0 : 0.2 }}
-          className="shrink-0"
-        >
-          <ChevronDown size={15} className="text-ink-3" />
-        </motion.span>
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            key="content"
-            initial={reduce ? false : { height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={reduce ? undefined : { height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: "easeInOut" }}
-            className="overflow-hidden"
-          >
-            <p className="px-5 pb-4 text-sm leading-relaxed text-ink-2">
-              {a}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
 interface FaqSectionProps {
-  /** Override the default FAQ list (used by platform landing pages) */
-  faqs?: { q: string; a: string }[];
+  faqs: { q: string; a: string }[];
+  eyebrow?: string;
+  title?: string;
+  /** Show a link to the full FAQ page */
+  moreLink?: boolean;
+  id?: string;
 }
 
-export default function FaqSection({ faqs = FAQS }: FaqSectionProps) {
-  const reduce = useReducedMotion();
-
+// Native <details> accordion: works without JavaScript, every answer is in
+// the HTML for search engines, and it needs no client bundle. Structured
+// data is added by the page that owns the questions.
+export default function FaqSection({
+  faqs,
+  eyebrow = "FAQ",
+  title = "Questions, answered",
+  moreLink = false,
+  id = "faq",
+}: FaqSectionProps) {
   return (
-    <section id="faq" className="mx-auto w-full max-w-2xl scroll-mt-20 px-4 py-20 sm:px-6">
-      <motion.div
-        initial={reduce ? false : { opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.5 }}
-        className="mb-10 text-center"
-      >
-        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">
-          FAQ
-        </p>
-        <h2 className="text-2xl font-semibold tracking-tight text-ink-hi sm:text-3xl">
-          Questions, answered
+    <section
+      id={id}
+      className="mx-auto w-full max-w-3xl scroll-mt-24 px-4 py-16 sm:px-6 sm:py-20"
+      aria-labelledby={`${id}-title`}
+    >
+      <div className="reveal mb-8 text-center">
+        <p className="eyebrow mb-2">{eyebrow}</p>
+        <h2 id={`${id}-title`} className="text-2xl font-extrabold text-ink-hi sm:text-3xl">
+          {title}
         </h2>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={reduce ? false : { opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-60px" }}
-        transition={{ duration: 0.5, delay: 0.08 }}
-        className="card divide-y divide-veil/[0.06] overflow-hidden"
-      >
+      <div className="reveal card divide-y divide-veil/[0.06] overflow-hidden">
         {faqs.map((faq) => (
-          <FaqItem key={faq.q} q={faq.q} a={faq.a} />
+          <details key={faq.q} className="group">
+            <summary className="focus-ring flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-veil/[0.03] [&::-webkit-details-marker]:hidden">
+              <span className="text-[15px] font-semibold text-ink-1">{faq.q}</span>
+              <ChevronDown
+                size={16}
+                className="shrink-0 text-ink-3 transition-transform duration-200 group-open:rotate-180"
+                aria-hidden
+              />
+            </summary>
+            <p className="px-5 pb-5 text-sm leading-relaxed text-ink-2">{faq.a}</p>
+          </details>
         ))}
-      </motion.div>
+      </div>
+
+      {moreLink && (
+        <p className="mt-6 text-center text-sm text-ink-3">
+          More questions?{" "}
+          <Link
+            href="/faq"
+            className="focus-ring rounded font-medium text-ink-1 underline decoration-accent/50 underline-offset-4 hover:text-accent"
+          >
+            Read the full FAQ
+          </Link>
+        </p>
+      )}
     </section>
   );
 }

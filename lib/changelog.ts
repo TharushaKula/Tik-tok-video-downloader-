@@ -7,6 +7,17 @@ export interface ChangelogEntry {
 // Newest first. Keep entries short and user-facing.
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-09-07",
+    title: "Hello, ClipKoala",
+    items: [
+      "SnapLoad is now ClipKoala, at clipkoala.com: a new name, a new koala mark, and a calmer eucalyptus-green look in light and dark",
+      "Redesigned home page, navigation, and footer, with proper pages for features, FAQ, glossary, the browser extension, and about",
+      "New tool pages for YouTube to MP3 and batch downloading, plus four new guides (Reddit with sound, Pinterest, Twitch clips, SoundCloud)",
+      "Search-friendly from the ground up: canonical URLs, social sharing images for every page, breadcrumbs, and complete structured data",
+      "Your saved videos, history, and preferences carried over automatically",
+    ],
+  },
+  {
     date: "2026-08-28",
     title: "Guides, now illustrated",
     items: [
@@ -17,8 +28,8 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: "2026-08-28",
     title: "A browser extension",
     items: [
-      "New Chrome/Edge extension: one click sends the video you're watching straight to SnapLoad",
-      "Right-click any link and choose Download with SnapLoad",
+      "New Chrome/Edge extension: one click sends the video you're watching straight to ClipKoala",
+      "Right-click any link and choose Download with ClipKoala",
       "Privacy-first: no tracking, no access to your browsing, it only acts when you click",
     ],
   },
@@ -26,8 +37,8 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: "2026-08-28",
     title: "A faster, more secure engine",
     items: [
-      "SnapLoad now runs on the latest web stack (Next.js 16 + React 19): pages build and load faster",
-      "Every known dependency vulnerability is cleared  0 audit findings",
+      "ClipKoala now runs on the latest web stack (Next.js 16 + React 19): pages build and load faster",
+      "Every known dependency vulnerability is cleared, 0 audit findings",
     ],
   },
   {
@@ -129,7 +140,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "TikTok photo slideshows download as images plus the soundtrack",
       "YouTube conversions show live progress right on the button",
       "Preview videos in the result card before saving",
-      "Install SnapLoad as an app and share links straight into it from Android",
+      "Install ClipKoala as an app and share links straight into it from Android",
       "Dedicated downloader pages for every platform",
     ],
   },
@@ -137,14 +148,14 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: "2026-08-27",
     title: "Batch downloads",
     items: [
-      "Paste several links at once  they fetch in parallel with per-video status",
+      "Paste several links at once, they fetch in parallel with per-video status",
       "Save all grabs the best quality for every video in the batch",
       "Failed fetches can be retried individually",
     ],
   },
   {
     date: "2026-08-27",
-    title: "A brand-new SnapLoad",
+    title: "A brand-new downloader",
     items: [
       "Complete redesign: cleaner, faster, and easier to use",
       "Paste-to-fetch: a copied link starts fetching the moment you paste it",

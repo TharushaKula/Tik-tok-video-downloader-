@@ -1,6 +1,6 @@
-# SnapLoad  Feature Roadmap
+# ClipKoala Feature Roadmap
 
-A backlog of feature ideas for SnapLoad, compiled from research into top-tier
+A backlog of feature ideas for ClipKoala (formerly ClipKoala), compiled from research into top-tier
 downloaders (4K Video Downloader Plus, Stacher/yt-dlp, Cobalt, SnapTik, SSSTik,
 iGram, FastDl, Video DownloadHelper) and adjacent online video toolkits
 (VEED, FreeConvert, Flixier), plus modern SaaS UX patterns.
@@ -25,7 +25,7 @@ Check items off as they ship: `[x]`
 - [x] TikTok photo slideshows (all slides + soundtrack MP3)
 - [x] Live YouTube conversion progress (client-side job polling, no held server connections)
 - [x] In-card video preview with seeking (streamed inline through the proxy)
-- [x] PWA  installable app with Android share-target ("Share to SnapLoad")
+- [x] PWA  installable app with Android share-target ("Share to ClipKoala")
 - [x] SEO landing pages per platform + sitemap + robots + FAQ structured data
 - [x] Reddit videos with sound + Pinterest video/image pins (7 platforms total)
 - [x] Carousel/slideshow ZIP bundles, thumbnail saver, and title-based smart filenames
@@ -47,7 +47,8 @@ Check items off as they ship: `[x]`
 - [x] How-to guides section (6 SEO guides with HowTo/FAQ structured data) + completion chime/haptics
 - [x] Annotated real screenshots in the guides (TikTok, YouTube, Instagram, X, Facebook share flows + batch mode)
 - [x] Next.js 16 + React 19 + ESLint 9 flat-config migration (Turbopack builds, async params, 0 npm audit findings)
-- [x] Chrome/Edge browser extension (one-click send-to-SnapLoad, privacy-first MV3)
+- [x] Chrome/Edge browser extension (one-click send-to-ClipKoala, privacy-first MV3)
+- [x] ClipKoala rebrand (clipkoala.com): mascot-led identity, violet/indigo palette, Nunito display type, redesigned home/nav/footer, new pages (features, FAQ, about, extension, glossary, YouTube to MP3, batch downloader), 4 new guides, full technical SEO (canonicals, OG images per page, breadcrumbs, structured data, sitemap lastModified, redirects, security headers)
 
 ---
 
@@ -118,7 +119,7 @@ Check items off as they ship: `[x]`
 ## ✨ UX & convenience
 
 - [x] PWA install (add to home screen)
-- [x] Android share-target ("Share to SnapLoad" straight from the TikTok app)
+- [x] Android share-target ("Share to ClipKoala" straight from the TikTok app)
 - [x] Browser extension (MV3, in `extension/`: toolbar popup with platform
       detection, right-click menus, zero host permissions  sends pages to
       the site's ?url= deep link; `npm run ext:pack` builds the Web Store zip)

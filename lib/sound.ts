@@ -2,7 +2,7 @@
 // files) and a light vibration on devices that support it. The chime can be
 // turned off from the command palette; the preference sticks in localStorage.
 
-const STORAGE_KEY = "snapload:sound";
+const STORAGE_KEY = "clipkoala:sound";
 
 export function isSoundEnabled(): boolean {
   try {

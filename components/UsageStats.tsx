@@ -15,7 +15,7 @@ export default function UsageStats({ stats }: { stats: Stats }) {
       <span>
         You&apos;ve saved{" "}
         <span className="font-semibold text-ink-2">{stats.total}</span>{" "}
-        {stats.total === 1 ? "video" : "videos"} with SnapLoad
+        {stats.total === 1 ? "video" : "videos"} with ClipKoala
       </span>
       {topMeta && (
         <>

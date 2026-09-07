@@ -27,7 +27,7 @@ import DownloadOptionRow, {
   startOptionDownload,
 } from "./DownloadOptionRow";
 
-// Phone handoff: a QR encoding a SnapLoad deep link that re-fetches this
+// Phone handoff: a QR encoding a ClipKoala deep link that re-fetches this
 // video, so scanning it opens the download already in progress on a phone.
 function QrHandoff({
   sourceUrl,
@@ -71,7 +71,7 @@ function QrHandoff({
         </button>
         <h3 className="text-sm font-semibold text-ink-hi">Continue on your phone</h3>
         <p className="mt-1 text-xs leading-relaxed text-ink-3">
-          Scan to open this video in SnapLoad on another device.
+          Scan to open this video in ClipKoala on another device.
         </p>
         <div className="mt-4 flex justify-center">
           <div className="rounded-xl bg-white p-3">
@@ -177,7 +177,7 @@ interface VideoResultProps {
   onReset: () => void;
   favorited: boolean;
   onToggleFavorite: () => void;
-  /** Original link the user pasted  used for the phone-handoff QR code */
+  /** Original link the user pasted, used for the phone-handoff QR code */
   sourceUrl: string;
 }
 
@@ -198,7 +198,7 @@ export default function VideoResult({
     { icon: Share2, label: "shares", value: info.stats?.shares },
   ].filter((s) => (s.value ?? 0) > 0);
 
-  // In-page preview streams through our proxy. YouTube is excluded  it
+  // In-page preview streams through our proxy. YouTube is excluded, it
   // would kick off a full conversion just to peek.
   const previewOption =
     info.platform !== "youtube"
@@ -386,7 +386,7 @@ export default function VideoResult({
         </div>
         <p className="mt-3 text-xs leading-relaxed text-ink-4">
           {info.platform === "youtube"
-            ? "YouTube files are converted on the fly  you'll see live progress, and the download starts automatically when it's ready."
+            ? "YouTube files are converted on the fly, you'll see live progress, and the download starts automatically when it's ready."
             : "Files are fetched through our server, so nothing is installed and no app is needed."}
         </p>
       </div>

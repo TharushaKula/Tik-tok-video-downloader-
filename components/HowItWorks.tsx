@@ -1,78 +1,60 @@
-"use client";
-
-import { motion, useReducedMotion } from "framer-motion";
-import { Link2, Sparkles, Download } from "lucide-react";
+import { Link2, Wand2, Download } from "lucide-react";
 
 const STEPS = [
   {
-    number: "01",
+    number: "1",
     icon: Link2,
     title: "Copy a link",
-    desc: "Use the share button in any supported app  TikTok, Instagram, YouTube, Reddit, and more  and copy the video link.",
+    desc: "Tap Share in TikTok, YouTube, Instagram, or any supported app and copy the video link.",
   },
   {
-    number: "02",
-    icon: Sparkles,
-    title: "Paste it here",
-    desc: "The platform is detected automatically and the video details appear in seconds.",
+    number: "2",
+    icon: Wand2,
+    title: "Paste it into ClipKoala",
+    desc: "The platform is detected automatically and the video appears with every available format in about two seconds.",
   },
   {
-    number: "03",
+    number: "3",
     icon: Download,
     title: "Save your file",
-    desc: "Pick a quality  MP4 in HD or MP3 audio  and it lands straight in your downloads.",
+    desc: "Pick a quality, MP4 in HD or audio as MP3, and it lands in your downloads, named after the video.",
   },
 ];
 
 export default function HowItWorks() {
-  const reduce = useReducedMotion();
-
   return (
     <section
       id="how-it-works"
-      className="mx-auto w-full max-w-4xl scroll-mt-20 px-4 py-20 sm:px-6"
+      className="mx-auto w-full max-w-page scroll-mt-24 px-4 py-16 sm:px-6 sm:py-20"
+      aria-labelledby="how-title"
     >
-      <motion.div
-        initial={reduce ? false : { opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.5 }}
-        className="mb-10 text-center"
-      >
-        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">
-          How it works
-        </p>
-        <h2 className="text-2xl font-semibold tracking-tight text-ink-hi sm:text-3xl">
-          Three steps, ten seconds
+      <div className="reveal mb-10 text-center">
+        <p className="eyebrow mb-2">How it works</p>
+        <h2 id="how-title" className="text-2xl font-extrabold text-ink-hi sm:text-3xl">
+          Three steps, about ten seconds
         </h2>
         <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-ink-2">
-          No account, no app, no browser extension.
+          No account, no app, nothing to install. Works on any phone or computer.
         </p>
-      </motion.div>
+      </div>
 
-      <div className="relative grid grid-cols-1 gap-3 sm:grid-cols-3">
-        {STEPS.map(({ number, icon: Icon, title, desc }, i) => (
-          <motion.div
-            key={number}
-            initial={reduce ? false : { opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.4, delay: i * 0.08 }}
-            className="card relative p-5"
-          >
-            <span className="absolute right-4 top-4 font-mono text-xs text-ink-4">
+      <ol className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {STEPS.map(({ number, icon: Icon, title, desc }) => (
+          <li key={number} className="reveal card relative p-6">
+            <span
+              className="absolute right-5 top-5 font-display text-4xl font-black text-veil/[0.06]"
+              aria-hidden
+            >
               {number}
             </span>
-            <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-accent/20 bg-accent/10">
-              <Icon size={17} className="text-accent" />
+            <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-brand text-white shadow-[0_8px_20px_-10px_rgb(var(--c-btn)/0.8)]">
+              <Icon size={18} aria-hidden />
             </span>
-            <h3 className="mb-1.5 text-sm font-semibold text-ink-1">
-              {title}
-            </h3>
-            <p className="text-xs leading-relaxed text-ink-3">{desc}</p>
-          </motion.div>
+            <h3 className="mb-1.5 text-base font-extrabold text-ink-hi">{title}</h3>
+            <p className="text-sm leading-relaxed text-ink-2">{desc}</p>
+          </li>
         ))}
-      </div>
+      </ol>
     </section>
   );
 }

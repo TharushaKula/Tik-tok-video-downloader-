@@ -98,7 +98,7 @@ async function currentTwitchClip(): Promise<string | null> {
 }
 
 async function main() {
-  console.log("SnapLoad resolver health check\n");
+  console.log("ClipKoala resolver health check\n");
   const rows: { platform: string; ok: boolean; detail: string }[] = [];
 
   for (const probe of PROBES) {

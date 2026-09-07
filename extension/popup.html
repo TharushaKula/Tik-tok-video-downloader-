@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>SnapLoad</title>
+<title>ClipKoala</title>
 <style>
   :root {
-    --base: #0b0b10;
-    --raised: #15151d;
-    --border: rgba(148, 148, 180, 0.14);
-    --ink-hi: #f4f4f8;
-    --ink-1: #d6d6e0;
-    --ink-3: #8f8fa3;
+    --base: #0b0b14;
+    --raised: #131320;
+    --border: rgba(160, 160, 182, 0.16);
+    --ink-hi: #fafafc;
+    --ink-1: #e4e4ee;
+    --ink-3: #7272a8;
     --accent: #8b5cf6;
   }
   * { box-sizing: border-box; margin: 0; }
@@ -23,11 +23,8 @@
   }
   .head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
   .brand { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--ink-hi); font-size: 15px; letter-spacing: -0.01em; }
-  .logo {
-    width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center;
-    background: linear-gradient(135deg, #8b5cf6, #d946ef);
-  }
-  .logo svg { display: block; }
+  .logo { width: 26px; height: 26px; display: block; }
+  .brand b { color: #a78bfa; font-weight: 800; }
   #settings {
     border: 0; background: none; color: var(--ink-3); cursor: pointer;
     padding: 4px; border-radius: 6px; display: grid; place-items: center;
@@ -46,7 +43,7 @@
   #go {
     width: 100%; border: 0; cursor: pointer; border-radius: 12px;
     padding: 11px 14px; font-size: 14px; font-weight: 600; color: #fff;
-    background: linear-gradient(135deg, #8b5cf6, #d946ef);
+    background: linear-gradient(135deg, #8b5cf6, #3b3bf5);
     display: flex; align-items: center; justify-content: center; gap: 8px;
   }
   #go:hover { filter: brightness(1.08); }
@@ -58,12 +55,8 @@
 <body>
   <div class="head">
     <div class="brand">
-      <span class="logo">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
-      </span>
-      SnapLoad
+      <img class="logo" src="icons/icon-48.png" alt="" width="26" height="26" />
+      Clip<b>Koala</b>
     </div>
     <button id="settings" title="Settings" aria-label="Settings">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -77,7 +70,7 @@
     <div id="page-url"></div>
   </div>
 
-  <button id="go" disabled>Download with SnapLoad</button>
+  <button id="go" disabled>Download with ClipKoala</button>
   <p class="hint" id="hint">Works on TikTok, YouTube, Instagram, X, Facebook, Reddit, Pinterest, Twitch &amp; SoundCloud</p>
 
   <script type="module" src="popup.js"></script>

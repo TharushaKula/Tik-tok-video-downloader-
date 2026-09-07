@@ -69,7 +69,7 @@ describe("template persistence", () => {
     saveTemplate("{author} - {title}");
     expect(loadTemplate()).toBe("{author} - {title}");
     saveTemplate(DEFAULT_TEMPLATE);
-    expect(localStorage.getItem("snapload:filename-template")).toBeNull();
+    expect(localStorage.getItem("clipkoala:filename-template")).toBeNull();
     saveTemplate("   ");
     expect(loadTemplate()).toBe(DEFAULT_TEMPLATE);
   });

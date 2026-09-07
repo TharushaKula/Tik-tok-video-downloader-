@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { detectPlatform, snapLoadUrl, DEFAULT_BASE_URL } from "./platforms.js";
+import { detectPlatform, clipKoalaUrl, DEFAULT_BASE_URL } from "./platforms.js";
 
 // The extension's detector must agree with the site's lib/validators.ts on
 // everything the site accepts (the site re-validates, so the extension only
@@ -50,16 +50,16 @@ describe("extension detectPlatform", () => {
   });
 });
 
-describe("snapLoadUrl", () => {
+describe("clipKoalaUrl", () => {
   it("builds the deep link with encoding", () => {
-    expect(snapLoadUrl(DEFAULT_BASE_URL, "https://youtu.be/a?b=c")).toBe(
-      "https://snapload.app/?url=https%3A%2F%2Fyoutu.be%2Fa%3Fb%3Dc"
+    expect(clipKoalaUrl(DEFAULT_BASE_URL, "https://youtu.be/a?b=c")).toBe(
+      "https://clipkoala.com/?url=https%3A%2F%2Fyoutu.be%2Fa%3Fb%3Dc"
     );
   });
   it("strips trailing slashes and falls back to the default base", () => {
-    expect(snapLoadUrl("http://localhost:3000/", "https://youtu.be/a")).toBe(
+    expect(clipKoalaUrl("http://localhost:3000/", "https://youtu.be/a")).toBe(
       "http://localhost:3000/?url=https%3A%2F%2Fyoutu.be%2Fa"
     );
-    expect(snapLoadUrl("", "https://youtu.be/a")).toContain(DEFAULT_BASE_URL);
+    expect(clipKoalaUrl("", "https://youtu.be/a")).toContain(DEFAULT_BASE_URL);
   });
 });

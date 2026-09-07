@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import LegalDocPage from "@/components/LegalDocPage";
 import { LEGAL_DOCS } from "@/lib/legal";
-import { SITE_URL } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
 
 const doc = LEGAL_DOCS.privacy;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: doc.metaTitle,
   description: doc.metaDescription,
-  alternates: { canonical: `${SITE_URL}/privacy` },
-};
+  path: "/privacy",
+});
 
-export default function PrivacyPage() {
+export default function Page() {
   return <LegalDocPage doc={doc} />;
 }

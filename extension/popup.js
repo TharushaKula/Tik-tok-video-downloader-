@@ -1,7 +1,7 @@
 import {
   detectPlatform,
   PLATFORMS,
-  snapLoadUrl,
+  clipKoalaUrl,
   DEFAULT_BASE_URL,
 } from "./platforms.js";
 
@@ -36,13 +36,13 @@ async function init() {
     pageUrl.textContent = url;
     go.disabled = false;
     go.addEventListener("click", async () => {
-      chrome.tabs.create({ url: snapLoadUrl(await baseUrl(), url) });
+      chrome.tabs.create({ url: clipKoalaUrl(await baseUrl(), url) });
       window.close();
     });
   } else {
     statusText.textContent = "Not a supported video page";
     pageUrl.textContent = url && url.startsWith("http") ? url : "";
-    go.textContent = "Open SnapLoad";
+    go.textContent = "Open ClipKoala";
     go.disabled = false;
     go.addEventListener("click", async () => {
       chrome.tabs.create({ url: await baseUrl() });

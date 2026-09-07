@@ -13,7 +13,7 @@ const ORDER: ThemePref[] = ["system", "light", "dark"];
 
 // Fired whenever the theme changes anywhere (toggle or command palette), so
 // every listener stays in sync.
-export const THEME_EVENT = "snapload:theme-change";
+export const THEME_EVENT = "clipkoala:theme-change";
 
 export function setThemePref(pref: ThemePref) {
   applyThemePref(pref);

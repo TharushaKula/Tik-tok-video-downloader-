@@ -1,91 +1,69 @@
-"use client";
-
-import { motion, useReducedMotion } from "framer-motion";
-import {
-  AudioLines,
-  Bot,
-  Check,
-  Facebook,
-  Instagram,
-  Music2,
-  Pin,
-  Twitch,
-  Twitter,
-  Youtube,
-} from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Check } from "lucide-react";
 import { PLATFORMS, PLATFORM_IDS } from "@/lib/platforms";
-import type { PlatformId } from "@/lib/types";
+import { LANDING_FOR_PLATFORM, LANDING_PAGES } from "@/lib/landing";
+import PlatformIcon from "./PlatformIcon";
 
-const ICONS: Record<PlatformId, typeof Music2> = {
-  tiktok: Music2,
-  instagram: Instagram,
-  facebook: Facebook,
-  youtube: Youtube,
-  twitter: Twitter,
-  reddit: Bot,
-  pinterest: Pin,
-  twitch: Twitch,
-  soundcloud: AudioLines,
-};
-
+// Grid of every supported platform, each card linking to its dedicated
+// downloader page. Server component: pure HTML, no client bundle.
 export default function PlatformsSection() {
-  const reduce = useReducedMotion();
-
   return (
-    <section id="platforms" className="mx-auto w-full max-w-4xl scroll-mt-20 px-4 py-20 sm:px-6">
-      <motion.div
-        initial={reduce ? false : { opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.5 }}
-        className="mb-10 text-center"
-      >
-        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">
-          Supported platforms
-        </p>
-        <h2 className="text-2xl font-semibold tracking-tight text-ink-hi sm:text-3xl">
-          One tool for every feed
+    <section
+      id="platforms"
+      className="mx-auto w-full max-w-page scroll-mt-24 px-4 py-16 sm:px-6 sm:py-20"
+      aria-labelledby="platforms-title"
+    >
+      <div className="reveal mb-10 text-center">
+        <p className="eyebrow mb-2">Supported platforms</p>
+        <h2 id="platforms-title" className="text-2xl font-extrabold text-ink-hi sm:text-3xl">
+          One downloader for every feed
         </h2>
         <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-ink-2">
-          Paste a link from any of these platforms  SnapLoad detects it and
+          Paste a link from any of these platforms. ClipKoala detects it and
           fetches the best quality available.
         </p>
-      </motion.div>
+      </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {PLATFORM_IDS.map((id, i) => {
+      <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {PLATFORM_IDS.map((id) => {
           const meta = PLATFORMS[id];
-          const Icon = ICONS[id];
+          const slug = LANDING_FOR_PLATFORM[id];
+          const page = LANDING_PAGES[slug];
           return (
-            <motion.div
-              key={id}
-              initial={reduce ? false : { opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.4, delay: i * 0.06 }}
-              className={`card p-5 transition-colors duration-300 ${meta.hoverBorder}`}
-            >
-              <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-veil/[0.06] bg-veil/[0.04]">
-                <Icon size={18} className={meta.text} />
-              </span>
-              <h3 className="mb-2.5 text-sm font-semibold text-ink-1">
-                {meta.name}
-              </h3>
-              <ul className="space-y-1.5">
-                {meta.supports.map((line) => (
-                  <li
-                    key={line}
-                    className="flex items-start gap-1.5 text-xs leading-relaxed text-ink-3"
-                  >
-                    <Check size={12} className="mt-0.5 shrink-0 text-ink-4" />
-                    {line}
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
+            <li key={id} className="reveal">
+              <Link
+                href={`/${slug}`}
+                className={`focus-ring card card-hover group flex h-full flex-col p-6 ${meta.hoverBorder}`}
+              >
+                <span className="mb-4 flex items-center justify-between">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-veil/[0.06] bg-veil/[0.04]">
+                    <PlatformIcon platform={id} size={20} className={meta.text} />
+                  </span>
+                  <ArrowRight
+                    size={16}
+                    className="text-ink-4 transition-transform group-hover:translate-x-0.5 group-hover:text-ink-1"
+                    aria-hidden
+                  />
+                </span>
+                <h3 className="mb-2.5 text-base font-extrabold text-ink-hi">
+                  {page.name}
+                </h3>
+                <ul className="space-y-1.5">
+                  {meta.supports.map((line) => (
+                    <li
+                      key={line}
+                      className="flex items-start gap-2 text-sm leading-relaxed text-ink-2"
+                    >
+                      <Check size={14} className={`mt-0.5 shrink-0 ${meta.text}`} aria-hidden />
+                      {line}
+                    </li>
+                  ))}
+                </ul>
+              </Link>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </section>
   );
 }

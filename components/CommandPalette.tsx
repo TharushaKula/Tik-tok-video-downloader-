@@ -137,7 +137,7 @@ export default function CommandPalette({
           if (next) playCompletionChime(); // instant preview of the chime
           toast.success(
             next
-              ? "Completion sound on  you'll hear a soft chime when conversions finish"
+              ? "Completion sound on, you'll hear a soft chime when conversions finish"
               : "Completion sound off"
           );
           onClose();
@@ -200,7 +200,7 @@ export default function CommandPalette({
         group: "Go to",
         keywords: "faq questions help",
         icon: FileText,
-        run: go("/#faq"),
+        run: go("/faq"),
       },
       {
         id: "go-changelog",
@@ -212,11 +212,35 @@ export default function CommandPalette({
       },
       {
         id: "go-status",
-        label: "Status  is SnapLoad working?",
+        label: "Status: is ClipKoala working?",
         group: "Go to",
         keywords: "status up down outage broken working health",
         icon: Activity,
         run: go("/status"),
+      },
+      {
+        id: "go-features",
+        label: "Features",
+        group: "Go to",
+        keywords: "features what can it do",
+        icon: Sparkles,
+        run: go("/features"),
+      },
+      {
+        id: "go-extension",
+        label: "Browser extension",
+        group: "Go to",
+        keywords: "extension chrome edge browser addon",
+        icon: Layers,
+        run: go("/extension"),
+      },
+      {
+        id: "go-about",
+        label: "About ClipKoala",
+        group: "Go to",
+        keywords: "about who privacy trust",
+        icon: FileText,
+        run: go("/about"),
       },
       {
         id: "go-guides",
@@ -230,10 +254,10 @@ export default function CommandPalette({
 
     LANDING_SLUGS.forEach((slug) => {
       const page = LANDING_PAGES[slug];
-      const name = PLATFORMS[page.platform]?.name ?? slug;
+      const name = page.platform ? PLATFORMS[page.platform].name : page.name;
       list.push({
         id: `landing-${slug}`,
-        label: `${name} downloader`,
+        label: page.name,
         group: "Go to",
         keywords: `${name} ${slug} downloader page`,
         icon: Layers,

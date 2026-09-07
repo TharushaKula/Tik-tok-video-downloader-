@@ -4,7 +4,7 @@
 
 export type ThemePref = "system" | "light" | "dark";
 
-export const THEME_STORAGE_KEY = "snapload:theme";
+export const THEME_STORAGE_KEY = "clipkoala:theme";
 
 export function loadThemePref(): ThemePref {
   try {

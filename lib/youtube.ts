@@ -305,7 +305,7 @@ export async function resolveYouTubeDownload(
       });
       progress = res.data;
     } catch {
-      continue; // transient poll failure  try again within the budget
+      continue; // transient poll failure, try again within the budget
     }
 
     if (typeof progress?.download_url === "string" &&

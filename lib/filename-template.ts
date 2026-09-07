@@ -3,7 +3,7 @@ import { PLATFORMS } from "./platforms";
 
 // User-configurable download filename template. Persisted in the browser.
 // Variables use {curly} syntax and are filled from the video metadata.
-export const STORAGE_KEY = "snapload:filename-template";
+export const STORAGE_KEY = "clipkoala:filename-template";
 export const DEFAULT_TEMPLATE = "{title}";
 
 export const TEMPLATE_VARS: { key: string; label: string; example: string }[] =

@@ -2,7 +2,7 @@
 
 import { Lightbulb, X } from "lucide-react";
 
-const STORAGE_KEY = "snapload:onboarded";
+const STORAGE_KEY = "clipkoala:onboarded";
 
 export function hasOnboarded(): boolean {
   try {

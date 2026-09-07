@@ -8,7 +8,7 @@ export interface UsageStats {
   since: number; // first-count timestamp
 }
 
-const STORAGE_KEY = "snapload:stats";
+const STORAGE_KEY = "clipkoala:stats";
 
 export function loadStats(): UsageStats {
   try {

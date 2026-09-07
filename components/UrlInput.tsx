@@ -143,7 +143,7 @@ export default function UrlInput({
       onBatchModeChange(true);
       onBatchTextChange(found.urls.join("\n"));
       onBatchSubmit(found.urls);
-      toast.success(`${found.urls.length} links detected  fetching all`);
+      toast.success(`${found.urls.length} links detected, fetching all`);
       return true;
     }
     if (found.urls.length === 1 && !loading) {
@@ -203,23 +203,23 @@ export default function UrlInput({
   const glowShadow = focused
     ? meta && !batchMode
       ? `0 0 0 1px ${meta.glow.replace("0.18", "0.6")}, 0 0 32px ${meta.glow}`
-      : "0 0 0 1px rgba(139,92,246,0.5), 0 0 32px rgba(139,92,246,0.14)"
+      : "0 0 0 1px rgb(var(--c-accent) / 0.55), 0 0 32px rgb(var(--c-accent) / 0.16)"
     : "none";
 
   const singleHint = !trimmed
-    ? "Paste a link  or several at once  platforms are detected automatically"
+    ? "Paste a link, or several at once. The platform is detected automatically"
     : isPlaylist
-    ? "YouTube playlist detected  we'll fetch its latest videos as a batch"
+    ? "YouTube playlist detected, we'll fetch its latest videos as a batch"
     : isChannel
-    ? "YouTube channel detected  we'll fetch its latest uploads as a batch"
+    ? "YouTube channel detected, we'll fetch its latest uploads as a batch"
     : meta
-    ? `${meta.name} link detected  press Enter to fetch`
+    ? `${meta.name} link detected, press Enter to fetch`
     : trimmed.length > 12
     ? "This doesn't look like a supported link yet"
     : " ";
 
   const batchHint = !batchText.trim()
-    ? "One link per line  or paste any text, the links are picked out for you"
+    ? "One link per line, or paste any text, the links are picked out for you"
     : [
         `${batch.urls.length} valid ${batch.urls.length === 1 ? "link" : "links"}`,
         batch.unsupported > 0 ? `${batch.unsupported} unsupported` : null,
@@ -306,7 +306,7 @@ export default function UrlInput({
               <button
                 onClick={() => onBatchSubmit(batch.urls)}
                 disabled={loading || batch.urls.length === 0}
-                className="focus-ring flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-btn px-5 text-sm font-semibold text-btn-ink transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+                className="btn-primary btn-md shrink-0"
               >
                 {loading ? (
                   <>
@@ -351,7 +351,7 @@ export default function UrlInput({
                   if (e.key === "Enter" && !loading) onSubmit();
                   if (e.key === "Escape") handleClear();
                 }}
-                placeholder="Paste a video link…"
+                placeholder="Paste a TikTok, YouTube, Instagram, or any video link…"
                 disabled={loading}
                 className="h-11 min-w-0 flex-1 bg-transparent text-[15px] text-ink-1 placeholder-ink-3 outline-none disabled:opacity-60"
                 aria-label="Video URL"
@@ -378,8 +378,8 @@ export default function UrlInput({
                 onClick={enterBatchMode}
                 disabled={loading}
                 className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-veil/[0.08] px-2.5 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1 disabled:opacity-50"
-                aria-label="Batch mode  paste several links"
-                title="Batch mode  paste several links"
+                aria-label="Batch mode, paste several links"
+                title="Batch mode, paste several links"
               >
                 <ListPlus size={13} />
                 <span className="hidden sm:inline">Batch</span>
@@ -389,7 +389,7 @@ export default function UrlInput({
             <button
               onClick={() => onSubmit()}
               disabled={loading || !trimmed}
-              className="focus-ring flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-btn px-5 text-sm font-semibold text-btn-ink transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+              className="btn-primary btn-md shrink-0 sm:w-auto"
             >
               {loading ? (
                 <>

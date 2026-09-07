@@ -12,7 +12,7 @@ export interface FavoriteEntry {
   tags?: string[];
 }
 
-const STORAGE_KEY = "snapload:favorites";
+const STORAGE_KEY = "clipkoala:favorites";
 const MAX_ENTRIES = 50;
 
 export function loadFavorites(): FavoriteEntry[] {

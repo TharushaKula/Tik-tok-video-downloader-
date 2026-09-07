@@ -1,84 +1,97 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
 
-import Navbar from "@/components/Navbar";
-import Backdrop from "@/components/Backdrop";
-import Footer from "@/components/Footer";
+import PageShell from "@/components/PageShell";
+import PageHeader from "@/components/PageHeader";
+import JsonLd from "@/components/JsonLd";
+import CtaBanner from "@/components/sections/CtaBanner";
 
 import { GUIDES, GUIDE_SLUGS } from "@/lib/guides";
 import { PLATFORMS } from "@/lib/platforms";
-import { SITE_URL } from "@/lib/site";
+import { absoluteUrl } from "@/lib/site";
+import { graph, pageMetadata, webPageSchema } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "How-to Guides  Download Videos from Any Platform | SnapLoad",
-  description:
-    "Step-by-step guides for saving videos from TikTok, YouTube, Instagram, X, Facebook, and more: watermark-free downloads, MP3 conversion, batch downloading.",
-  alternates: { canonical: `${SITE_URL}/guides` },
-};
+const TITLE = "How-to Guides: Download Videos from Any Platform";
+const DESCRIPTION =
+  "Step-by-step guides for saving videos from TikTok, YouTube, Instagram, X, Facebook, Reddit, Pinterest, Twitch, and SoundCloud: watermark-free downloads, MP3 conversion, and batch downloading.";
+
+export const metadata: Metadata = pageMetadata({
+  title: TITLE,
+  description: DESCRIPTION,
+  path: "/guides",
+});
 
 export default function GuidesIndexPage() {
   return (
-    <div id="top" className="relative min-h-screen text-ink-1">
-      <Backdrop />
-      <Navbar />
+    <PageShell>
+      <div className="mx-auto w-full max-w-page px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
+        <PageHeader
+          crumbs={[{ name: "Guides", path: "/guides" }]}
+          eyebrow="Guides"
+          title="How-to guides for saving videos"
+          lede="Short, honest walkthroughs with real screenshots. Each guide covers one task from copying the link to the saved file, and links to the matching downloader."
+        />
 
-      <main className="relative z-10 mx-auto w-full max-w-2xl px-4 pb-24 pt-16 sm:px-6">
-        <Link
-          href="/"
-          className="focus-ring mb-8 inline-flex items-center gap-1.5 rounded-lg text-sm text-ink-3 transition-colors hover:text-ink-1"
-        >
-          <ArrowLeft size={14} />
-          Back to the downloader
-        </Link>
-
-        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">
-          Guides
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight text-ink-hi sm:text-4xl">
-          How-to guides
-        </h1>
-        <p className="mt-3 max-w-md text-sm leading-relaxed text-ink-2">
-          Short, honest walkthroughs for getting the most out of SnapLoad, from
-          watermark-free TikToks to batch downloading.
-        </p>
-
-        <div className="mt-10 space-y-4">
+        <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {GUIDE_SLUGS.map((slug) => {
             const guide = GUIDES[slug];
             const meta = guide.platform ? PLATFORMS[guide.platform] : null;
             return (
-              <Link
-                key={slug}
-                href={`/guides/${slug}`}
-                className="focus-ring group card flex items-center gap-4 p-5 transition-colors hover:border-veil/20"
-              >
-                <span
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-veil/[0.07] bg-raised"
-                  aria-hidden
+              <li key={slug} className="reveal">
+                <Link
+                  href={`/guides/${slug}`}
+                  className="focus-ring card card-hover group flex h-full flex-col p-6"
                 >
-                  <BookOpen size={16} className={meta ? meta.text : "text-accent"} />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[15px] font-semibold text-ink-hi">
+                  <span className="mb-4 flex items-center justify-between">
+                    <span className="flex items-center gap-2 text-xs font-medium text-ink-3">
+                      <BookOpen size={13} className={meta ? meta.text : "text-accent"} aria-hidden />
+                      {meta ? meta.name : "All platforms"}
+                    </span>
+                    <span className="text-[11px] text-ink-4">
+                      {guide.steps.length} steps
+                    </span>
+                  </span>
+                  <h2 className="text-[17px] font-extrabold leading-snug text-ink-hi">
                     {guide.h1}
+                  </h2>
+                  <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-ink-3">
+                    {guide.metaDescription}
+                  </p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-accent">
+                    Read the guide
+                    <ArrowRight
+                      size={12}
+                      className="transition-transform group-hover:translate-x-0.5"
+                      aria-hidden
+                    />
                   </span>
-                  <span className="mt-0.5 block truncate text-sm text-ink-3">
-                    {guide.intro}
-                  </span>
-                </span>
-                <ArrowRight
-                  size={16}
-                  className="shrink-0 text-ink-4 transition-transform group-hover:translate-x-0.5"
-                  aria-hidden
-                />
-              </Link>
+                </Link>
+              </li>
             );
           })}
-        </div>
-      </main>
-
-      <Footer />
-    </div>
+        </ul>
+      </div>
+      <CtaBanner />
+      <JsonLd
+        data={graph(
+          webPageSchema({
+            path: "/guides",
+            name: TITLE,
+            description: DESCRIPTION,
+            type: "CollectionPage",
+          }),
+          {
+            "@type": "ItemList",
+            itemListElement: GUIDE_SLUGS.map((slug, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              name: GUIDES[slug].h1,
+              url: absoluteUrl(`/guides/${slug}`),
+            })),
+          }
+        )}
+      />
+    </PageShell>
   );
 }

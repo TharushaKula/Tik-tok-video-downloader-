@@ -1,94 +1,132 @@
 import Link from "next/link";
-import { Download } from "lucide-react";
+import Logo from "./brand/Logo";
 import { LANDING_PAGES, LANDING_SLUGS } from "@/lib/landing";
-import { PLATFORMS } from "@/lib/platforms";
+import { GUIDES, GUIDE_SLUGS } from "@/lib/guides";
+import { SITE } from "@/lib/site";
 
-const LINKS = [
-  { href: "/#platforms", label: "Platforms" },
-  { href: "/#how-it-works", label: "How it works" },
-  { href: "/guides", label: "Guides" },
-  { href: "/#faq", label: "FAQ" },
+const PRODUCT = [
+  { href: "/", label: "Video downloader" },
+  { href: "/features", label: "Features" },
+  { href: "/extension", label: "Browser extension" },
+  { href: "/batch-video-downloader", label: "Batch downloads" },
   { href: "/changelog", label: "What's new" },
   { href: "/status", label: "Status" },
 ];
 
-const LEGAL_LINKS = [
-  { href: "/terms", label: "Terms" },
-  { href: "/privacy", label: "Privacy" },
-  { href: "/dmca", label: "Copyright" },
+const COMPANY = [
+  { href: "/about", label: "About ClipKoala" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/glossary", label: "Glossary" },
+  { href: "/terms", label: "Terms of service" },
+  { href: "/privacy", label: "Privacy policy" },
+  { href: "/dmca", label: "Copyright & DMCA" },
 ];
 
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-veil/[0.06]">
-      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-          <a
-            href="#top"
-            className="focus-ring flex items-center gap-2.5 rounded-lg"
-            aria-label="SnapLoad  back to top"
-          >
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500">
-              <Download size={14} className="text-white" strokeWidth={2.5} />
-            </span>
-            <span className="text-[15px] font-semibold tracking-tight text-ink-hi">
-              SnapLoad
-            </span>
-          </a>
+    <footer className="relative z-10 border-t border-veil/[0.06] bg-base">
+      <div className="mx-auto max-w-page px-4 py-14 sm:px-6">
+        <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
+          <div className="max-w-xs">
+            <Link href="/" className="focus-ring inline-flex rounded-lg" aria-label="ClipKoala home">
+              <Logo />
+            </Link>
+            <p className="mt-4 text-sm leading-relaxed text-ink-3">
+              {SITE.tagline} ClipKoala is a free online video downloader for
+              nine platforms. HD, watermark-free, no sign-up.
+            </p>
+            <ul className="mt-5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-4">
+              <li>Free forever</li>
+              <li>No account</li>
+              <li>Nothing stored</li>
+            </ul>
+          </div>
 
-          <nav className="flex items-center gap-1" aria-label="Footer">
-            {LINKS.map(({ href, label }) => (
-              <a
-                key={href}
-                href={href}
-                className="focus-ring rounded-lg px-3 py-1.5 text-sm text-ink-3 transition-colors hover:text-ink-1"
-              >
-                {label}
-              </a>
+          <FooterColumn title="Downloaders">
+            {LANDING_SLUGS.filter((s) => LANDING_PAGES[s].platform).map(
+              (slug) => (
+                <FooterLink key={slug} href={`/${slug}`}>
+                  {LANDING_PAGES[slug].name}
+                </FooterLink>
+              )
+            )}
+          </FooterColumn>
+
+          <FooterColumn title="Guides">
+            {GUIDE_SLUGS.slice(0, 7).map((slug) => (
+              <FooterLink key={slug} href={`/guides/${slug}`}>
+                {GUIDES[slug].shortTitle}
+              </FooterLink>
             ))}
-          </nav>
+            <FooterLink href="/guides">All guides</FooterLink>
+          </FooterColumn>
+
+          <FooterColumn title="Product">
+            {PRODUCT.map((l) => (
+              <FooterLink key={l.href} href={l.href}>
+                {l.label}
+              </FooterLink>
+            ))}
+          </FooterColumn>
+
+          <FooterColumn title="Company">
+            {COMPANY.map((l) => (
+              <FooterLink key={l.href} href={l.href}>
+                {l.label}
+              </FooterLink>
+            ))}
+          </FooterColumn>
         </div>
 
-        {/* Per-platform downloader pages */}
-        <nav
-          className="mt-8 flex flex-wrap items-center justify-center gap-x-1 gap-y-1 border-t border-veil/[0.05] pt-6 sm:justify-start"
-          aria-label="Downloaders"
-        >
-          {LANDING_SLUGS.map((slug) => (
-            <Link
-              key={slug}
-              href={`/${slug}`}
-              className="focus-ring rounded-lg px-2.5 py-1 text-xs text-ink-4 transition-colors hover:text-ink-1"
-            >
-              {PLATFORMS[LANDING_PAGES[slug].platform].name} Downloader
-            </Link>
-          ))}
-        </nav>
-
-        <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-veil/[0.05] pt-6 text-center sm:flex-row sm:text-left">
-          <p className="max-w-md text-xs leading-relaxed text-ink-4">
-            SnapLoad isn&apos;t affiliated with any of the supported platforms.
-            Download only content you own or have permission to save.
+        <div className="mt-12 flex flex-col gap-3 border-t border-veil/[0.06] pt-6 text-xs leading-relaxed text-ink-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="max-w-xl">
+            ClipKoala is not affiliated with TikTok, YouTube, Instagram,
+            Facebook, X, Reddit, Pinterest, Twitch, or SoundCloud. Download only
+            content you own or have permission to save.
           </p>
-          <nav
-            className="flex shrink-0 items-center gap-1"
-            aria-label="Legal"
-          >
-            {LEGAL_LINKS.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className="focus-ring rounded-md px-2 py-1 text-xs text-ink-4 transition-colors hover:text-ink-1"
-              >
-                {label}
-              </Link>
-            ))}
-            <span className="ml-1 text-xs text-ink-4">© {year}</span>
-          </nav>
+          <p className="shrink-0">
+            © {year} {SITE.name} · {SITE.domain}
+          </p>
         </div>
       </div>
     </footer>
+  );
+}
+
+function FooterColumn({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <nav aria-label={title}>
+      <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-ink-3">
+        {title}
+      </p>
+      <ul className="space-y-2">{children}</ul>
+    </nav>
+  );
+}
+
+function FooterLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <li>
+      <Link
+        href={href}
+        className="focus-ring rounded text-sm text-ink-2 transition-colors hover:text-ink-hi"
+      >
+        {children}
+      </Link>
+    </li>
   );
 }

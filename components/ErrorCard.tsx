@@ -25,7 +25,7 @@ export default function ErrorCard({
         </span>
         <div className="min-w-0 flex-1">
           <h3 className="text-sm font-semibold text-ink-1">
-            Couldn&apos;t fetch that video
+            We couldn&apos;t fetch that one
           </h3>
           <p className="mt-1 break-words text-sm leading-relaxed text-danger-ink">
             {message}
@@ -33,7 +33,7 @@ export default function ErrorCard({
           <ul className="mt-3 space-y-1 text-xs leading-relaxed text-ink-3">
             <li>· Check that the link opens in your browser</li>
             <li>· Private, age-restricted, or region-locked posts can&apos;t be fetched</li>
-            <li>· Try copying the link again from the app&apos;s share button</li>
+            <li>· Try copying the link again from the app&apos;s Share button</li>
             <li>
               · Keeps happening?{" "}
               <Link
