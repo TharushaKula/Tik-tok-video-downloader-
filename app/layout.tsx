@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Inter, Nunito } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
@@ -6,6 +7,7 @@ import ToastProvider from "@/components/ToastProvider";
 import PwaSetup from "@/components/PwaSetup";
 import JsonLd from "@/components/JsonLd";
 import { SITE, SITE_URL } from "@/lib/site";
+import { GA_MEASUREMENT_ID } from "@/lib/gtag";
 import {
   graph,
   organizationSchema,
@@ -36,7 +38,7 @@ const THEME_INIT = `(function(){try{var L=[];for(var i=0;i<localStorage.length;i
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE.name}: Free Video Downloader for TikTok, YouTube, Instagram & More`,
+    default: `${SITE.name}: Free Video Downloader, No Sign-Up`,
     template: `%s | ${SITE.name}`,
   },
   description: SITE.description,
@@ -62,6 +64,13 @@ export const metadata: Metadata = {
     url: SITE_URL,
   },
   twitter: { card: "summary_large_image" },
+  alternates: {
+    types: {
+      "application/rss+xml": [
+        { url: "/feed.xml", title: `${SITE.name}: guides, answers, and updates` },
+      ],
+    },
+  },
   robots: {
     index: true,
     follow: true,
@@ -115,6 +124,22 @@ export default function RootLayout({
         <PwaSetup />
         {children}
         <Analytics />
+
+        {/* Google Analytics 4. Loaded after hydration so it never competes
+            with the downloader for the main thread on first paint.
+            Unlike Vercel Analytics this does set first-party cookies (_ga,
+            _ga_*) and sends data to Google, which is why the privacy policy
+            and the About page describe both trackers separately. */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_MEASUREMENT_ID}');`}
+        </Script>
         {/* Site-wide entities: who publishes this, what the site is, what the app does */}
         <JsonLd
           data={graph(

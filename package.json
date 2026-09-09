@@ -10,6 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "health": "tsx scripts/health-check.ts",
+    "seo:audit": "tsx scripts/seo-audit.ts",
+    "indexnow": "tsx scripts/indexnow.ts",
     "brand:assets": "node scripts/generate-brand-assets.mjs",
     "ext:pack": "cd extension && zip -r ../clipkoala-extension.zip . -x '.DS_Store' -x '*/.DS_Store'"
   },

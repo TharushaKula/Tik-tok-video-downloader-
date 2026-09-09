@@ -30,8 +30,12 @@ const PRINCIPLES = [
     body: "ClipKoala fetches the file the platform actually serves. TikToks arrive without the watermark because we get the clean original, not because we blur it out.",
   },
   {
-    title: "Nothing stored, nothing tracked",
-    body: "Links are resolved and discarded. Files stream through and are never kept. Your history and favorites live in your own browser. Analytics are cookie-less page counts.",
+    title: "Nothing stored about what you download",
+    body: "Links are resolved and discarded. Files stream through and are never kept. Your history and favorites live in your own browser, and no analytics ever records the link you pasted or the file you saved.",
+  },
+  {
+    title: "Two analytics tools, described plainly",
+    body: "Vercel Analytics counts page views and sets no cookies. Google Analytics measures traffic and does set cookies, sending that data to Google. No advertising or remarketing tags run anywhere on the site.",
   },
   {
     title: "Free means free",
@@ -44,6 +48,10 @@ const PRINCIPLES = [
   {
     title: "Honest about problems",
     body: "The platforms change constantly and resolvers break. A public status page shows live health for every platform, and the changelog records every fix.",
+  },
+  {
+    title: "Open about what we do not run",
+    body: "Some platforms block server access hard enough that links are resolved through third-party services rather than by us directly. That is why a platform can fail while ClipKoala itself is fine, and why the status page checks the whole path.",
   },
 ];
 

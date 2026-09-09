@@ -116,7 +116,7 @@ H1, copy, and FAQ.
   only where it is above the fold on desktop; hidden on mobile.
 - Reveal animations are CSS scroll-driven (`animation-timeline: view()`)
   with a progressive-enhancement fallback, honoring reduced motion.
-- No third-party scripts other than cookie-less Vercel Analytics.
+- Third-party scripts limited to analytics: cookie-less Vercel Analytics plus Google Analytics 4 (`lib/gtag.ts`), both loaded after hydration.
 - Static generation for every content page; `/status` uses ISR (10 min).
 
 Verify after deploy with PageSpeed Insights (mobile). Targets: LCP < 2.0s,

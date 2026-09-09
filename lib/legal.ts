@@ -71,7 +71,7 @@ export const LEGAL_DOCS: Record<string, LegalDoc> = {
     metaTitle: "Privacy Policy",
     metaDescription:
       "How ClipKoala handles your data: links are processed and discarded, nothing is stored server-side, and your history stays in your own browser.",
-    updated: "2026-09-07",
+    updated: "2026-09-10",
     intro:
       "ClipKoala is built to need as little of your data as possible. Here is exactly what happens.",
     sections: [
@@ -85,6 +85,7 @@ export const LEGAL_DOCS: Record<string, LegalDoc> = {
         heading: "What stays on your device",
         body: [
           "Your recent downloads, saved (starred) videos, theme choice, sound preference, and filename template live only in your browser's local storage. They never leave your device, and you can clear them anytime from the app.",
+          "Two small records live there as well: a personal tally of how many videos you have saved, and the campaign tag or referring site you first arrived from. Both stay in your browser. Clearing your site data removes everything in this section.",
         ],
       },
       {
@@ -96,7 +97,11 @@ export const LEGAL_DOCS: Record<string, LegalDoc> = {
       {
         heading: "Analytics",
         body: [
-          "We use privacy-friendly, cookie-less analytics to count page views and understand which features are used. It does not build a profile of you or track you across other sites. We do not run advertising trackers.",
+          "We run two analytics tools, and they have different privacy characteristics, so it is worth separating them. Vercel Analytics counts page views and the download steps described below; it sets no cookies and does not identify you. Google Analytics 4 also measures traffic, and unlike the first it does set first-party cookies (named _ga and _ga_ followed by the stream id) and sends the data it collects to Google, who process it under their own terms. Google receives your IP address in order to derive an approximate location, and discards it after that.",
+          "We do not run advertising or remarketing tags, we have not enabled Google Signals or ads personalisation, and we do not use any of this to build an advertising profile of you. If that ever changes, this page will change first. You can opt out of Google Analytics on every site at once with Google's official browser add-on, and any tracker blocker or a browser with tracking protection turned on will stop it here.",
+          "Beyond page views we record the steps of the download itself, so we can tell whether something is broken rather than guessing: that a link was submitted, that resolving started, whether it succeeded or failed, whether a preview was played, and that a download began. Each of those carries the platform (for example TikTok or YouTube), the file format and quality you chose, a rough speed bucket such as under one second, and for failures a general category such as private or restricted, rather than the message itself.",
+          "What is deliberately never recorded: the link you pasted, the title, author, or filename of anything you download, your IP address as an identifier, and any text you type. The two optional one-tap questions we sometimes show record only which of the fixed options you tapped, and nothing if you dismiss them.",
+          "Each event also carries how you first arrived (a campaign tag, or the site that referred you) and which page you landed on, so we can tell which channels bring people who actually complete a download. That first-touch record is stored in your own browser, not in a cookie, and clearing your browser storage clears it.",
         ],
       },
       {

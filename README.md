@@ -18,6 +18,8 @@ npx tsc --noEmit   # type check
 npm test           # vitest unit tests
 npm run build      # production build
 npm run health     # probe every platform resolver with a real public post
+npm run seo:audit  # pre-deploy SEO gate (needs a running build, see below)
+npm run indexnow   # tell Bing and friends which URLs changed
 npm run brand:assets  # regenerate icons/OG assets from brand-src/
 npm run ext:pack   # zip the browser extension for the Chrome Web Store
 ```
@@ -28,6 +30,7 @@ npm run ext:pack   # zip the browser extension for the Chrome Web Store
 | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | Public origin. Defaults to `https://clipkoala.com`. Set to the preview URL in Vercel preview environments if you want correct canonicals there (optional). |
 | `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Token from Google Search Console's "HTML tag" method. Renders the `google-site-verification` meta tag. |
+| `INDEXNOW_KEY` | Optional. 8-128 hex characters (`openssl rand -hex 16`). When set, `/<key>.txt` is served automatically and `npm run indexnow` can submit URLs. Google does not use IndexNow; this is for Bing. |
 
 ## Project map
 
@@ -35,17 +38,24 @@ npm run ext:pack   # zip the browser extension for the Chrome Web Store
 app/                    routes (App Router)
   page.tsx              home: hero + tool + marketing sections
   [slug]/               tool landing pages (9 platforms + youtube-to-mp3 + batch)
+  for/[slug]/           use-case pages (creators, editors, teachers, social managers)
+  answers/[slug]/       problem, question, and comparison pages (direct answer first)
   guides/[slug]/        how-to guides with HowTo/Article/FAQ structured data
-  faq, about, features, extension, glossary, status, changelog, terms, privacy, dmca
+  faq, about, features, extension, glossary, status, changelog, roadmap,
+  press, accessibility, security, terms, privacy, dmca
+  feed.xml/ llms.txt/   RSS feed and the factual summary for answer engines
   opengraph-image.tsx   social card (also per landing page and per guide)
   sitemap.ts robots.ts manifest.ts not-found.tsx
   api/                  resolver + proxy endpoints (noindex via robots)
 components/             UI; components/sections/* are the marketing blocks
 components/brand/       Logo (mascot + wordmark)
-lib/                    data (landing, guides, faq, glossary, features, legal,
-                        changelog), SEO helpers (seo.ts, og.tsx), resolvers
+lib/                    data (landing, guides, answers, audiences, faq, glossary,
+                        features, legal, changelog, roadmap), SEO helpers
+                        (seo.ts, og.tsx), analytics.ts + attribution.ts, resolvers
 brand-src/              source artwork supplied by the brand (PNG, transparent)
 scripts/generate-brand-assets.mjs  derives icons, favicons, OG mascot from brand-src
+scripts/seo-audit.ts    pre-deploy SEO gate (see below)
+scripts/indexnow.ts     IndexNow submitter
 docs/BRAND.md           brand guidelines (colors, type, voice)
 docs/SEO-STRATEGY.md    keyword map, content architecture, launch checklist
 ```
@@ -58,9 +68,39 @@ metadata through `pageMetadata()` in `lib/seo.ts`, and gets a generated
 SoftwareApplication JSON-LD; pages add WebPage, BreadcrumbList, FAQPage,
 HowTo, Article, ItemList, or DefinedTermSet where the visible content
 warrants it. `app/sitemap.ts` lists every indexable URL with real
-`lastModified` dates; `app/robots.ts` blocks `/api/` and the `?url=` deep-link
-variant. See `docs/SEO-STRATEGY.md` for the launch checklist (Search Console,
-domain redirects, monitoring).
+`lastModified` dates; `app/robots.ts` blocks `/api/` and the deep-link query
+variants. See `docs/SEO-STRATEGY.md` for the keyword map and
+`USER_ACQUISITION_AND_TRAFFIC.md` for the growth plan and its progress log.
+
+## The SEO gate
+
+`npm run seo:audit` crawls every URL in the sitemap and fails on anything
+that would quietly cost traffic: a non-200, a canonical on the wrong host or
+pointing at the wrong path, an accidental `noindex`, a missing title or
+description, more than one `H1`, invalid JSON-LD, an orphan page nothing
+links to, or a broken internal link. Length and Open Graph problems are
+warnings rather than errors.
+
+```bash
+npm run build && npm start     # one terminal
+npm run seo:audit              # another
+BASE_URL=https://clipkoala.com npm run seo:audit   # or against production
+```
+
+It exits non-zero when there is an error, so it can gate a deploy.
+
+## Measurement
+
+`lib/analytics.ts` records the activation funnel: submit, resolve start,
+resolve success or failure, preview play, and download start (the north-star
+event). Each carries the platform, format, quality, a latency bucket, a
+coarse error class, and the visitor's first-touch source, medium, campaign,
+and landing page from `lib/attribution.ts`.
+
+It never records the pasted URL, the video title, the author, or the
+filename. `lib/__tests__/analytics.test.ts` pins those guarantees, and
+`lib/legal.ts` (Privacy, Analytics) describes them to users. Keep all three
+in step when adding an event.
 
 ## Deploying the domain
 

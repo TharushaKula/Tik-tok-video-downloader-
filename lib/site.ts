@@ -15,7 +15,7 @@ export const SITE = {
   tagline: "Save any clip. Keep it clean.",
   /** One-line positioning used in default metadata and the manifest */
   description:
-    "ClipKoala is a free online video downloader for TikTok, YouTube, Instagram, Facebook, X, Reddit, Pinterest, Twitch, and SoundCloud. Save videos in HD without watermarks, or grab the audio as MP3. No sign-up, no limits.",
+    "Free online video downloader for TikTok, YouTube, Instagram and six more platforms. Save in HD without watermarks, or take the audio as MP3. No sign-up.",
   /** Short description for app stores, manifest, and the extension */
   shortDescription:
     "Free video downloader for TikTok, YouTube, Instagram, and six more platforms. HD, watermark-free, MP3. No sign-up.",

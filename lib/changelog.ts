@@ -7,6 +7,19 @@ export interface ChangelogEntry {
 // Newest first. Keep entries short and user-facing.
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-09-09",
+    title: "Pages for the problems, not just the platforms",
+    items: [
+      "New Answers section: why Reddit videos download silent, why TikTok's Save option is greyed out, why a YouTube MP3 can sound worse than expected, what happens to an expired Instagram Story, and which links are actually supported",
+      "An honest MP3 vs M4A vs WAV vs FLAC comparison, including when the difference is inaudible",
+      "New use-case pages for creators, video editors, teachers, and social managers, each with the workflow for that job and the limits stated plainly",
+      "Five new guides: YouTube Shorts, Instagram Stories before they expire, whole YouTube playlists, TikTok photo slideshows, and saving videos on an iPhone from Safari",
+      "A share button after a successful download that shares the tool, never the link you pasted",
+      "New pages for the roadmap, the press kit, accessibility, and security disclosure, plus an RSS feed at /feed.xml",
+      "The privacy policy now describes exactly which download steps are measured, and what is deliberately never recorded",
+    ],
+  },
+  {
     date: "2026-09-07",
     title: "Hello, ClipKoala",
     items: [

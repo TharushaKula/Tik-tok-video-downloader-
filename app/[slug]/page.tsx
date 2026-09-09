@@ -13,6 +13,8 @@ import JsonLd from "@/components/JsonLd";
 import CtaBanner from "@/components/sections/CtaBanner";
 
 import { LANDING_PAGES, LANDING_SLUGS } from "@/lib/landing";
+import { ANSWERS } from "@/lib/answers";
+import { AUDIENCES, AUDIENCE_SLUGS } from "@/lib/audiences";
 import { GUIDES } from "@/lib/guides";
 import { PLATFORMS } from "@/lib/platforms";
 import { faqSchema, graph, pageMetadata, webPageSchema } from "@/lib/seo";
@@ -52,6 +54,12 @@ export default async function LandingPage({ params }: LandingParams) {
     (s) => s !== copy.slug && !copy.related.includes(s)
   );
   const guides = copy.guides.map((g) => GUIDES[g]).filter(Boolean);
+  const answers = (copy.answers ?? []).map((a) => ANSWERS[a]).filter(Boolean);
+  // One audience page whose job list mentions this tool, for a prose link.
+  const audienceSlug = AUDIENCE_SLUGS.find((a) =>
+    AUDIENCES[a].tools.includes(copy.slug)
+  );
+  const audience = audienceSlug ? AUDIENCES[audienceSlug] : null;
 
   return (
     <PageShell tool>
@@ -127,6 +135,33 @@ export default async function LandingPage({ params }: LandingParams) {
               </Link>
             ))}
           </div>
+        )}
+        {(answers.length > 0 || audience) && (
+          <p className="reveal mt-6 text-sm leading-relaxed text-ink-3">
+            {answers.length > 0 && (
+              <>
+                If a link fails, the most common causes are covered in{" "}
+                {answers.map((a, i) => (
+                  <span key={a.slug}>
+                    {i > 0 && (i === answers.length - 1 ? " and " : ", ")}
+                    <Link href={`/answers/${a.slug}`} className="link-quiet">
+                      {a.shortTitle.toLowerCase()}
+                    </Link>
+                  </span>
+                ))}
+                .{" "}
+              </>
+            )}
+            {audience && (
+              <>
+                If you are doing this as part of a bigger job, the{" "}
+                <Link href={`/for/${audience.slug}`} className="link-quiet">
+                  workflow for {audience.name.toLowerCase()}
+                </Link>{" "}
+                sets out the whole thing.
+              </>
+            )}
+          </p>
         )}
       </section>
 

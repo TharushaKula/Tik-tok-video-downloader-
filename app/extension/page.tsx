@@ -11,7 +11,7 @@ import { graph, pageMetadata, webPageSchema } from "@/lib/seo";
 
 const TITLE = "ClipKoala Browser Extension for Chrome & Edge";
 const DESCRIPTION =
-  "Send the video you are watching to ClipKoala with one click, or right-click any link to download it. A privacy-first Manifest V3 extension with no tracking and no access to your browsing.";
+  "Send the video you are watching to ClipKoala with one click, or right-click any link. A Manifest V3 extension with no tracking and no browsing access.";
 
 export const metadata: Metadata = pageMetadata({
   title: TITLE,

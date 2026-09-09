@@ -17,12 +17,18 @@ import RecentDownloads, {
 import Favorites from "@/components/Favorites";
 import CommandPalette from "@/components/CommandPalette";
 import UsageStats from "@/components/UsageStats";
+import FeedbackPrompt from "@/components/FeedbackPrompt";
 import { DOWNLOAD_EVENT } from "@/components/DownloadOptionRow";
 import OnboardingHint, {
   hasOnboarded,
   markOnboarded,
 } from "@/components/OnboardingHint";
 import { type UsageStats as Stats, loadStats } from "@/lib/stats";
+import {
+  classifyError,
+  latencyBucket,
+  trackFunnel,
+} from "@/lib/analytics";
 
 import {
   detectPlatform,
@@ -52,21 +58,58 @@ type FetchState =
 
 const BATCH_CONCURRENCY = 3;
 
-async function fetchVideoInfo(target: string): Promise<VideoInfo> {
-  const res = await fetch("/api/download", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ url: target }),
-  });
+/**
+ * Resolve one link, recording the resolve step of the funnel around it.
+ * Only the platform, a coarse error class, and a latency bucket are sent;
+ * the pasted URL never reaches analytics.
+ */
+async function fetchVideoInfo(
+  target: string,
+  via = "input"
+): Promise<VideoInfo> {
+  const platform = detectPlatform(target) ?? "unknown";
+  const started = Date.now();
+  trackFunnel("resolve_start", { platform, via });
+
+  let res: Response;
+  try {
+    res = await fetch("/api/download", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: target }),
+    });
+  } catch {
+    trackFunnel("resolve_error", {
+      platform,
+      error: "network",
+      latency: latencyBucket(Date.now() - started),
+    });
+    throw new Error(
+      "We couldn't reach the server. Check your connection and try again."
+    );
+  }
+
   // The body may not be JSON if the server hits a hard failure.
   const json = await res.json().catch(() => null);
   if (!res.ok || !json?.success) {
-    throw new Error(
+    const message =
       json?.error ||
-        "The server hit an unexpected problem. Give it a second and try again."
-    );
+      "The server hit an unexpected problem. Give it a second and try again.";
+    trackFunnel("resolve_error", {
+      platform,
+      error: classifyError(message),
+      latency: latencyBucket(Date.now() - started),
+    });
+    throw new Error(message);
   }
-  return json.data as VideoInfo;
+
+  const info = json.data as VideoInfo;
+  trackFunnel("resolve_success", {
+    platform: info.platform ?? platform,
+    latency: latencyBucket(Date.now() - started),
+    count: info.downloads?.length,
+  });
+  return info;
 }
 
 // The complete interactive downloader: command bar, fetch states, batch
@@ -83,6 +126,10 @@ export default function DownloaderTool() {
   const [showHint, setShowHint] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [stats, setStats] = useState<Stats | null>(null);
+  // Funnel position in this session, used only to decide which one-question
+  // prompt (if either) is worth showing.
+  const [attempted, setAttempted] = useState(false);
+  const [activated, setActivated] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
 
@@ -103,7 +150,10 @@ export default function DownloaderTool() {
 
   // Keep the usage tally live as downloads are started anywhere in the tool.
   useEffect(() => {
-    const onDownload = () => setStats(loadStats());
+    const onDownload = () => {
+      setStats(loadStats());
+      setActivated(true);
+    };
     window.addEventListener(DOWNLOAD_EVENT, onDownload);
     return () => window.removeEventListener(DOWNLOAD_EVENT, onDownload);
   }, []);
@@ -123,10 +173,10 @@ export default function DownloaderTool() {
     if (urls.length >= 2) {
       setBatchMode(true);
       setBatchText(urls.join("\n"));
-      void handleBatchSubmit(urls);
+      void handleBatchSubmit(urls, "deeplink");
     } else if (urls.length === 1) {
       setUrl(urls[0]);
-      void handleSubmit(urls[0]);
+      void handleSubmit(urls[0], "deeplink");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -153,18 +203,18 @@ export default function DownloaderTool() {
   // Route any incoming text (drop, page-level paste, clipboard detection):
   // several links start a batch, one link fetches directly.
   // Returns false when no supported link was found.
-  function routeIncomingText(text: string): boolean {
+  function routeIncomingText(text: string, via = "paste"): boolean {
     const found = extractSupportedUrls(text);
     if (found.urls.length >= 2 && !busyRef.current) {
       setBatchMode(true);
       setBatchText(found.urls.join("\n"));
-      void handleBatchSubmit(found.urls);
+      void handleBatchSubmit(found.urls, via);
       toast.success(`${found.urls.length} links detected, fetching all`);
       return true;
     }
     if (found.urls.length === 1 && !busyRef.current) {
       setUrl(found.urls[0]);
-      void handleSubmit(found.urls[0]);
+      void handleSubmit(found.urls[0], via);
       return true;
     }
     return false;
@@ -244,7 +294,7 @@ export default function DownloaderTool() {
         void file
           .text()
           .then((content) => {
-            if (!routeRef.current(normalizeLinkFileText(content))) {
+            if (!routeRef.current(normalizeLinkFileText(content), "file")) {
               toast("No supported links found in that file");
             }
           })
@@ -255,7 +305,7 @@ export default function DownloaderTool() {
         e.dataTransfer?.getData("text/uri-list") ||
         e.dataTransfer?.getData("text/plain") ||
         "";
-      if (text.trim() && !routeRef.current(text.trim())) {
+      if (text.trim() && !routeRef.current(text.trim(), "drop")) {
         setUrl(text.trim().split(/\s+/)[0]);
         toast("That doesn't look like a supported link");
       }
@@ -330,7 +380,7 @@ export default function DownloaderTool() {
             <button
               onClick={() => {
                 toast.dismiss(t.id);
-                routeRef.current(text);
+                routeRef.current(text, "clipboard");
               }}
               className="shrink-0 rounded-lg bg-btn px-2.5 py-1 text-xs font-semibold text-btn-ink"
             >
@@ -376,7 +426,7 @@ export default function DownloaderTool() {
           ? `${label} loaded, fetching the ${urls.length} most recent videos`
           : `${label} loaded, fetching ${urls.length} ${urls.length === 1 ? "video" : "videos"}`
       );
-      await handleBatchSubmit(urls);
+      await handleBatchSubmit(urls, kind);
     } catch (err: unknown) {
       setState({
         kind: "error",
@@ -387,9 +437,15 @@ export default function DownloaderTool() {
     }
   }
 
-  async function handleSubmit(explicitUrl?: string) {
+  async function handleSubmit(explicitUrl?: string, via = "input") {
     const target = (explicitUrl ?? url).trim();
     if (!target || busy) return;
+
+    setAttempted(true);
+    trackFunnel("submit", {
+      platform: detectPlatform(target) ?? "unknown",
+      via,
+    });
 
     // YouTube playlists and channels expand into a batch of their videos
     const playlistId = extractYouTubePlaylistId(target);
@@ -414,6 +470,11 @@ export default function DownloaderTool() {
 
     const platform = detectPlatform(target);
     if (!platform) {
+      trackFunnel("resolve_error", {
+        platform: "unknown",
+        error: "unsupported_url",
+        via,
+      });
       setState({
         kind: "error",
         message:
@@ -428,7 +489,7 @@ export default function DownloaderTool() {
     setState({ kind: "loading", platform });
 
     try {
-      const info = await fetchVideoInfo(target);
+      const info = await fetchVideoInfo(target, via);
       setState({ kind: "success", info, url: target });
       rememberDownload(target, info);
       if (showHint) {
@@ -453,7 +514,7 @@ export default function DownloaderTool() {
   async function fetchBatchItem(id: string, target: string) {
     updateBatchItem(id, { status: "loading", error: undefined });
     try {
-      const info = await fetchVideoInfo(target);
+      const info = await fetchVideoInfo(target, "batch");
       updateBatchItem(id, { status: "success", info });
       rememberDownload(target, info);
     } catch (err: unknown) {
@@ -464,16 +525,27 @@ export default function DownloaderTool() {
     }
   }
 
-  async function handleBatchSubmit(urls: string[]) {
+  async function handleBatchSubmit(urls: string[], via = "batch") {
     if (busy || urls.length === 0) return;
 
     // A batch of one is just a normal fetch
     if (urls.length === 1) {
       setBatchMode(false);
       setUrl(urls[0]);
-      void handleSubmit(urls[0]);
+      void handleSubmit(urls[0], via);
       return;
     }
+
+    setAttempted(true);
+    const platforms = new Set(urls.map((u) => detectPlatform(u)));
+    trackFunnel("batch_start", {
+      platform:
+        platforms.size === 1
+          ? (detectPlatform(urls[0]) ?? "unknown")
+          : "mixed",
+      count: Math.min(urls.length, MAX_BATCH_SIZE),
+      via,
+    });
 
     const items: BatchItem[] = urls.slice(0, MAX_BATCH_SIZE).map((u, i) => ({
       id: `${Date.now()}-${i}`,
@@ -566,7 +638,7 @@ export default function DownloaderTool() {
         onClose={() => setPaletteOpen(false)}
         recent={recent}
         favorites={favorites}
-        onSelectUrl={(u) => handleSubmit(u)}
+        onSelectUrl={(u) => handleSubmit(u, "palette")}
         onPasteFetch={pasteAndFetch}
       />
 
@@ -620,7 +692,7 @@ export default function DownloaderTool() {
             >
               <ErrorCard
                 message={state.message}
-                onRetry={() => handleSubmit(state.url)}
+                onRetry={() => handleSubmit(state.url, "retry")}
                 onDismiss={handleReset}
               />
             </motion.div>
@@ -667,7 +739,7 @@ export default function DownloaderTool() {
       {state.kind !== "loading" && (
         <Favorites
           entries={favorites}
-          onSelect={(u) => handleSubmit(u)}
+          onSelect={(u) => handleSubmit(u, "favorites")}
           onRemove={handleRemoveFavorite}
           onClear={handleClearFavorites}
           onSetTags={handleSetFavoriteTags}
@@ -679,7 +751,7 @@ export default function DownloaderTool() {
       {state.kind !== "loading" && (
         <RecentDownloads
           entries={recent}
-          onSelect={(u) => handleSubmit(u)}
+          onSelect={(u) => handleSubmit(u, "history")}
           onClear={handleClearRecent}
           disabled={busy}
         />
@@ -687,6 +759,13 @@ export default function DownloaderTool() {
 
       {/* Personal usage tally (appears after a few downloads) */}
       {stats && <UsageStats stats={stats} />}
+
+      {/* One optional question, at most once per browser, never mid-flow */}
+      <FeedbackPrompt
+        activated={activated}
+        attempted={attempted}
+        busy={busy}
+      />
 
       {/* Trust row */}
       <p className="flex flex-wrap items-center justify-center gap-x-2 text-xs text-ink-4">

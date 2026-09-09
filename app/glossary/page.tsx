@@ -11,9 +11,9 @@ import { GLOSSARY_SORTED } from "@/lib/glossary";
 import { absoluteUrl } from "@/lib/site";
 import { graph, pageMetadata, webPageSchema } from "@/lib/seo";
 
-const TITLE = "Video Download Glossary: Bitrate, Codec, MP4, FLAC & More";
+const TITLE = "Video Download Glossary: Bitrate, Codec, MP4, FLAC";
 const DESCRIPTION =
-  "Plain-English definitions of the terms you meet when downloading video and audio: bitrate, codec, container format, muxing, watermark, MP3 vs FLAC, HD vs Full HD, and more.";
+  "Plain-English definitions of the terms you meet when downloading video and audio: bitrate, codec, container, muxing, watermark, and MP3 vs FLAC.";
 
 export const metadata: Metadata = pageMetadata({
   title: TITLE,

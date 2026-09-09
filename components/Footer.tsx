@@ -2,6 +2,8 @@ import Link from "next/link";
 import Logo from "./brand/Logo";
 import { LANDING_PAGES, LANDING_SLUGS } from "@/lib/landing";
 import { GUIDES, GUIDE_SLUGS } from "@/lib/guides";
+import { ANSWERS, ANSWER_SLUGS } from "@/lib/answers";
+import { AUDIENCES, AUDIENCE_SLUGS } from "@/lib/audiences";
 import { SITE } from "@/lib/site";
 
 const PRODUCT = [
@@ -10,16 +12,21 @@ const PRODUCT = [
   { href: "/extension", label: "Browser extension" },
   { href: "/batch-video-downloader", label: "Batch downloads" },
   { href: "/changelog", label: "What's new" },
+  { href: "/roadmap", label: "Roadmap" },
   { href: "/status", label: "Status" },
+  { href: "/feed.xml", label: "RSS feed" },
 ];
 
 const COMPANY = [
   { href: "/about", label: "About ClipKoala" },
   { href: "/faq", label: "FAQ" },
   { href: "/glossary", label: "Glossary" },
+  { href: "/press", label: "Press kit" },
+  { href: "/accessibility", label: "Accessibility" },
   { href: "/terms", label: "Terms of service" },
   { href: "/privacy", label: "Privacy policy" },
   { href: "/dmca", label: "Copyright & DMCA" },
+  { href: "/security", label: "Report a problem" },
 ];
 
 export default function Footer() {
@@ -28,7 +35,7 @@ export default function Footer() {
   return (
     <footer className="relative z-10 border-t border-veil/[0.06] bg-base">
       <div className="mx-auto max-w-page px-4 py-14 sm:px-6">
-        <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr_1fr]">
           <div className="max-w-xs">
             <Link href="/" className="focus-ring inline-flex rounded-lg" aria-label="ClipKoala home">
               <Logo />
@@ -61,6 +68,24 @@ export default function Footer() {
               </FooterLink>
             ))}
             <FooterLink href="/guides">All guides</FooterLink>
+          </FooterColumn>
+
+          <FooterColumn title="Answers">
+            {ANSWER_SLUGS.slice(0, 5).map((slug) => (
+              <FooterLink key={slug} href={`/answers/${slug}`}>
+                {ANSWERS[slug].shortTitle}
+              </FooterLink>
+            ))}
+            <FooterLink href="/answers">All answers</FooterLink>
+          </FooterColumn>
+
+          <FooterColumn title="Who it's for">
+            {AUDIENCE_SLUGS.map((slug) => (
+              <FooterLink key={slug} href={`/for/${slug}`}>
+                {AUDIENCES[slug].name}
+              </FooterLink>
+            ))}
+            <FooterLink href="/for">All use cases</FooterLink>
           </FooterColumn>
 
           <FooterColumn title="Product">

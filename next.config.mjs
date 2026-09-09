@@ -45,8 +45,24 @@ const nextConfig = {
     ],
   },
   async headers() {
+    // Belt and braces alongside app/robots.ts: a preview deployment that gets
+    // linked from somewhere can be indexed before robots.txt is ever fetched,
+    // so non-production origins send a header on every response too.
+    const previewNoindex =
+      process.env.VERCEL_ENV && process.env.VERCEL_ENV !== "production"
+        ? [
+            {
+              source: "/:path*",
+              headers: [
+                { key: "X-Robots-Tag", value: "noindex, nofollow" },
+              ],
+            },
+          ]
+        : [];
+
     return [
       { source: "/:path*", headers: SECURITY_HEADERS },
+      ...previewNoindex,
       {
         source: "/(brand|icons|guides)/:path*",
         headers: [
@@ -54,9 +70,29 @@ const nextConfig = {
         ],
       },
       {
-        source: "/(sitemap.xml|robots.txt|manifest.webmanifest)",
+        source: "/(sitemap.xml|robots.txt|manifest.webmanifest|feed.xml|llms.txt)",
         headers: [{ key: "Cache-Control", value: "public, max-age=3600" }],
       },
+    ];
+  },
+  async rewrites() {
+    // IndexNow needs its key served from a root-level <key>.txt. Wiring it
+    // here keeps the key out of the repository: set INDEXNOW_KEY in the
+    // project and redeploy, and rotating it is a variable change.
+    const indexNowKey = process.env.INDEXNOW_KEY;
+    const indexNow =
+      indexNowKey && /^[a-fA-F0-9]{8,128}$/.test(indexNowKey)
+        ? [{ source: `/${indexNowKey}.txt`, destination: "/api/indexnow-key" }]
+        : [];
+
+    return [
+      // RFC 9116. The App Router cannot own a directory whose name begins
+      // with a dot, so the well-known path is served by a route handler.
+      {
+        source: "/.well-known/security.txt",
+        destination: "/api/security-txt",
+      },
+      ...indexNow,
     ];
   },
   async redirects() {

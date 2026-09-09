@@ -15,13 +15,25 @@ import { downloadYouTubeOption, PollBlockedError } from "@/lib/youtube-client";
 import { applyTemplate, loadTemplate } from "@/lib/filename-template";
 import { recordDownload } from "@/lib/stats";
 import { vibrate } from "@/lib/sound";
+import { markActivated, trackFunnel } from "@/lib/analytics";
 
 // Fired once per started download so the page can refresh its usage tally.
 export const DOWNLOAD_EVENT = "clipkoala:download";
 
-/** Record one started download and notify listeners. Call once per action. */
-export function markDownload(platform: PlatformId) {
+/**
+ * Record one started download and notify listeners. Call once per action.
+ * This is the north-star event: a file transfer actually beginning, not a
+ * page view and not a resolve.
+ */
+export function markDownload(platform: PlatformId, option?: DownloadOption) {
   recordDownload(platform);
+  markActivated();
+  trackFunnel("download_start", {
+    platform,
+    format: option?.format,
+    quality: option?.quality,
+    via: option ? optionKind(option) : undefined,
+  });
   vibrate(15); // light tactile ack on phones
   try {
     window.dispatchEvent(new CustomEvent(DOWNLOAD_EVENT, { detail: platform }));
@@ -122,7 +134,7 @@ export function startOptionDownload(
   notify = true,
   nameInfo?: NameInfo
 ) {
-  markDownload(platform);
+  markDownload(platform, option);
   if (platform === "youtube" && option.isProxy) {
     // Fire-and-forget client conversion; server redirect flow as fallback
     void downloadYouTubeOption(option).catch(() =>
@@ -215,7 +227,7 @@ export default function DownloadOptionRow({
 
   function handleClick() {
     if (status !== "idle") return;
-    markDownload(platform);
+    markDownload(platform, option);
     if (isYouTube && option.isProxy) {
       void handleYouTubeClick();
       return;

@@ -11,7 +11,7 @@ import { graph, pageMetadata, webPageSchema } from "@/lib/seo";
 
 const TITLE = "Features: Everything ClipKoala Can Do";
 const DESCRIPTION =
-  "Watermark-free downloads, HD up to 1080p, MP3, M4A, WAV, and FLAC audio, batch downloads, playlists, saved videos, custom filenames, a browser extension, and more. All free.";
+  "Watermark-free downloads, HD up to 1080p, four audio formats, batches, playlists, saved videos, custom filenames, and a browser extension. All free.";
 
 export const metadata: Metadata = pageMetadata({
   title: TITLE,

@@ -171,6 +171,11 @@ h4 {
   .prose-ck a {
     @apply font-medium text-ink-1 underline decoration-accent/50 underline-offset-4 transition-colors hover:text-accent;
   }
+  /* Contextual internal link inside a sentence, outside .prose-ck blocks.
+     Search engines and readers both prefer links in prose to link lists. */
+  .link-quiet {
+    @apply rounded font-medium text-ink-1 underline decoration-accent/40 underline-offset-4 transition-colors hover:text-accent;
+  }
 }
 
 /* ── Scroll-reveal without JavaScript ─────────────────────────────────── */

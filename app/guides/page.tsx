@@ -14,7 +14,7 @@ import { graph, pageMetadata, webPageSchema } from "@/lib/seo";
 
 const TITLE = "How-to Guides: Download Videos from Any Platform";
 const DESCRIPTION =
-  "Step-by-step guides for saving videos from TikTok, YouTube, Instagram, X, Facebook, Reddit, Pinterest, Twitch, and SoundCloud: watermark-free downloads, MP3 conversion, and batch downloading.";
+  "Step-by-step guides for saving videos from TikTok, YouTube, Instagram and six more platforms: watermark-free downloads, MP3 conversion, and batches.";
 
 export const metadata: Metadata = pageMetadata({
   title: TITLE,
@@ -71,6 +71,20 @@ export default function GuidesIndexPage() {
             );
           })}
         </ul>
+
+        <p className="mt-10 max-w-2xl text-sm leading-relaxed text-ink-3">
+          These cover how to do something. If a download already failed, the{" "}
+          <Link href="/answers" className="link-quiet">
+            answers section
+          </Link>{" "}
+          covers why: Reddit videos with no sound, TikTok&apos;s Save option
+          greyed out, expired Stories, and links that are not supported. For a
+          whole workflow rather than one task, start from{" "}
+          <Link href="/for" className="link-quiet">
+            who it&apos;s for
+          </Link>
+          .
+        </p>
       </div>
       <CtaBanner />
       <JsonLd

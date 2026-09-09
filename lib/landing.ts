@@ -30,6 +30,8 @@ export interface LandingCopy {
   guides: string[];
   /** Related landing pages to cross-link first */
   related: string[];
+  /** Problem and comparison pages under /answers worth linking in-sentence */
+  answers?: string[];
   /** ISO date of the last meaningful copy change */
   updated: string;
 }
@@ -84,6 +86,7 @@ export const LANDING_PAGES: Record<string, LandingCopy> = {
       },
     ],
     guides: ["how-to-download-tiktok-videos-without-watermark"],
+    answers: ["tiktok-save-greyed-out", "link-not-supported"],
     related: ["instagram-downloader", "youtube-downloader", "batch-video-downloader"],
     updated: "2026-09-07",
   },
@@ -137,6 +140,7 @@ export const LANDING_PAGES: Record<string, LandingCopy> = {
       },
     ],
     guides: ["how-to-download-instagram-reels"],
+    answers: ["instagram-story-expired", "private-post-error"],
     related: ["tiktok-downloader", "facebook-downloader", "pinterest-downloader"],
     updated: "2026-09-07",
   },
@@ -186,6 +190,7 @@ export const LANDING_PAGES: Record<string, LandingCopy> = {
       },
     ],
     guides: ["how-to-download-facebook-videos"],
+    answers: ["private-post-error", "link-not-supported"],
     related: ["instagram-downloader", "youtube-downloader", "twitter-downloader"],
     updated: "2026-09-07",
   },
@@ -239,6 +244,7 @@ export const LANDING_PAGES: Record<string, LandingCopy> = {
       },
     ],
     guides: ["how-to-convert-youtube-to-mp3", "how-to-batch-download-videos"],
+    answers: ["youtube-mp3-sounds-bad", "downloader-not-working"],
     related: ["youtube-to-mp3", "batch-video-downloader", "tiktok-downloader"],
     updated: "2026-09-07",
   },
@@ -292,6 +298,7 @@ export const LANDING_PAGES: Record<string, LandingCopy> = {
       },
     ],
     guides: ["how-to-convert-youtube-to-mp3"],
+    answers: ["youtube-mp3-sounds-bad", "mp3-vs-m4a-vs-wav-vs-flac"],
     related: ["youtube-downloader", "soundcloud-downloader", "tiktok-downloader"],
     updated: "2026-09-07",
   },
@@ -341,6 +348,7 @@ export const LANDING_PAGES: Record<string, LandingCopy> = {
       },
     ],
     guides: ["how-to-download-twitter-videos"],
+    answers: ["private-post-error", "link-not-supported"],
     related: ["reddit-downloader", "tiktok-downloader", "facebook-downloader"],
     updated: "2026-09-07",
   },
@@ -364,7 +372,7 @@ export const LANDING_PAGES: Record<string, LandingCopy> = {
       {
         heading: "Why most Reddit downloads are silent, and why ours are not",
         body: [
-          "Reddit's video host, v.redd.it, serves the picture and the audio as two separate streams. Save the video file directly and you get silence. ClipKoala fetches both streams and merges them on the server, so the MP4 you save plays with sound everywhere, from your phone gallery to a video editor.",
+          "Reddit's video host, v.redd.it, serves the picture and the audio as two separate streams. Save the video file directly and you get silence. ClipKoala resolves the post through a service that merges the two into one file, and streams that to you, so the MP4 you save plays with sound everywhere, from your phone gallery to a video editor.",
           "Reddit GIFs and image posts download too, and the post title becomes the filename.",
         ],
       },
@@ -378,7 +386,7 @@ export const LANDING_PAGES: Record<string, LandingCopy> = {
     faqs: [
       {
         q: "Why do Reddit videos usually download without sound?",
-        a: "Reddit serves the video and audio as separate streams. ClipKoala merges them server-side, so the file you save plays with sound in any player.",
+        a: "Reddit serves the video and audio as separate streams. They are merged into one file before it reaches you, so what you save plays with sound in any player.",
       },
       {
         q: "Which Reddit links work?",
@@ -390,6 +398,7 @@ export const LANDING_PAGES: Record<string, LandingCopy> = {
       },
     ],
     guides: ["how-to-download-reddit-videos-with-sound"],
+    answers: ["reddit-video-no-sound", "link-not-supported"],
     related: ["twitter-downloader", "youtube-downloader", "twitch-clip-downloader"],
     updated: "2026-09-07",
   },
@@ -438,6 +447,7 @@ export const LANDING_PAGES: Record<string, LandingCopy> = {
       },
     ],
     guides: ["how-to-download-pinterest-videos"],
+    answers: ["link-not-supported", "private-post-error"],
     related: ["instagram-downloader", "tiktok-downloader", "facebook-downloader"],
     updated: "2026-09-07",
   },
@@ -486,6 +496,7 @@ export const LANDING_PAGES: Record<string, LandingCopy> = {
       },
     ],
     guides: ["how-to-download-twitch-clips"],
+    answers: ["link-not-supported", "downloader-not-working"],
     related: ["youtube-downloader", "reddit-downloader", "twitter-downloader"],
     updated: "2026-09-07",
   },
@@ -534,6 +545,7 @@ export const LANDING_PAGES: Record<string, LandingCopy> = {
       },
     ],
     guides: ["how-to-download-soundcloud-tracks"],
+    answers: ["mp3-vs-m4a-vs-wav-vs-flac", "link-not-supported"],
     related: ["youtube-to-mp3", "tiktok-downloader", "youtube-downloader"],
     updated: "2026-09-07",
   },
@@ -542,7 +554,7 @@ export const LANDING_PAGES: Record<string, LandingCopy> = {
     slug: "batch-video-downloader",
     platform: null,
     name: "Batch Downloader",
-    metaTitle: "Batch Video Downloader: Download Multiple Videos at Once",
+    metaTitle: "Batch Video Downloader: Many Videos at Once",
     metaDescription:
       "Download many videos at once from TikTok, YouTube, Instagram, and more. Paste a list of links, import a .txt or .csv, or drop a whole YouTube playlist. Free.",
     h1: "Download multiple videos at once",
@@ -587,6 +599,7 @@ export const LANDING_PAGES: Record<string, LandingCopy> = {
       },
     ],
     guides: ["how-to-batch-download-videos"],
+    answers: ["link-not-supported", "downloader-not-working"],
     related: ["youtube-downloader", "tiktok-downloader", "instagram-downloader"],
     updated: "2026-09-07",
   },

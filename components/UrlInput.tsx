@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import {
   ArrowRight,
   AudioLines,
@@ -442,6 +443,27 @@ export default function UrlInput({
           aria-live="polite"
         >
           {batchMode ? batchHint : singleHint}
+          {showWarn && (
+            <>
+              {" · "}
+              <Link href="/answers/link-not-supported" className="underline underline-offset-2 hover:text-ink-1">
+                which links work
+              </Link>
+            </>
+          )}
+        </p>
+
+        {/* The boundary, stated at the moment of hesitation rather than in a
+            footnote: this is where people decide whether to trust the box. */}
+        <p className="text-center text-[11px] leading-relaxed text-ink-4">
+          Public posts only, no account, and nothing is stored on our
+          server.{" "}
+          <Link
+            href="/answers/private-post-error"
+            className="focus-ring rounded underline underline-offset-2 transition-colors hover:text-ink-2"
+          >
+            Why private posts can&apos;t be fetched
+          </Link>
         </p>
       </div>
     </div>

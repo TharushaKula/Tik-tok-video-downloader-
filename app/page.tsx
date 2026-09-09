@@ -8,6 +8,7 @@ import HowItWorks from "@/components/HowItWorks";
 import PlatformsSection from "@/components/PlatformsSection";
 import TrustSection from "@/components/sections/TrustSection";
 import GuidesTeaser from "@/components/sections/GuidesTeaser";
+import AudiencesTeaser from "@/components/sections/AudiencesTeaser";
 import FaqSection from "@/components/FaqSection";
 import CtaBanner from "@/components/sections/CtaBanner";
 import JsonLd from "@/components/JsonLd";
@@ -18,12 +19,12 @@ import { faqSchema, graph, webPageSchema } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: {
-    absolute: `${SITE.name}: Free Video Downloader for TikTok, YouTube, Instagram & More`,
+    absolute: `${SITE.name}: Free Video Downloader, No Sign-Up`,
   },
   description: SITE.description,
   alternates: { canonical: SITE_URL },
   openGraph: {
-    title: `${SITE.name}: Free Video Downloader for TikTok, YouTube, Instagram & More`,
+    title: `${SITE.name}: Free Video Downloader, No Sign-Up`,
     description: SITE.description,
     url: SITE_URL,
     siteName: SITE.name,
@@ -47,6 +48,7 @@ export default function HomePage() {
       <HowItWorks />
       <PlatformsSection />
       <TrustSection />
+      <AudiencesTeaser />
       <GuidesTeaser />
       <FaqSection faqs={HOME_FAQS} moreLink />
       <CtaBanner

@@ -21,11 +21,14 @@ import {
 import { QRCodeSVG } from "qrcode.react";
 import toast from "react-hot-toast";
 import type { VideoInfo } from "@/lib/types";
+import { markActivated, trackFunnel } from "@/lib/analytics";
 import PlatformBadge from "./PlatformBadge";
 import DownloadOptionRow, {
+  DOWNLOAD_EVENT,
   proxyUrlFor,
   startOptionDownload,
 } from "./DownloadOptionRow";
+import ShareResult from "./ShareResult";
 
 // Phone handoff: a QR encoding a ClipKoala deep link that re-fetches this
 // video, so scanning it opens the download already in progress on a phone.
@@ -39,6 +42,7 @@ function QrHandoff({
   const [href, setHref] = useState("");
   useEffect(() => {
     setHref(`${window.location.origin}/?url=${encodeURIComponent(sourceUrl)}`);
+    trackFunnel("qr_handoff");
   }, [sourceUrl]);
 
   useEffect(() => {
@@ -130,6 +134,12 @@ function ZipAllButton({ info }: { info: VideoInfo }) {
       a.click();
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 30000);
+      markActivated();
+      trackFunnel("zip_download", {
+        platform: info.platform,
+        format: "zip",
+        count: images.length,
+      });
       toast.success(`ZIP with ${images.length} images saved`);
     } catch (err) {
       toast.error(
@@ -190,6 +200,15 @@ export default function VideoResult({
 }: VideoResultProps) {
   const [previewing, setPreviewing] = useState(false);
   const [showQr, setShowQr] = useState(false);
+  // The share row only appears once a file is actually on its way, so the
+  // ask never lands before the visitor has been given anything.
+  const [downloaded, setDownloaded] = useState(false);
+
+  useEffect(() => {
+    const onDownload = () => setDownloaded(true);
+    window.addEventListener(DOWNLOAD_EVENT, onDownload);
+    return () => window.removeEventListener(DOWNLOAD_EVENT, onDownload);
+  }, []);
 
   const statItems = [
     { icon: Eye, label: "views", value: info.stats?.views },
@@ -248,7 +267,10 @@ export default function VideoResult({
               )}
               {previewOption && (
                 <button
-                  onClick={() => setPreviewing(true)}
+                  onClick={() => {
+                    setPreviewing(true);
+                    trackFunnel("preview_play", { platform: info.platform });
+                  }}
                   className="focus-ring group/play absolute inset-0 flex items-center justify-center"
                   aria-label="Preview video"
                 >
@@ -390,6 +412,8 @@ export default function VideoResult({
             : "Files are fetched through our server, so nothing is installed and no app is needed."}
         </p>
       </div>
+
+      {downloaded && <ShareResult platform={info.platform} />}
 
       {showQr && <QrHandoff sourceUrl={sourceUrl} onClose={() => setShowQr(false)} />}
     </div>

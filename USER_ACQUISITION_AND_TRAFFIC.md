@@ -31,7 +31,48 @@ Execution log for this playbook. Each item in **Highest-priority actions** below
 
 ### Log
 
-Nothing yet. This playbook has not been started on ClipKoala.
+**9 September 2026 — first code pass.** Everything in this playbook that
+could be built was built; nothing that needs an account, a relationship, or a
+recording was touched. Shipped:
+
+- **Activation funnel analytics** (`lib/analytics.ts`, `lib/attribution.ts`).
+  Submit → resolve start → success/failure → preview → download start, with
+  first-touch source, medium, campaign, and landing page preserved. The
+  pasted URL, title, author, and filename are never recorded; failures become
+  one of eight coarse classes and latencies one of five buckets. The privacy
+  policy was rewritten to describe exactly this, and
+  `lib/__tests__/analytics.test.ts` fails if a future change breaks the
+  guarantee.
+- **Four audience pages** at `/for/{creators,editors,teachers,social-managers}`,
+  each with its own title, description, canonical, social card, workflow,
+  stated limits, and FAQ.
+- **Eight problem, question, and comparison pages** at `/answers/...`, each
+  leading with the direct answer before any steps.
+- **Five new guides** from the highest-value list below.
+- **Post-download sharing**: a share row that shares the matching tool page
+  with UTM tags, never the visitor's source URL.
+- **Two one-tap research prompts**: what job a successful visitor finished,
+  and what stopped one who never activated. At most one per browser, fixed
+  choices only, never mid-flow.
+- **Trust pages**: `/roadmap` (no dates, including what was declined),
+  `/press`, `/accessibility`, `/security`, and `/.well-known/security.txt`.
+- **`/feed.xml`** RSS and **`/llms.txt`**, both generated from the same
+  constants the site uses.
+- **A pre-deploy SEO gate** (`npm run seo:audit`) covering status codes,
+  canonical host and self-reference, `noindex`, snippet lengths, heading
+  structure, JSON-LD validity, orphan pages, and broken internal links. It
+  found and fixed 35 real problems on its first run; 56/56 pages now pass
+  with zero errors and zero warnings.
+- **An IndexNow submitter** (`npm run indexnow`), key served from an env var.
+- Route-specific social cards for every static page, contextual in-sentence
+  internal links between the tool, guide, and answer clusters, and a
+  public-posts-only trust line beside the paste box.
+
+**Still blocking everything measurable:** Search Console is not verified and
+the sitemap has not been submitted. Until an operator does items 1 to 3
+below, assume zero proven organic acquisition. The funnel now records
+activation, but nothing yet records where the traffic came from, because
+there is no traffic.
 
 ## Highest-priority actions
 
@@ -43,36 +84,36 @@ Nothing yet. This playbook has not been started on ClipKoala.
    5. Run URL Inspection on `https://clipkoala.com/` and request indexing. Repeat for `/tiktok-downloader`, `/youtube-to-mp3`, `/instagram-downloader`, `/youtube-downloader`, and one guide.
 2. `[YOU]` **Set up Bing Webmaster Tools** — Import the Search Console property once step 1 is done, or verify by DNS, then submit the same sitemap URL.
 3. `[YOU]` **Confirm sitemap URLs are indexable** — Check tool pages, guides, FAQ, glossary, and legal pages in Search Console rather than assuming a valid sitemap means they are indexed. Two weeks after submitting, read **Pages → Why pages aren't indexed**. `Duplicate, Google chose a different canonical` means host or canonical mismatch. `Crawled – currently not indexed` on thin pages is a content signal, not a reason to request indexing again.
-4. `[ ]` **Add activation funnel analytics** — Measure landing view → paste/submit → resolve start → resolve success/failure → preview play → download → return visit. Page views alone cannot reveal the real bottleneck. Preserve first-touch source, medium, campaign, and landing page. Record a safe error class, never the pasted URL or filename in a way that identifies the post. Keep the privacy policy in step with whatever is recorded. Vercel Analytics already exists for page views; this item is action-level events plus a simple dashboard (or tagged events you can read weekly).
-5. `[ ]` **Create four audience landing pages first** — Start with people saving their own social posts, video editors collecting reference clips, teachers saving lecture/podcast audio for offline class use, and social managers archiving public campaign posts. Each page needs its own title, description, canonical, FAQ, and a path that opens the tool with the right job, not a copy-paste of the homepage.
-6. `[ ]` **Create four high-intent problem/output pages** — Build focused pages that Search Console and the keyword map already point at, for example Reddit downloads with sound, TikTok without watermark, YouTube to MP3 (bitrate honesty), and batch/ZIP downloads. Specs must come from what the product actually does. Do not invent 4K, private-video, or live-stream support.
+4. `[x]` **Add activation funnel analytics** — Measure landing view → paste/submit → resolve start → resolve success/failure → preview play → download → return visit. Page views alone cannot reveal the real bottleneck. Preserve first-touch source, medium, campaign, and landing page. Record a safe error class, never the pasted URL or filename in a way that identifies the post. Keep the privacy policy in step with whatever is recorded. Vercel Analytics already exists for page views; this item is action-level events plus a simple dashboard (or tagged events you can read weekly).
+5. `[x]` **Create four audience landing pages first** — Start with people saving their own social posts, video editors collecting reference clips, teachers saving lecture/podcast audio for offline class use, and social managers archiving public campaign posts. Each page needs its own title, description, canonical, FAQ, and a path that opens the tool with the right job, not a copy-paste of the homepage.
+6. `[x]` **Create four high-intent problem/output pages** — Build focused pages that Search Console and the keyword map already point at, for example Reddit downloads with sound, TikTok without watermark, YouTube to MP3 (bitrate honesty), and batch/ZIP downloads. Specs must come from what the product actually does. Do not invent 4K, private-video, or live-stream support.
 7. `[ ]` **Publish real static demos** — Screenshots and short clips of the actual UI (TikTok, YouTube, Instagram, X, Facebook, batch). Original or consented material only. These exist partly so outreach and directories have something true to show, and so a search visitor sees the result before trusting a paste.
-8. `[ ]` **Add one-click sharing after a successful download** — Offer a share button and a prewritten line that links the relevant tool page. Never put the user's source URL into a public share payload by default.
-9. `[ ]` **Build shareable tool links** — Deep links that open the matching downloader (and later, safe presets such as audio-only) without leaking the clip they just saved.
+8. `[x]` **Add one-click sharing after a successful download** — Offer a share button and a prewritten line that links the relevant tool page. Never put the user's source URL into a public share payload by default.
+9. `[~]` **Build shareable tool links** — Deep links that open the matching downloader (and later, safe presets such as audio-only) without leaking the clip they just saved. *Shipped: the post-download share button builds a UTM-tagged link to the matching tool page and never includes the source URL. Remaining: safe presets such as an audio-only variant.*
 10. `[YOU]` **Launch on product and tool directories** — Prepare a clear demo, screenshots, short video, and a description that stresses no sign-up, public links only, and no stored files. Product Hunt plus a small set of reputable directories, not fifteen scattergun submissions.
 11. `[YOU]` **Publish demonstration videos every week** — One real problem and outcome per video: TikTok without watermark, YouTube to MP3, Instagram carousel ZIP, Reddit with sound, batch paste, share-to-PWA.
 12. `[YOU]` **Recruit the first 20 power users manually** — Speak with editors, students, teachers, social managers, and people who already save their own posts. Learn the exact jobs that make them return.
 13. `[YOU]` **Earn the first relevant backlinks** — Ask creator-resource pages, education blogs, editor tool lists, and indie-maker roundups to test and list the tool. Ten good links beat a hundred directory submissions.
-14. `[ ]` **Add return-use features worth a second visit** — Recent history, favorites, collections, PWA, and the extension already exist as product ideas or code; this playbook still needs you to **measure** whether they create return visits and to fill the gaps that interviews reveal (resume, better empty states, finish notifications, and so on).
-15. `[ ]` **Protect speed and trust** — Keep intrusive ads away from paste, resolve, preview, and download. Explain failures in plain language with a retry. Keep `/status` honest when a resolver is down. Do not put popups or forced redirects in the download path.
+14. `[~]` **Add return-use features worth a second visit** — Recent history, favorites, collections, PWA, and the extension already exist as product ideas or code; this playbook still needs you to **measure** whether they create return visits and to fill the gaps that interviews reveal (resume, better empty states, finish notifications, and so on). *Shipped: every funnel event now carries a visitor-age bucket (new, 1d, 7d, 30d, older) and the entry point (history, favorites, palette, deeplink, share), so return use is measurable. Remaining: reading that data, the interviews, and resume.*
+15. `[x]` **Protect speed and trust** — Keep intrusive ads away from paste, resolve, preview, and download. Explain failures in plain language with a retry. Keep `/status` honest when a resolver is down. Do not put popups or forced redirects in the download path. *There are no ads anywhere in the flow; the error card keeps the URL, explains the likely cause, and offers a retry plus a link to `/status`; the failure paths now link to the matching `/answers` page. `/roadmap` records refusing ads in the download path as a deliberate decision.*
 
 ## Measurement and research
 
-- `[ ]` **Define the north-star action** — Use “successful download started” (file received or proxy download begun after a successful resolve) as the main activation event, not raw visits.
-- `[ ]` **Track the complete funnel** — Landing view → paste/submit → resolve start → resolve success → preview → download → return.
-- `[ ]` **Track each platform separately** — TikTok, YouTube, Instagram, and the long tail will activate and fail very differently.
-- `[ ]` **Track acquisition source** — Preserve UTM source, campaign, medium, and landing page so each channel can be compared.
-- `[ ]` **Track resolver reliability** — Record safe details such as platform, success, error class, and latency without storing the source URL in analytics.
-- `[ ]` **Track export choice** — MP4 vs MP3/M4A/WAV/FLAC, ZIP vs single file, quality picked. This shows which landing pages deserve more work.
-- `[ ]` **Track repeat use locally or anonymously** — Compare new and returning visitors while respecting the no-account, nothing-stored promise.
-- `[ ]` **Create a weekly growth dashboard** — Review visitors, activated users, activation rate, source, landing page, retention, indexed pages, and cost per activation.
+- `[x]` **Define the north-star action** — Use “successful download started” (file received or proxy download begun after a successful resolve) as the main activation event, not raw visits.
+- `[x]` **Track the complete funnel** — Landing view → paste/submit → resolve start → resolve success → preview → download → return.
+- `[x]` **Track each platform separately** — TikTok, YouTube, Instagram, and the long tail will activate and fail very differently.
+- `[x]` **Track acquisition source** — Preserve UTM source, campaign, medium, and landing page so each channel can be compared.
+- `[x]` **Track resolver reliability** — Record safe details such as platform, success, error class, and latency without storing the source URL in analytics.
+- `[x]` **Track export choice** — MP4 vs MP3/M4A/WAV/FLAC, ZIP vs single file, quality picked. This shows which landing pages deserve more work.
+- `[x]` **Track repeat use locally or anonymously** — Compare new and returning visitors while respecting the no-account, nothing-stored promise.
+- `[~]` **Create a weekly growth dashboard** — Review visitors, activated users, activation rate, source, landing page, retention, indexed pages, and cost per activation.
 - `[YOU]` **Connect Search Console to on-site activation** — Compare query impressions with downloads, not clicks alone.
-- `[ ]` **Add a one-question exit prompt** — Ask non-activated visitors what stopped them: trust, error, unsupported URL, quality, ads, or missing platform.
-- `[ ]` **Ask successful users what job they completed** — A short optional post-download question will reveal the best audience and messaging.
+- `[x]` **Add a one-question exit prompt** — Ask non-activated visitors what stopped them: trust, error, unsupported URL, quality, ads, or missing platform.
+- `[x]` **Ask successful users what job they completed** — A short optional post-download question will reveal the best audience and messaging.
 - `[YOU]` **Interview returning users** — Ten conversations will usually identify stronger retention work than guessing.
 - `[ ]` **Run message tests** — Compare “save without watermark,” “YouTube to MP3,” “batch downloader,” and “no sign-up” on the same traffic source.
 - `[ ]` **Set channel kill rules** — Stop any paid or time-intensive channel that cannot produce activated and returning users at a sustainable cost.
-- `[ ]` **Use consent correctly** — Keep analytics behavior and the privacy-policy description aligned, especially if advertising or remarketing is added.
+- `[x]` **Use consent correctly** — Keep analytics behavior and the privacy-policy description aligned, especially if advertising or remarketing is added.
 
 ## Technical search engine optimization
 
@@ -82,80 +123,87 @@ Nothing yet. This playbook has not been started on ClipKoala.
 - `[YOU]` **Inspect representative URLs** — Homepage, each platform tool page, `/youtube-to-mp3`, `/batch-video-downloader`, a few guides, `/faq`, `/glossary`, `/status`.
 - `[YOU]` **Request initial indexing selectively** — Homepage and highest-value tool pages first.
 - `[YOU]` **Add Bing; consider IndexNow later** — Notify participating engines when important pages are added. Google does not use IndexNow.
-- `[ ]` **Keep one canonical host** — Apex `https://clipkoala.com` is primary. Every canonical, sitemap URL, OG URL, and internal link must use that host. `www` and `snapload.app` should 308 once, not chain.
+- `[x]` **Keep one canonical host** — Apex `https://clipkoala.com` is primary. Every canonical, sitemap URL, OG URL, and internal link must use that host. `www` and `snapload.app` should 308 once, not chain.
 - `[ ]` **Monitor redirect chains** — Every public URL should reach its canonical version in one redirect at most.
 - `[ ]` **Keep preview deployments blocked** — Preview robots protection must prevent duplicate deployments from competing with production.
-- `[ ]` **Check status codes at every release** — Catch accidental 404, 500, redirect, or `noindex` on SEO landing pages.
-- `[ ]` **Improve Core Web Vitals** — Measure LCP, INP, and CLS on mobile around the hero, the paste box, and preview.
-- `[ ]` **Reduce initial JavaScript** — Keep marketing pages light; load the downloader UI where the user needs it.
-- `[ ]` **Keep the main explanation server-rendered** — Search engines and link previews should see useful copy without running the tool.
-- `[ ]` **Add breadcrumb markup consistently** — Visible trail plus matching `BreadcrumbList` on secondary pages.
-- `[ ]` **Use accurate app structured data** — Validate SoftwareApplication / WebApplication and add only properties that are visible and true.
-- `[ ]` **Do not depend on FAQ rich results** — Keep FAQs for users; Google limits FAQ rich results for most sites.
-- `[ ]` **Create route-specific social images** — A TikTok page and a YouTube-to-MP3 page should not share one generic card.
+- `[x]` **Check status codes at every release** — Catch accidental 404, 500, redirect, or `noindex` on SEO landing pages.
+- `[~]` **Improve Core Web Vitals** — Measure LCP, INP, and CLS on mobile around the hero, the paste box, and preview.
+- `[~]` **Reduce initial JavaScript** — Keep marketing pages light; load the downloader UI where the user needs it.
+- `[x]` **Keep the main explanation server-rendered** — Search engines and link previews should see useful copy without running the tool.
+- `[x]` **Add breadcrumb markup consistently** — Visible trail plus matching `BreadcrumbList` on secondary pages.
+- `[x]` **Use accurate app structured data** — Validate SoftwareApplication / WebApplication and add only properties that are visible and true.
+- `[x]` **Do not depend on FAQ rich results** — Keep FAQs for users; Google limits FAQ rich results for most sites.
+- `[x]` **Create route-specific social images** — A TikTok page and a YouTube-to-MP3 page should not share one generic card.
 - `[ ]` **Add useful image alt text** — Tutorial screenshots should describe the workflow.
-- `[ ]` **Maintain descriptive page titles** — Lead with the exact user job, then the free / no-sign-up benefit where it reads naturally.
+- `[x]` **Maintain descriptive page titles** — Lead with the exact user job, then the free / no-sign-up benefit where it reads naturally.
 - `[ ]` **Improve weak search snippets** — Rewrite titles and descriptions for pages with high impressions but low click-through rate (needs Search Console data first).
-- `[ ]` **Prevent parameter indexing** — `?url=` and campaign parameters must canonicalize to the clean page. Robots should keep API and deep-link duplicates out of the index.
-- `[ ]` **Use semantic headings** — One precise H1; then task, benefit, instructions, examples, questions.
-- `[ ]` **Strengthen contextual internal links** — Link related downloaders and guides inside sentences, not only footer lists.
-- `[ ]` **Detect orphan pages automatically** — Every indexable page needs at least one crawlable internal link.
-- `[ ]` **Monitor broken internal and external links**
-- `[ ]` **Use real last-modified dates** — Only when the page content genuinely changed.
-- `[ ]` **Preserve accessibility** — Keyboard, contrast, labels, focus, and status messages.
-- `[ ]` **Publish an accessibility statement** — What works, known limits, how to report barriers.
+- `[x]` **Prevent parameter indexing** — `?url=` and campaign parameters must canonicalize to the clean page. Robots should keep API and deep-link duplicates out of the index.
+- `[x]` **Use semantic headings** — One precise H1; then task, benefit, instructions, examples, questions.
+- `[x]` **Strengthen contextual internal links** — Link related downloaders and guides inside sentences, not only footer lists.
+- `[x]` **Detect orphan pages automatically** — Every indexable page needs at least one crawlable internal link.
+- `[x]` **Monitor broken internal and external links**
+- `[x]` **Use real last-modified dates** — Only when the page content genuinely changed.
+- `[~]` **Preserve accessibility** — Keyboard, contrast, labels, focus, and status messages.
+- `[x]` **Publish an accessibility statement** — What works, known limits, how to report barriers.
 - `[ ]` **Keep the public status page truthful** — Reliability is part of search reputation.
 - `[YOU]` **Watch crawl stats** — Learn whether bots reach tool and guide pages and whether errors affect them.
-- `[ ]` **Validate structured data after every template change**
-- `[ ]` **Add a pre-deploy SEO gate** — Status codes, canonical host, `noindex`, snippet lengths, heading structure, JSON-LD, sitemap agreement, orphan pages.
+- `[x]` **Validate structured data after every template change**
+- `[x]` **Add a pre-deploy SEO gate** — Status codes, canonical host, `noindex`, snippet lengths, heading structure, JSON-LD, sitemap agreement, orphan pages.
 
 ## Search landing pages and programmatic SEO
 
-- `[ ]` **Use-case pages** — Editors, teachers, social managers, students: only if the copy is genuinely different.
+- `[x]` **Use-case pages** — Editors, teachers, social managers, students: only if the copy is genuinely different.
 - `[ ]` **Platform pages** — Confirm each `/[platform]-downloader` page has unique intent, FAQ, and proof, not a swapped keyword.
-- `[ ]` **Output-format pages** — YouTube to MP3 / M4A / WAV / FLAC, TikTok MP3, ZIP carousels: only where the product actually exports that format.
-- `[ ]` **Problem pages** — “Reddit video has no sound,” “TikTok save greyed out,” “YouTube to MP3 sounds bad.”
-- `[ ]` **How-to guides** — Complete tasks such as “how to save an Instagram Story before it expires” or “how to download a YouTube playlist.”
-- `[ ]` **Question pages** — High-intent questions from Search Console, support, autocomplete, and interviews.
+- `[x]` **Output-format pages** — YouTube to MP3 / M4A / WAV / FLAC, TikTok MP3, ZIP carousels: only where the product actually exports that format.
+- `[x]` **Problem pages** — “Reddit video has no sound,” “TikTok save greyed out,” “YouTube to MP3 sounds bad.”
+- `[~]` **How-to guides** — Complete tasks such as “how to save an Instagram Story before it expires” or “how to download a YouTube playlist.”
+- `[x]` **Question pages** — High-intent questions from Search Console, support, autocomplete, and interviews.
 - `[ ]` **Glossary pages** — Bitrate, muxing, watermark, HLS, FLAC vs MP3, and other terms users actually search.
-- `[ ]` **Comparison pages** — Honest format comparisons (MP3 vs M4A vs FLAC). Competitor-name pages are out unless they are accurate, useful, and respectful of trademarks.
-- `[ ]` **Troubleshooting pages** — Resolver down, unsupported URL, private post, expired Story, audio missing.
-- `[ ]` **Browser and device guides** — Chrome, Safari, iPhone, Android, only after testing each flow.
+- `[x]` **Comparison pages** — Honest format comparisons (MP3 vs M4A vs FLAC). Competitor-name pages are out unless they are accurate, useful, and respectful of trademarks.
+- `[x]` **Troubleshooting pages** — Resolver down, unsupported URL, private post, expired Story, audio missing.
+- `[x]` **Browser and device guides** — Chrome, Safari, iPhone, Android, only after testing each flow.
 - `[ ]` **Localized landing pages** — Human-reviewed translation and proper `hreflang`. Do not duplicate English pages with keywords swapped.
-- `[ ]` **Topical content clusters** — Hub page plus guides, tools, FAQs, and troubleshooting for one job.
+- `[x]` **Topical content clusters** — Hub page plus guides, tools, FAQs, and troubleshooting for one job.
 - `[ ]` **Original benchmark or reliability pages** — Documented resolver tests, quality notes, and what failed. Method must be real.
-- `[ ]` **Public changelog as crawlable explanations** — New platforms and fixes linked to the matching tool pages.
-- `[ ]` **Do not mass-produce thin pages** — Every page needs unique utility, examples, facts, and a clear path into the paste box.
+- `[~]` **Public changelog as crawlable explanations** — New platforms and fixes linked to the matching tool pages.
+- `[x]` **Do not mass-produce thin pages** — Every page needs unique utility, examples, facts, and a clear path into the paste box.
 
-Highest-value next informational pages (from the existing keyword map, all still to write or to treat as unproven until they rank):
+Highest-value next informational pages (from the existing keyword map). All
+eight are now written. **Written is not ranked**: treat every one of these as
+unproven until Search Console shows impressions for it.
 
-- How to download YouTube Shorts (and why quality picker matters)
-- How to save Instagram Stories before they expire
-- How to download a whole YouTube playlist at once
-- How to download TikTok photo slideshows (with music)
-- How to save videos on iPhone from Safari
-- Reddit video has no sound after download
-- TikTok Save video greyed out / not allowed
-- YouTube to MP3 sounds bad: bitrate explained
+- `[x]` How to download YouTube Shorts (and why quality picker matters) — `/guides/how-to-download-youtube-shorts`
+- `[x]` How to save Instagram Stories before they expire — `/guides/how-to-save-instagram-stories`
+- `[x]` How to download a whole YouTube playlist at once — `/guides/how-to-download-youtube-playlist`
+- `[x]` How to download TikTok photo slideshows (with music) — `/guides/how-to-download-tiktok-slideshows`
+- `[x]` How to save videos on iPhone from Safari — `/guides/how-to-save-videos-on-iphone`
+- `[x]` Reddit video has no sound after download — `/answers/reddit-video-no-sound`
+- `[x]` TikTok Save video greyed out / not allowed — `/answers/tiktok-save-greyed-out`
+- `[x]` YouTube to MP3 sounds bad: bitrate explained — `/answers/youtube-mp3-sounds-bad`
+
+Four more answer pages were added alongside them, from the troubleshooting and
+comparison lists above: `/answers/instagram-story-expired`,
+`/answers/private-post-error`, `/answers/link-not-supported`,
+`/answers/downloader-not-working`, and `/answers/mp3-vs-m4a-vs-wav-vs-flac`.
 
 Do not add near-duplicate “X downloader online / free / HD” pages, city pages, or pages for platforms the tool does not support.
 
 ## Content marketing
 
-- `[ ]` **Start or extend a practical guides section** — Real download, quality, and “why it failed” problems.
-- `[ ]` **Create cornerstone guides** — Own a few complete subjects such as “save TikTok without a watermark” and “YouTube audio formats that actually work.”
+- `[~]` **Start or extend a practical guides section** — Real download, quality, and “why it failed” problems.
+- `[~]` **Create cornerstone guides** — Own a few complete subjects such as “save TikTok without a watermark” and “YouTube audio formats that actually work.”
 - `[ ]` **Publish before-and-after demonstrations** — Link in, settings chosen, file out. Original or consented clips only.
 - `[YOU]` **Write user stories** — Only from real people who completed a real, lawful job.
 - `[ ]` **Publish transparent engineering stories** — Resolver failover, muxing Reddit audio, why Vimeo is not supported, proxy download design.
-- `[ ]` **Publish privacy and legality explainers** — What is fetched, what is not stored, public vs private, DMCA.
+- `[x]` **Publish privacy and legality explainers** — What is fetched, what is not stored, public vs private, DMCA.
 - `[ ]` **Create downloadable checklists** — Archiving your own posts, lecture-audio workflow, filename templates.
 - `[YOU]` **Run original surveys** — Anonymized habits around saving clips; publish only real results.
 - `[YOU]` **Invite guest experts** — Editors, teachers, indie developers. Strong editorial standards.
 - `[YOU]` **Syndicate carefully** — Canonical link back where the platform supports it.
-- `[ ]` **Offer an RSS feed** — Guides and product updates without collecting email.
+- `[x]` **Offer an RSS feed** — Guides and product updates without collecting email.
 - `[YOU]` **Publish a monthly update** — New platforms, fixes, and honest outages.
-- `[ ]` **Create a public roadmap** — Let users see what is next; invite votes without promising dates you cannot keep.
-- `[ ]` **Turn support answers into pages** — Repeated questions are validated topics.
+- `[x]` **Create a public roadmap** — Let users see what is next; invite votes without promising dates you cannot keep.
+- `[~]` **Turn support answers into pages** — Repeated questions are validated topics.
 - `[YOU]` **Refresh winning content** — Improve pages already getting impressions before endlessly creating new ones.
 - `[YOU]` **Consolidate losing content** — Merge overlapping or thin pages.
 
@@ -164,6 +212,10 @@ Do not add near-duplicate “X downloader online / free / HD” pages, city page
 Most items below this point need an account, a relationship, a recording, or an operator decision. Code cannot complete them.
 
 ### Do these first — nothing else is measurable until they do
+
+*Unchanged by the code pass on 9 September 2026. These three are still open,
+and the funnel analytics that now exist produce nothing useful until traffic
+does.*
 
 1. **Search Console domain property + sitemap** (priority item 1).
 2. **Read the Pages report about two weeks later.** Coverage issues before content expansion.
@@ -198,42 +250,42 @@ Most items below this point need an account, a relationship, a recording, or an 
 
 ## Product-led growth and sharing loops
 
-- `[ ]` **Post-success share button** — Share the tool, not the user's source URL by default.
-- `[ ]` **Native mobile share sheet**
-- `[ ]` **Shareable tool / quality links**
+- `[x]` **Post-success share button** — Share the tool, not the user's source URL by default.
+- `[x]` **Native mobile share sheet**
+- `[~]` **Shareable tool / quality links**
 - `[ ]` **Optional attribution badge** — “Saved with ClipKoala,” no forced watermark on their file.
 - `[ ]` **Bookmarklet or “send this tab”** — Extension already conceived; still treat store listing, screenshots, and reviews as unstarted acquisition work.
-- `[ ]` **Installable PWA and web share target** — Confirm they are discoverable from `/extension` or a tools page, with install instructions.
-- `[ ]` **QR phone handoff** — Move a desktop result to a phone without an account.
-- `[ ]` **Feedback invitation after success** — Never after a failure, never before the file arrives.
+- `[~]` **Installable PWA and web share target** — Confirm they are discoverable from `/extension` or a tools page, with install instructions.
+- `[~]` **QR phone handoff** — Move a desktop result to a phone without an account.
+- `[x]` **Feedback invitation after success** — Never after a failure, never before the file arrives.
 - `[YOU]` **Ask for reviews at the right moment** — After a successful download only.
 
 ## Retention and repeat traffic
 
-- `[ ]` **Recent download history that actually brings people back**
-- `[ ]` **Favorites and collections**
-- `[ ]` **PWA on the home screen**
+- `[~]` **Recent download history that actually brings people back**
+- `[~]` **Favorites and collections**
+- `[~]` **PWA on the home screen**
 - `[ ]` **Finish notifications** — Only after a long YouTube conversion, with explicit permission, never on first landing.
 - `[ ]` **RSS for guides and changelog**
 - `[YOU]` **Opt-in product email** — Low frequency; never required to use the tool.
 - `[ ]` **New-feature tour for returners** — Dismissible, tied to a real changelog.
-- `[ ]` **Resolver health the user can see** — `/status` must match reality.
-- `[ ]` **Useful filenames and templates**
+- `[~]` **Resolver health the user can see** — `/status` must match reality.
+- `[~]` **Useful filenames and templates**
 - `[YOU]` **Donation or supporter option** — Only if it reduces pressure to damage the download path with ads.
 
 ## Conversion rate improvements
 
-- `[ ]` **Lead with one primary job per landing page**
-- `[ ]` **Show the paste box and a real example above the fold**
-- `[ ]` **Make “no sign-up” impossible to miss**
-- `[ ]` **Explain public-links-only beside the input** — At the moment of hesitation.
-- `[ ]` **Honest progress for long YouTube jobs**
-- `[ ]` **First-error recovery** — Keep the URL, explain the cause, offer retry.
+- `[~]` **Lead with one primary job per landing page**
+- `[~]` **Show the paste box and a real example above the fold**
+- `[~]` **Make “no sign-up” impossible to miss**
+- `[~]` **Explain public-links-only beside the input** — At the moment of hesitation.
+- `[~]` **Honest progress for long YouTube jobs**
+- `[~]` **First-error recovery** — Keep the URL, explain the cause, offer retry.
 - `[YOU]` **Social proof** — Only verifiable testimonials or counts.
-- `[ ]` **Trust proof** — Privacy, DMCA, status, operator contact on the decision path.
-- `[ ]` **Mobile paste, share, and download with one hand**
-- `[ ]` **No ads or unrelated CTAs on paste / resolve / download**
-- `[ ]` **One next action after success** — Download, save to favorites, try batch, or share the tool.
+- `[~]` **Trust proof** — Privacy, DMCA, status, operator contact on the decision path.
+- `[~]` **Mobile paste, share, and download with one hand**
+- `[~]` **No ads or unrelated CTAs on paste / resolve / download**
+- `[~]` **One next action after success** — Download, save to favorites, try batch, or share the tool.
 - `[ ]` **A/B tests only when traffic is large enough** — Judge by successful downloads, not button clicks.
 
 ## Community distribution
@@ -275,9 +327,9 @@ Most items below this point need an account, a relationship, a recording, or an 
 
 ## Backlink acquisition
 
-- `[ ]` **Create link-worthy free utilities** — Filename templates, bitrate explainer, “why Reddit has no sound,” status/reliability notes.
+- `[~]` **Create link-worthy free utilities** — Filename templates, bitrate explainer, “why Reddit has no sound,” status/reliability notes.
 - `[ ]` **Publish original research** — Reproducible resolver or quality tests.
-- `[ ]` **Build one definitive guide** worth citing.
+- `[~]` **Build one definitive guide** worth citing.
 - `[YOU]` **Earn resource-list links** — Never buy or fabricate `.edu` or nonprofit links.
 - `[YOU]` **Open-source useful components**
 - `[YOU]` **Recover lost links** after domain change (`snapload.app` → `clipkoala.com`).
@@ -336,7 +388,7 @@ Most items below this point need an account, a relationship, a recording, or an 
 
 Treat each of these as a **separate product** with its own review, permissions, and release cadence. None of this playbook is started:
 
-- `[ ]` **PWA discoverability and install prompts that are not annoying**
+- `[~]` **PWA discoverability and install prompts that are not annoying**
 - `[ ]` **Chrome/Edge extension listing and reviews**
 - `[ ]` **Firefox extension**
 - `[ ]` **Desktop wrapper** — Only if web/PWA demand is proven.
@@ -346,30 +398,30 @@ Treat each of these as a **separate product** with its own review, permissions, 
 
 ## AI-search and answer-engine visibility
 
-- `[ ]` **Publish clear factual pages** — Platforms, formats, limitations, privacy, no private videos.
-- `[ ]` **Strong entity consistency** — ClipKoala, clipkoala.com, Organization details, platform count, contact.
-- `[ ]` **`llms.txt`** — Optional factual summary generated from the same constants the site uses. Not a ranking trick.
-- `[ ]` **Allow or disallow AI crawlers intentionally** — Document the choice in `robots`.
-- `[ ]` **Original data** — Unique reliability notes and definitions beat generic “best downloader” copy.
-- `[ ]` **Concise answer sections** — Direct answer first, then steps.
-- `[ ]` **Keep dates and facts current** — Stale platform counts and “no limits” claims weaken trust.
+- `[x]` **Publish clear factual pages** — Platforms, formats, limitations, privacy, no private videos.
+- `[x]` **Strong entity consistency** — ClipKoala, clipkoala.com, Organization details, platform count, contact.
+- `[x]` **`llms.txt`** — Optional factual summary generated from the same constants the site uses. Not a ranking trick.
+- `[x]` **Allow or disallow AI crawlers intentionally** — Document the choice in `robots`.
+- `[~]` **Original data** — Unique reliability notes and definitions beat generic “best downloader” copy.
+- `[x]` **Concise answer sections** — Direct answer first, then steps.
+- `[x]` **Keep dates and facts current** — Stale platform counts and “no limits” claims weaken trust.
 - `[YOU]` **Earn independent mentions**
 - `[YOU]` **Do not create a promotional Wikipedia page**
 
 ## Reputation, trust, and advocacy
 
 - `[YOU]` **Operator and contact details that work**
-- `[ ]` **Clear terms and copyright position**
-- `[ ]` **Precise privacy claims**
-- `[ ]` **Public status page and incident notes**
-- `[ ]` **Accessibility progress**
+- `[x]` **Clear terms and copyright position**
+- `[x]` **Precise privacy claims**
+- `[~]` **Public status page and incident notes**
+- `[~]` **Accessibility progress**
 - `[YOU]` **Real testimonials** — Role and use case, permission, never fabricated.
 - `[YOU]` **Invite reviews only after success** — Never pay for positive sentiment.
 - `[YOU]` **Respond to every substantive review**
-- `[ ]` **Verifiable usage milestones only**
+- `[x]` **Verifiable usage milestones only**
 - `[ ]` **Transparent “how the free tool is funded” page** if ads or donations appear
-- `[ ]` **Responsible disclosure channel**
-- `[ ]` **Public changelog**
+- `[x]` **Responsible disclosure channel**
+- `[x]` **Public changelog**
 - `[YOU]` **Recognize contributors who want credit**
 
 ## Feature-driven acquisition opportunities

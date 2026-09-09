@@ -46,7 +46,7 @@ export const GUIDES: Record<string, GuideCopy> = {
   "how-to-download-tiktok-videos-without-watermark": {
     slug: "how-to-download-tiktok-videos-without-watermark",
     platform: "tiktok",
-    metaTitle: "How to Download TikTok Videos Without a Watermark (2026)",
+    metaTitle: "How to Download TikTok Videos Without a Watermark",
     metaDescription:
       "Save any TikTok video without the watermark in HD, free and in under a minute. A step-by-step guide that works on phone and desktop, no app required.",
     h1: "How to download TikTok videos without a watermark",
@@ -378,7 +378,7 @@ export const GUIDES: Record<string, GuideCopy> = {
       },
       {
         title: "Download the merged MP4",
-        body: "Click Download Video. ClipKoala fetches the video and audio streams, merges them on the server, and streams the finished MP4 to your browser. The post title becomes the filename.",
+        body: "Click Download Video. The post is resolved through a service that merges Reddit's separate video and audio streams, and the finished MP4 is streamed to your browser. The post title becomes the filename.",
       },
     ],
     tips: [
@@ -408,7 +408,7 @@ export const GUIDES: Record<string, GuideCopy> = {
   "how-to-download-pinterest-videos": {
     slug: "how-to-download-pinterest-videos",
     platform: "pinterest",
-    metaTitle: "How to Download Pinterest Videos and Images in Full Quality",
+    metaTitle: "How to Download Pinterest Videos and Image Pins",
     metaDescription:
       "Save Pinterest video pins as MP4 and image pins at their original resolution. Works with pin.it links from the app. Free, no account needed.",
     h1: "How to download Pinterest videos and images",
@@ -617,6 +617,290 @@ export const GUIDES: Record<string, GuideCopy> = {
     landingSlug: "batch-video-downloader",
     published: "2026-08-28",
     updated: "2026-09-07",
+  },
+
+  "how-to-download-youtube-shorts": {
+    slug: "how-to-download-youtube-shorts",
+    platform: "youtube",
+    metaTitle: "How to Download YouTube Shorts in Full Quality",
+    metaDescription:
+      "Save a YouTube Short as an MP4 in the quality you choose, or pull just the audio. Step by step, free, with no app and no account.",
+    h1: "How to download YouTube Shorts",
+    shortTitle: "YouTube Shorts",
+    intro:
+      "A Short is an ordinary YouTube video in a vertical frame, so it downloads like one: paste the link, choose a quality, get an MP4. The part worth understanding is the quality picker, because Shorts are shot for phone screens and the wrong choice gives you a file that looks soft on anything bigger.",
+    steps: [
+      {
+        title: "Copy the Short's link",
+        body: "Tap Share under the Short and choose Copy link. You will get a youtube.com/shorts/... URL. A youtu.be short link for the same video works identically, and so does the regular watch URL if you opened it on desktop.",
+      },
+      {
+        title: "Paste it into the YouTube downloader",
+        body: "Drop the link into ClipKoala. Shorts resolve the same way full videos do, so within a couple of seconds you will see the title, the channel, and the list of available qualities.",
+      },
+      {
+        title: "Choose a quality deliberately",
+        body: "Shorts are usually uploaded at 1080p in a vertical frame, which is 1080 pixels across the short side. Pick 1080p if the clip is going anywhere near a large screen or an edit. Pick 360p or 480p only when you want a small file for a message or a rough cut.",
+      },
+      {
+        title: "Save the file, or take the audio instead",
+        body: "The MP4 converts on demand, with progress shown on the button, and starts downloading the moment it is ready. If it was the sound you were after, choose MP3 and skip the video entirely.",
+      },
+    ],
+    tips: [
+      "A Short and its regular watch URL are the same video, so either link works",
+      "Downloads top out at 1080p; there is no 4K path, and a Short rarely has one anyway",
+      "Several Shorts to save? Paste all the links at once and batch mode handles them together",
+    ],
+    faqs: [
+      {
+        q: "Why does the quality list look different from a normal video?",
+        a: "Shorts are vertical, so the resolution labels describe the short side of the frame. A 1080p Short is 1080 pixels wide and around 1920 tall, which is the full quality most Shorts are uploaded in.",
+      },
+      {
+        q: "Can I download a Short as an MP3?",
+        a: "Yes. Every YouTube result, Shorts included, offers MP3 at 320kbps alongside M4A, WAV, and FLAC.",
+      },
+      {
+        q: "Do Shorts links from the mobile app work?",
+        a: "Yes. The Copy link option in the app gives a youtube.com/shorts/... or youtu.be link, and both resolve.",
+      },
+      {
+        q: "Is there a watermark on downloaded Shorts?",
+        a: "No. YouTube does not stamp Shorts the way TikTok stamps its exports, so the file you get is the upload itself.",
+      },
+    ],
+    landingSlug: "youtube-downloader",
+    published: "2026-09-09",
+    updated: "2026-09-09",
+  },
+
+  "how-to-save-instagram-stories": {
+    slug: "how-to-save-instagram-stories",
+    platform: "instagram",
+    metaTitle: "How to Save an Instagram Story Before It Expires",
+    metaDescription:
+      "Stories disappear after 24 hours. How to save a public Story or Highlight while it is still live, and what to do once the window has closed.",
+    h1: "How to save an Instagram Story before it expires",
+    shortTitle: "Instagram Stories",
+    intro:
+      "A Story is live for 24 hours and then it is deleted, permanently and for everyone. That makes this a race rather than a task: if the Story matters, save it the same day. Here is how, plus the one thing to check first so you do not spend ten minutes on something that is already gone.",
+    steps: [
+      {
+        title: "Check the Story is still live and public",
+        body: "Open the profile in a browser where you are logged out. If the Story appears, it can be fetched. A login wall means the account is private and nothing will work; a not-found page means the 24 hours are already up.",
+      },
+      {
+        title: "Copy the Story link",
+        body: "Open the Story, tap the three dots, and choose Copy link. Highlight links work too and are copied the same way from the Highlight cover on the profile.",
+      },
+      {
+        title: "Paste it into the Instagram downloader",
+        body: "Drop the link into ClipKoala. Video Stories arrive as MP4 at the quality Instagram serves, and photo Stories as full-resolution JPGs rather than the compressed preview a screenshot would give you.",
+      },
+      {
+        title: "Save it somewhere that is not a browser tab",
+        body: "The file lands in your downloads. Move it somewhere deliberate straight away, because the whole reason you saved it is that the original will not exist tomorrow.",
+      },
+    ],
+    tips: [
+      "Highlights do not expire, so a Story saved into a Highlight can be fetched any time",
+      "A screenshot loses quality and adds interface clutter; the download is the actual file",
+      "Once 24 hours have passed there is nothing left to fetch, by anyone or any tool",
+    ],
+    faqs: [
+      {
+        q: "Can I download an Instagram Story after it expires?",
+        a: "No. Instagram deletes the media after 24 hours and it stops being served, so there is nothing left for any tool to fetch. Check whether it was saved into a Highlight instead.",
+      },
+      {
+        q: "Can I save Stories from a private account?",
+        a: "No. Only public Stories and Highlights can be fetched. ClipKoala never asks for your Instagram login and will not reach followers-only content.",
+      },
+      {
+        q: "Will the person know I saved their Story?",
+        a: "Instagram notifies people who has viewed a Story, which happens when you open it, exactly as it would normally. The download itself is a separate request that Instagram does not attribute to you.",
+      },
+      {
+        q: "Do Highlights download the same way?",
+        a: "Yes, and they are the safer option: Highlights stay on the profile until the owner removes them, so there is no 24-hour clock.",
+      },
+    ],
+    landingSlug: "instagram-downloader",
+    published: "2026-09-09",
+    updated: "2026-09-09",
+  },
+
+  "how-to-download-youtube-playlist": {
+    slug: "how-to-download-youtube-playlist",
+    platform: "youtube",
+    metaTitle: "How to Download a Whole YouTube Playlist at Once",
+    metaDescription:
+      "Paste a playlist link and queue its videos as a batch, as MP4 or MP3. How playlist downloading works, what the limits are, and how to work through a long list.",
+    h1: "How to download a whole YouTube playlist",
+    shortTitle: "YouTube playlists",
+    intro:
+      "Paste a playlist link instead of a video link and ClipKoala expands it into a batch of that playlist's most recent videos, each with its own quality and audio options. This is the fastest route to a lecture series, a conference track, or an album of your own uploads, as long as you know where the limits sit.",
+    steps: [
+      {
+        title: "Copy the playlist link, not a video link",
+        body: "Open the playlist and copy the URL containing list=. A watch URL that happens to have a playlist attached works too, because the playlist ID is what gets read. Channel and @handle links behave the same way and expand into recent uploads.",
+      },
+      {
+        title: "Paste it and let it expand",
+        body: "ClipKoala loads the playlist and switches into batch mode automatically, queuing the most recent videos. If the playlist is longer than one batch, you will be told how many of the total were queued.",
+      },
+      {
+        title: "Choose formats per video, or take them all",
+        body: "Each row expands to show its own quality and audio choices, so you can take one talk as 1080p video and the rest as MP3. Save all takes the top option for every finished row.",
+      },
+      {
+        title: "Work through long playlists in blocks",
+        body: "Batches are capped at 10 links and fetched three at a time. For a 40-video series, run four batches back to back rather than looking for a setting that lifts the cap: there is not one, and the cap is what keeps each fetch quick.",
+      },
+    ],
+    tips: [
+      "Audio-only is much faster than video for a long lecture series",
+      "Private and unlisted videos inside an otherwise public playlist will fail individually and can be retried or skipped",
+      "A channel link queues recent uploads the same way a playlist does",
+    ],
+    faqs: [
+      {
+        q: "Can I download a playlist with hundreds of videos?",
+        a: "Not in one go. Batches are capped at 10 links, so a long playlist means several batches run back to back. The cap keeps every fetch fast rather than queueing hundreds of slow requests.",
+      },
+      {
+        q: "Can I convert a whole playlist to MP3?",
+        a: "Yes. Expand each row and choose MP3, or use Save all after setting the audio option on the items you want. Every MP3 is encoded at 320kbps.",
+      },
+      {
+        q: "Does it download the playlist in order?",
+        a: "The batch queues the most recent videos and fetches three at a time, so results can arrive out of order. Use a filename template with a date so the files sort correctly once saved.",
+      },
+      {
+        q: "What happens to private videos in the playlist?",
+        a: "They fail individually with their own error and retry button. The rest of the batch continues, so one restricted video does not stop the others.",
+      },
+    ],
+    landingSlug: "youtube-downloader",
+    published: "2026-09-09",
+    updated: "2026-09-09",
+  },
+
+  "how-to-download-tiktok-slideshows": {
+    slug: "how-to-download-tiktok-slideshows",
+    platform: "tiktok",
+    metaTitle: "How to Download TikTok Slideshows With the Music",
+    metaDescription:
+      "Save every slide of a TikTok photo post as a full-resolution image, grab the soundtrack as MP3, or take the whole set as one ZIP. Free, no app needed.",
+    h1: "How to download a TikTok photo slideshow",
+    shortTitle: "TikTok slideshows",
+    intro:
+      "TikTok photo posts are not videos, which is why so many downloaders return a single frame or nothing at all. Each slide is a separate image and the music is a separate audio track. ClipKoala lists all of them, so you can take one slide, the sound, or the whole set as a ZIP.",
+    steps: [
+      {
+        title: "Copy the slideshow link",
+        body: "Tap Share on the photo post and choose Copy link, exactly as you would for a video. Short vm.tiktok.com links work too, and so do links copied from the web.",
+      },
+      {
+        title: "Paste it into the TikTok downloader",
+        body: "ClipKoala detects that the post is a slideshow rather than a video and lists every slide separately, each at the resolution it was uploaded in, along with the soundtrack.",
+      },
+      {
+        title: "Take one slide or the whole set",
+        body: "Save individual slides from their own rows, or use Download all as ZIP to get every image in one file named after the post. A nine-slide carousel becomes one download rather than nine.",
+      },
+      {
+        title: "Grab the sound separately if you want it",
+        body: "The soundtrack appears as its own MP3 option. It is a separate file from the images, because a slideshow has no single video file to embed it in.",
+      },
+    ],
+    tips: [
+      "The images are the originals, not the downscaled versions a screenshot would give you",
+      "There is no automatic merge into one video yet; the slides and the sound arrive separately",
+      "Private and friends-only photo posts cannot be fetched, exactly like private videos",
+    ],
+    faqs: [
+      {
+        q: "Why do most downloaders fail on TikTok photo posts?",
+        a: "A slideshow has no video file. It is a set of images plus an audio track, so a tool that looks for a video URL finds nothing. It has to be handled as a different kind of post.",
+      },
+      {
+        q: "Can I get the slideshow as a single video?",
+        a: "Not yet. The slides download as separate images and the music as a separate MP3. Merging them into one MP4 is on the list, and it is not pretended to work in the meantime.",
+      },
+      {
+        q: "Do the images keep their full resolution?",
+        a: "Yes. Each slide downloads at the resolution it was uploaded in, rather than the compressed preview you would get from a screenshot.",
+      },
+      {
+        q: "Is there a watermark on the images?",
+        a: "No. The images are fetched as uploaded, without TikTok's export watermark.",
+      },
+    ],
+    landingSlug: "tiktok-downloader",
+    published: "2026-09-09",
+    updated: "2026-09-09",
+  },
+
+  "how-to-save-videos-on-iphone": {
+    slug: "how-to-save-videos-on-iphone",
+    platform: null,
+    metaTitle: "How to Save Videos on iPhone from Safari (No App)",
+    metaDescription:
+      "Download a video on an iPhone and get it into Photos, using Safari alone. Where iOS actually puts the file, and how to add ClipKoala to your home screen.",
+    h1: "How to save videos on an iPhone from Safari",
+    shortTitle: "Saving on iPhone",
+    intro:
+      "iOS makes downloading feel harder than it is, mostly because Safari puts the file somewhere you were not expecting. Nothing needs installing. The trick is knowing that downloads land in Files, not Photos, and that moving them across is two taps.",
+    steps: [
+      {
+        title: "Copy the link in the app you are in",
+        body: "Tap Share on the post and choose Copy link. Every supported app offers this, and it is more reliable than opening the post in Safari and copying the address bar.",
+      },
+      {
+        title: "Open ClipKoala in Safari and paste",
+        body: "Tap the link box and hold to paste. Safari usually offers the copied link straight away, and ClipKoala can also detect a fresh link in your clipboard and offer to fetch it for you.",
+      },
+      {
+        title: "Pick a quality and confirm the download",
+        body: "Safari asks whether to download the file. Tap Download. The blue arrow in the toolbar shows the progress and tells you when it has finished.",
+      },
+      {
+        title: "Move it from Files into Photos",
+        body: "Tap the download arrow, then the file, to open it in Files. Tap Share, then Save Video. It now appears in Photos like anything you recorded yourself. Images use Save Image in the same menu.",
+      },
+      {
+        title: "Add ClipKoala to your home screen",
+        body: "In Safari, tap Share, then Add to Home Screen. It opens like an app, full screen and without the browser chrome, and there is still nothing installed and no account.",
+      },
+    ],
+    tips: [
+      "Downloads live in Files, under Downloads on My iPhone or in iCloud Drive, depending on your Safari setting",
+      "If the download arrow does not appear, check Settings, Safari, Downloads and pick a location",
+      "Low Power Mode can pause a download in the background; plug in for long YouTube conversions",
+    ],
+    faqs: [
+      {
+        q: "Where do Safari downloads go on an iPhone?",
+        a: "Into the Files app, in the Downloads folder either on your device or in iCloud Drive, depending on the setting under Settings, Safari, Downloads. They do not go straight into Photos.",
+      },
+      {
+        q: "How do I get a downloaded video into my camera roll?",
+        a: "Open the file in Files, tap Share, then Save Video. It then appears in Photos alongside everything else.",
+      },
+      {
+        q: "Do I need an app from the App Store?",
+        a: "No. This works in Safari alone. You can add ClipKoala to your home screen so it opens full screen like an app, but nothing is installed.",
+      },
+      {
+        q: "Does this work in Chrome on iPhone?",
+        a: "Yes, though Safari handles downloads more predictably on iOS because every browser on the platform uses the same underlying engine and Safari is where the download manager lives.",
+      },
+    ],
+    landingSlug: null,
+    published: "2026-09-09",
+    updated: "2026-09-09",
   },
 };
 

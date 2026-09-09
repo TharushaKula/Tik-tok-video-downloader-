@@ -34,7 +34,7 @@ Check items off as they ship: `[x]`
 - [x] Instagram Stories & Highlights link support
 - [x] TikTok resolver failover (TikWM → SnapTik)
 - [x] Background-tab notification when YouTube conversions finish
-- [x] Vercel Analytics (privacy-friendly, cookie-less)
+- [x] Vercel Analytics (privacy-friendly, cookie-less) + Google Analytics 4
 - [x] Twitch clips + SoundCloud tracks (9 platforms total)
 - [x] Favorites  star videos to a persistent Saved list
 - [x] YouTube full-channel downloads, custom filename templates, first-visit hint
@@ -49,8 +49,22 @@ Check items off as they ship: `[x]`
 - [x] Next.js 16 + React 19 + ESLint 9 flat-config migration (Turbopack builds, async params, 0 npm audit findings)
 - [x] Chrome/Edge browser extension (one-click send-to-ClipKoala, privacy-first MV3)
 - [x] ClipKoala rebrand (clipkoala.com): mascot-led identity, violet/indigo palette, Nunito display type, redesigned home/nav/footer, new pages (features, FAQ, about, extension, glossary, YouTube to MP3, batch downloader), 4 new guides, full technical SEO (canonicals, OG images per page, breadcrumbs, structured data, sitemap lastModified, redirects, security headers)
+- [x] Activation funnel analytics: submit → resolve → success/failure → preview → download, with first-touch source, medium, campaign and landing page preserved. Never records the pasted URL, title, author, or filename; failures are bucketed into eight coarse classes and latencies into five. Privacy policy updated to match, with tests pinning the guarantees
+- [x] Answers cluster (`/answers`): 8 problem, question, and comparison pages that lead with the direct answer (Reddit no sound, TikTok Save greyed out, YouTube MP3 bitrate, expired Stories, private posts, unsupported links, resolver outages, MP3 vs M4A vs WAV vs FLAC)
+- [x] Use-case pages (`/for`): creators, video editors, teachers, and social managers, each with its own workflow, limits, FAQ, and social card
+- [x] 5 new guides: YouTube Shorts, Instagram Stories before they expire, whole YouTube playlists, TikTok photo slideshows, and saving videos on iPhone from Safari
+- [x] Post-download share row (Web Share API + copy link) that shares the matching tool page, never the user's source URL, with UTM tagging so referral traffic is attributable
+- [x] Two optional one-tap research prompts, at most one per browser: what job a successful visitor finished, and what stopped a visitor who never activated. Fixed choices only, never mid-flow
+- [x] Trust and transparency pages: public roadmap (no dates, including what has been deliberately declined), press kit, WCAG 2.1 AA accessibility statement with known gaps, security disclosure policy, and `/.well-known/security.txt`
+- [x] RSS feed at `/feed.xml` for guides, answers, and releases, discoverable from `<head>`
+- [x] `/llms.txt` for answer engines, generated from the same constants the site uses, leading with the real limitations
+- [x] Pre-deploy SEO gate (`npm run seo:audit`): status codes, canonical host and self-reference, accidental noindex, title/description lengths, single-H1 and heading order, JSON-LD validity, orphan pages, and broken or redirecting internal links. Currently 56/56 pages clean
+- [x] IndexNow submitter (`npm run indexnow`) with the key file served from an env var, so rotating it needs no upload
+- [x] Route-specific social cards for every static page, contextual in-sentence internal links between tools, guides, and answers, and a public-posts-only trust line beside the paste box
 
 ---
+
+
 
 ## 🌍 Platform & content expansion
 
@@ -59,14 +73,18 @@ Check items off as they ship: `[x]`
 - [x] Pinterest video & image pin downloads
 - [x] Twitch clip downloads (MP4 up to 1080p; VODs/streams not supported)
 - [x] SoundCloud audio downloads (tracks as MP3, with cover art)
+
 - [~] Vimeo downloads (investigated 2026-08: the player config endpoint now
-      returns 0 progressive files or 403s on effectively every video, gated
-      behind a per-video JWT; not shippable, revisit if that changes)
+returns 0 progressive files or 403s on effectively every video, gated
+behind a per-video JWT; not shippable, revisit if that changes)
+
 - [ ] Snapchat Spotlight downloads
 - [ ] Threads video downloads
 - [ ] LinkedIn video downloads
+
 - [~] Dailymotion (investigated 2026-08: metadata is public but media is
-      HLS-only behind session-bound 403 tokens; needs remuxing, not shippable)
+HLS-only behind session-bound 403 tokens; needs remuxing, not shippable)
+
 - [ ] Bilibili downloads
 - [x] TikTok photo slideshows → all slides as images + soundtrack MP3
 - [ ] TikTok slideshow auto-merge → single MP4 with music (needs server-side rendering)
@@ -80,12 +98,16 @@ Check items off as they ship: `[x]`
 - [ ] Live stream / ongoing broadcast capture
 - [ ] Anonymous story viewer mode
 
+
+
 ## ⚡ Download power features
 
 - [x] Batch mode  paste multiple links at once (multi-line box)
+
 - [~] Bulk download by username/profile (investigated 2026-08: tikwm's
-      user/posts endpoint is Cloudflare-gated like its search API; not
-      shippable. YouTube channels DO work, see below)
+user/posts endpoint is Cloudflare-gated like its search API; not
+shippable. YouTube channels DO work, see below)
+
 - [x] TXT/CSV link-list import (Import file button in batch mode, or drop the file anywhere)
 - [ ] Download queue with per-item progress and pause/cancel
 - [x] Real progress bars for YouTube conversions (live percent + progress track)
@@ -93,21 +115,27 @@ Check items off as they ship: `[x]`
 - [ ] Format/quality picker with codec + estimated file-size table
 - [ ] 4K / 8K / 60fps quality tiers
 - [ ] Resumable / retryable downloads
+
 - [~] Subtitle downloads (investigated 2026-08: YouTube caption URLs are now
-      POT-token-gated; signed baseUrls return empty even off-datacenter. Not
-      shippable server-side; revisit if a viable path appears)
+POT-token-gated; signed baseUrls return empty even off-datacenter. Not
+shippable server-side; revisit if a viable path appears)
+
 - [x] Thumbnail & cover-image download button
 - [x] Clipboard auto-detection on page focus ("We noticed a link" prompt, dedupes offers)
 - [ ] Concurrent-download limit control
+
+
 
 ## 🎬 Media processing (post-download tools)
 
 - [ ] Trim/clip by time range before downloading (download only a section)
 - [ ] Video → GIF converter
 - [x] Audio format choices beyond MP3 (YouTube: M4A, WAV, lossless FLAC)
+
 - [~] Audio bitrate picker (investigated 2026-08: loader.to ignores bitrate
-      params and always converts at 320kbps  already max quality, so the
-      MP3 option is labeled 320kbps instead)
+params and always converts at 320kbps  already max quality, so the
+MP3 option is labeled 320kbps instead)
+
 - [ ] Video compressor (target file size)
 - [ ] Format converter (MP4 ↔ WebM/MKV/MOV)
 - [x] Smart filenames  downloads named after the video title (sanitized, unicode-safe)
@@ -116,13 +144,17 @@ Check items off as they ship: `[x]`
 - [ ] SponsorBlock integration (auto-remove sponsor segments from YouTube)
 - [ ] Watermark/branding overlay option (for creators saving their own content)
 
+
+
 ## ✨ UX & convenience
 
 - [x] PWA install (add to home screen)
 - [x] Android share-target ("Share to ClipKoala" straight from the TikTok app)
 - [x] Browser extension (MV3, in `extension/`: toolbar popup with platform
-      detection, right-click menus, zero host permissions  sends pages to
-      the site's ?url= deep link; `npm run ext:pack` builds the Web Store zip)
+  ```
+  detection, right-click menus, zero host permissions  sends pages to
+  the site's ?url= deep link; `npm run ext:pack` builds the Web Store zip)
+  ```
 - [x] Video preview player in the result card (watch before saving)
 - [x] Drag-and-drop a link anywhere on the page (full-page drop target)
 - [x] QR handoff  scan to continue a download on your phone (encodes a ?url= deep link)
@@ -130,11 +162,14 @@ Check items off as they ship: `[x]`
 - [x] Paste anywhere on the page to fetch (no need to focus the input)
 - [x] Full keyboard shortcut set (⌘K palette with arrow/enter/escape nav)
 - [x] Light theme + system theme toggle (semantic design tokens, no-flicker init, per-theme platform colors)
-- [ ] Multi-language UI (i18n) with localized SEO pages
 - [x] First-visit onboarding hint (dismissible, auto-hides after first download)
 - [x] Browser notification when a YouTube conversion finishes while the tab is in the background
 - [x] Sound/haptic feedback on completion (soft chime + vibration when a
-      conversion finishes, palette toggle to mute)
+  ```
+  conversion finishes, palette toggle to mute)
+  ```
+
+
 
 ## ☁️ Accounts, retention & cloud
 
@@ -150,6 +185,8 @@ Check items off as they ship: `[x]`
 - [ ] Webhooks for finished conversions
 - [x] Usage tally (private, on-device "you've saved N videos, mostly from X")
 
+
+
 ## 📈 Growth, trust & monetization
 
 - [x] Per-platform SEO landing pages (/tiktok-downloader, /youtube-downloader, …) with canonical URLs, FAQ JSON-LD, sitemap.xml, and robots.txt
@@ -161,7 +198,9 @@ Check items off as they ship: `[x]`
 - [x] Changelog / "What's new" page (/changelog, linked from the footer)
 - [x] Terms, Privacy, and Copyright/DMCA pages (real ones, linked in footer + sitemap)
 - [ ] Rate limiting + abuse/captcha protection
-- [x] Privacy-friendly analytics (Vercel Analytics  cookie-less, activates on deploy)
+- [x] Analytics: Vercel Analytics (cookie-less) and Google Analytics 4 (`lib/gtag.ts`, sets _ga cookies; privacy policy describes both)
+
+
 
 ## 🛡️ Reliability & performance
 
@@ -170,12 +209,16 @@ Check items off as they ship: `[x]`
 - [ ] Server-side caching of recently resolved links
 - [x] Background job queue for long YouTube conversions (client polls with live progress)
 - [x] Health monitoring: `npm run health` script + scheduled GitHub Action +
-      public /status page (ISR-cached live probes, refreshed every 10 min)
+  ```
+  public /status page (ISR-cached live probes, refreshed every 10 min)
+  ```
 - [x] Automated test suite (vitest) over validators, parsers, and stores
 - [x] GitHub Actions: CI gate (lint/types/tests/build) + scheduled resolver health check
 - [ ] Smart link cleanup (strip tracking params, resolve shortlinks client-side)
 
 ---
+
+
 
 ## 🎯 Suggested quick wins
 
@@ -187,6 +230,8 @@ Fifteen rounds shipped. Next highest-impact candidates:
 4. Publish the extension to the Chrome Web Store (account + listing assets needed)
 
 ---
+
+
 
 ## Sources
 
@@ -202,3 +247,4 @@ Fifteen rounds shipped. Next highest-impact candidates:
 - [FastDl](https://fastdl.app/fastdl)
 - [Flixier GIF converter](https://flixier.com/tools/gif-converter)
 - [FreeConvert video to GIF](https://www.freeconvert.com/convert/video-to-gif)
+
