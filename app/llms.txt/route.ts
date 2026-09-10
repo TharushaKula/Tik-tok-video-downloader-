@@ -65,10 +65,11 @@ link, the server resolves it, and the file streams to the browser.
 No account is required and none can be created. Resolved links are discarded
 and media is never written to disk. Download history, favourites, and
 preferences are stored in the visitor's own browser, not on a server.
-Two analytics tools run: Vercel Analytics, which is cookie-less, and Google
-Analytics 4, which sets first-party cookies and sends data to Google. Neither
-records the pasted URL, the video title, the author, or the filename. No
-advertising or remarketing tags are used.
+Two analytics tools run, both receiving page views and the download funnel:
+Vercel Analytics, which is cookie-less, and Google Analytics 4, which sets
+first-party cookies and sends data to Google. Neither records the pasted URL,
+the video title, the author, or the filename. No advertising or remarketing
+tags are used.
 
 ## Intended use
 

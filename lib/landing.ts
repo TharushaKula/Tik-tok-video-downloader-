@@ -361,7 +361,7 @@ export const LANDING_PAGES: Record<string, LandingCopy> = {
     metaDescription:
       "Download Reddit videos with sound in HD. Video and audio are merged automatically. Works with post links, share links, and redd.it short links. Free, no sign-up.",
     h1: "Download Reddit videos, with the sound",
-    sub: "Reddit stores video and audio separately. ClipKoala merges them so your download plays with sound in any player.",
+    sub: "Reddit stores video and audio separately. ClipKoala gives you them already merged, so your download plays with sound in any player.",
     highlights: [
       "Video and audio merged",
       "GIFs as MP4",

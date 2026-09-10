@@ -198,7 +198,7 @@ MP3 option is labeled 320kbps instead)
 - [x] Changelog / "What's new" page (/changelog, linked from the footer)
 - [x] Terms, Privacy, and Copyright/DMCA pages (real ones, linked in footer + sitemap)
 - [ ] Rate limiting + abuse/captcha protection
-- [x] Analytics: Vercel Analytics (cookie-less) and Google Analytics 4 (`lib/gtag.ts`, sets _ga cookies; privacy policy describes both)
+- [x] Analytics: Vercel Analytics (cookie-less) and Google Analytics 4 (`lib/gtag.ts`, sets _ga cookies; privacy policy describes both). The full activation funnel is forwarded to both from one call site, with GA4-safe parameter naming so it cannot collide with GA4's own campaign attribution
 
 
 

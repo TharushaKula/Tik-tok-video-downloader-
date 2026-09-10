@@ -97,10 +97,30 @@ event). Each carries the platform, format, quality, a latency bucket, a
 coarse error class, and the visitor's first-touch source, medium, campaign,
 and landing page from `lib/attribution.ts`.
 
+Every event goes to **both** Vercel Analytics and GA4 (`lib/gtag.ts`), from
+one call site, so a property cannot reach one tool and be forgotten in the
+other. The two payloads differ only in naming: GA4 reserves `source`,
+`medium` and `campaign` for its own campaign attribution, so ours are sent as
+`first_source`, `first_medium`, `first_campaign` and `first_landing` via the
+`GA4_PARAM` map. Each sink has its own `try` block, because a tracker blocker
+routinely breaks one script and not the other.
+
 It never records the pasted URL, the video title, the author, or the
-filename. `lib/__tests__/analytics.test.ts` pins those guarantees, and
-`lib/legal.ts` (Privacy, Analytics) describes them to users. Keep all three
-in step when adding an event.
+filename. `lib/__tests__/analytics.test.ts` pins those guarantees (for both
+tools, including the GA4 naming rules), and `lib/legal.ts` (Privacy,
+Analytics) describes them to users. Keep all three in step when adding an
+event.
+
+Two things must be done once in the GA4 admin UI before any of this is
+visible in reports:
+
+1. **Register the custom dimensions.** Admin, then Custom definitions. Until
+   a parameter is registered, GA4 collects it but shows it nowhere. The ones
+   worth registering first are `platform`, `error_class`, `format`,
+   `latency`, `via` and `first_source`.
+2. **Mark `download_start` as a key event.** Admin, then Events. That is the
+   north-star action, and marking it makes GA4 report conversion rate by
+   channel and landing page.
 
 ## Deploying the domain
 

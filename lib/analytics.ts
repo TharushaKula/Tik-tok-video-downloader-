@@ -1,5 +1,6 @@
 import { track } from "@vercel/analytics";
 import { firstTouch, visitorAge } from "./attribution";
+import { gtagEvent, type GaValue } from "./gtag";
 import type { PlatformId } from "./types";
 
 // The activation funnel.
@@ -14,6 +15,11 @@ import type { PlatformId } from "./types";
 //   - Free text from the user is never sent; the prompts are fixed choices.
 //   - Every event carries the first-touch source so channels can be judged
 //     by activated users. That comes from our own localStorage, not a cookie.
+//
+// Every event goes to both Vercel Analytics and GA4. The payloads differ only
+// in naming: GA4 treats "source", "medium" and "campaign" as its own campaign
+// attribution parameters, so ours are prefixed to avoid colliding with the
+// model GA4 builds itself. See GA4_PARAM below.
 // Keep lib/legal.ts (Privacy → Analytics) in step with anything added here.
 
 export type FunnelEvent =
@@ -98,8 +104,31 @@ export interface FunnelProps {
 }
 
 /**
+ * Vercel property name to GA4 parameter name.
+ *
+ * GA4 reserves "source", "medium", "campaign", "term" and "content" for its
+ * own campaign attribution, so sending ours under those names would fight the
+ * model it builds from the URL and referrer. Prefixing also says what they
+ * actually are: first touch ever seen in this browser, not this session.
+ *
+ * The rest are renamed only for clarity in the GA4 UI, where a parameter is
+ * read without the surrounding code to explain it.
+ */
+const GA4_PARAM: Record<string, string> = {
+  source: "first_source",
+  medium: "first_medium",
+  campaign: "first_campaign",
+  landing: "first_landing",
+  visitor: "visitor_age",
+  page: "path",
+  error: "error_class",
+  count: "item_count",
+};
+
+/**
  * Record one funnel event. Always safe to call: it swallows its own errors,
  * no-ops during SSR, and strips anything not on the allowed property list.
+ * Goes to both Vercel Analytics and GA4.
  */
 export function trackFunnel(event: FunnelEvent, props: FunnelProps = {}): void {
   if (typeof window === "undefined") return;
@@ -123,7 +152,23 @@ export function trackFunnel(event: FunnelEvent, props: FunnelProps = {}): void {
     if (typeof props.count === "number") payload.count = props.count;
     if (props.choice) payload.choice = props.choice.slice(0, 32);
 
-    track(event, payload);
+    // Same event, GA4 naming. Built by renaming the payload above rather than
+    // assembled separately, so a property can never reach one tool and be
+    // forgotten in the other.
+    const gaPayload: Record<string, GaValue> = {};
+    for (const [key, value] of Object.entries(payload)) {
+      gaPayload[GA4_PARAM[key] ?? key] = value;
+    }
+
+    // Each sink gets its own try block. A blocker that breaks one of these
+    // scripts is common, and one failing tool must not silently take the
+    // other down with it.
+    try {
+      track(event, payload);
+    } catch {
+      // Vercel Analytics unavailable; GA4 still gets the event below.
+    }
+    gtagEvent(event, gaPayload);
   } catch {
     // Analytics must never break the download path.
   }
