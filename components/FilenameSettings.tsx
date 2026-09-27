@@ -10,10 +10,12 @@ import {
   saveTemplate,
   TEMPLATE_VARS,
 } from "@/lib/filename-template";
+import { useI18n } from "@/lib/i18n/client";
 
 // Popover for the download filename template. Variables are inserted by
 // clicking their chips; a live preview shows the result for a sample video.
 export default function FilenameSettings() {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [template, setTemplate] = useState(DEFAULT_TEMPLATE);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -74,17 +76,17 @@ export default function FilenameSettings() {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         className="focus-ring flex h-8 w-8 items-center justify-center rounded-lg border border-veil/[0.08] text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1"
-        aria-label="Filename settings"
-        title="Filename settings"
+        aria-label={t.filename.settings}
+        title={t.filename.settings}
       >
         <Settings2 size={14} />
       </button>
 
       {open && (
         <div className="absolute right-0 top-10 z-50 w-80 rounded-2xl border border-veil/10 bg-raised p-4 shadow-[0_16px_50px_rgb(var(--c-veil)/0.15)]">
-          <p className="text-sm font-semibold text-ink-hi">Download filenames</p>
+          <p className="text-sm font-semibold text-ink-hi">{t.filename.title}</p>
           <p className="mt-1 text-xs leading-relaxed text-ink-3">
-            Build your own pattern with the variables below.
+            {t.filename.body}
           </p>
 
           <input
@@ -93,7 +95,7 @@ export default function FilenameSettings() {
             onChange={(e) => commit(e.target.value)}
             spellCheck={false}
             className="mt-3 h-9 w-full rounded-lg border border-veil/10 bg-veil/[0.03] px-3 font-mono text-xs text-ink-1 outline-none transition-shadow focus:ring-2 focus:ring-accent/50"
-            aria-label="Filename template"
+            aria-label={t.filename.templateAria}
           />
 
           <div className="mt-2 flex flex-wrap gap-1">
@@ -102,7 +104,9 @@ export default function FilenameSettings() {
                 key={v.key}
                 onClick={() => insertVar(v.key)}
                 className="focus-ring rounded-md border border-veil/[0.08] px-1.5 py-0.5 font-mono text-[10px] text-ink-2 transition-colors hover:border-accent/40 hover:text-accent"
-                title={v.label}
+                title={
+                  (t.filename.vars as Record<string, string>)[v.key] ?? v.label
+                }
               >
                 {`{${v.key}}`}
               </button>
@@ -111,7 +115,7 @@ export default function FilenameSettings() {
 
           <div className="mt-3 rounded-lg bg-veil/[0.04] px-3 py-2">
             <p className="text-[10px] uppercase tracking-wider text-ink-4">
-              Preview
+              {t.filename.preview}
             </p>
             <p className="mt-0.5 truncate font-mono text-xs text-ink-1">
               {preview}.mp4
@@ -121,12 +125,12 @@ export default function FilenameSettings() {
           <button
             onClick={() => {
               commit(DEFAULT_TEMPLATE);
-              toast.success("Filename pattern reset");
+              toast.success(t.filename.resetToast);
             }}
             className="focus-ring mt-3 flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs text-ink-3 transition-colors hover:text-ink-1"
           >
             <RotateCcw size={11} />
-            Reset to default
+            {t.filename.reset}
           </button>
         </div>
       )}

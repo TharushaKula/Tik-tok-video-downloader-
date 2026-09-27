@@ -101,9 +101,11 @@ H1, copy, and FAQ.
   for a year (immutable).
 - **Security headers**: nosniff, frame-options, referrer-policy,
   permissions-policy.
-- **Hreflang**: not applicable (English only). If localized versions are
-  added, put them under `/es/`, `/pt/` etc. and add `alternates.languages`
-  in `pageMetadata()`.
+- **Hreflang**: the home page and the 11 tool pages exist in English, `/es`,
+  `/pt-br`, `/id`, and `/fr`. Each version lists every other plus x-default
+  (English) through `languageAlternates()` in `lib/i18n`, in page metadata
+  and in the sitemap; the SEO gate checks they are reciprocal. Everything
+  else is English only and has no alternates.
 
 ## 5. Performance (implemented)
 

@@ -29,6 +29,8 @@ import DownloadOptionRow, {
   startOptionDownload,
 } from "./DownloadOptionRow";
 import ShareResult from "./ShareResult";
+import { useI18n } from "@/lib/i18n/client";
+import { fmt } from "@/lib/i18n/format";
 
 // Phone handoff: a QR encoding a ClipKoala deep link that re-fetches this
 // video, so scanning it opens the download already in progress on a phone.
@@ -39,11 +41,15 @@ function QrHandoff({
   sourceUrl: string;
   onClose: () => void;
 }) {
+  const { t, href: localHref } = useI18n();
   const [href, setHref] = useState("");
   useEffect(() => {
-    setHref(`${window.location.origin}/?url=${encodeURIComponent(sourceUrl)}`);
+    // Opens the same language on the phone
+    setHref(
+      `${window.location.origin}${localHref("/")}?url=${encodeURIComponent(sourceUrl)}`
+    );
     trackFunnel("qr_handoff");
-  }, [sourceUrl]);
+  }, [sourceUrl, localHref]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -58,7 +64,7 @@ function QrHandoff({
       className="fixed inset-0 z-[70] flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
-      aria-label="Send to phone"
+      aria-label={t.result.sendToPhone}
     >
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -69,13 +75,13 @@ function QrHandoff({
         <button
           onClick={onClose}
           className="focus-ring absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full text-ink-3 transition-colors hover:bg-veil/[0.06] hover:text-ink-1"
-          aria-label="Close"
+          aria-label={t.common.close}
         >
           <X size={14} />
         </button>
-        <h3 className="text-sm font-semibold text-ink-hi">Continue on your phone</h3>
+        <h3 className="text-sm font-semibold text-ink-hi">{t.result.continueOnPhone}</h3>
         <p className="mt-1 text-xs leading-relaxed text-ink-3">
-          Scan to open this video in ClipKoala on another device.
+          {t.result.qrBody}
         </p>
         <div className="mt-4 flex justify-center">
           <div className="rounded-xl bg-white p-3">
@@ -93,6 +99,7 @@ function QrHandoff({
 
 /** Bundle a multi-image post (carousel / slideshow) into one ZIP. */
 function ZipAllButton({ info }: { info: VideoInfo }) {
+  const { t, locale } = useI18n();
   const [busy, setBusy] = useState(false);
   const mounted = useRef(true);
   useEffect(() => {
@@ -123,7 +130,9 @@ function ZipAllButton({ info }: { info: VideoInfo }) {
       });
       if (!res.ok) {
         const json = await res.json().catch(() => null);
-        throw new Error(json?.error || "Couldn't build the ZIP");
+        throw new Error(
+          (locale === "en" && json?.error) || t.result.zipError
+        );
       }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -140,11 +149,9 @@ function ZipAllButton({ info }: { info: VideoInfo }) {
         format: "zip",
         count: images.length,
       });
-      toast.success(`ZIP with ${images.length} images saved`);
+      toast.success(fmt(t.result.zipSaved, { count: images.length }));
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Couldn't build the ZIP"
-      );
+      toast.error(err instanceof Error ? err.message : t.result.zipError);
     } finally {
       if (mounted.current) setBusy(false);
     }
@@ -161,7 +168,7 @@ function ZipAllButton({ info }: { info: VideoInfo }) {
       ) : (
         <Archive size={12} />
       )}
-      {busy ? "Zipping…" : `Download all (${images.length}) as ZIP`}
+      {busy ? t.result.zipping : fmt(t.result.zipAll, { count: images.length })}
     </button>
   );
 }
@@ -198,6 +205,7 @@ export default function VideoResult({
   onToggleFavorite,
   sourceUrl,
 }: VideoResultProps) {
+  const { t } = useI18n();
   const [previewing, setPreviewing] = useState(false);
   const [showQr, setShowQr] = useState(false);
   // The share row only appears once a file is actually on its way, so the
@@ -211,10 +219,10 @@ export default function VideoResult({
   }, []);
 
   const statItems = [
-    { icon: Eye, label: "views", value: info.stats?.views },
-    { icon: Heart, label: "likes", value: info.stats?.likes },
-    { icon: MessageCircle, label: "comments", value: info.stats?.comments },
-    { icon: Share2, label: "shares", value: info.stats?.shares },
+    { icon: Eye, label: t.result.views, value: info.stats?.views },
+    { icon: Heart, label: t.result.likes, value: info.stats?.likes },
+    { icon: MessageCircle, label: t.result.comments, value: info.stats?.comments },
+    { icon: Share2, label: t.result.shares, value: info.stats?.shares },
   ].filter((s) => (s.value ?? 0) > 0);
 
   // In-page preview streams through our proxy. YouTube is excluded, it
@@ -239,13 +247,13 @@ export default function VideoResult({
                 playsInline
                 onError={() => {
                   setPreviewing(false);
-                  toast.error("Preview isn't available for this video");
+                  toast.error(t.result.previewUnavailable);
                 }}
               />
               <button
                 onClick={() => setPreviewing(false)}
                 className="focus-ring absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-black/70 text-white backdrop-blur-sm transition-colors hover:bg-black/90"
-                aria-label="Close preview"
+                aria-label={t.result.closePreview}
               >
                 <X size={13} />
               </button>
@@ -272,7 +280,7 @@ export default function VideoResult({
                     trackFunnel("preview_play", { platform: info.platform });
                   }}
                   className="focus-ring group/play absolute inset-0 flex items-center justify-center"
-                  aria-label="Preview video"
+                  aria-label={t.result.previewVideo}
                 >
                   <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/60 backdrop-blur-sm transition-transform group-hover/play:scale-110">
                     <Play size={16} className="ml-0.5 text-white" fill="white" />
@@ -306,8 +314,8 @@ export default function VideoResult({
                     ? "border-amber-400/40 text-amber-400"
                     : "border-veil/[0.08] text-ink-2 hover:border-veil/20 hover:text-ink-1"
                 }`}
-                aria-label={favorited ? "Remove from saved" : "Save to favorites"}
-                title={favorited ? "Saved" : "Save to favorites"}
+                aria-label={favorited ? t.result.removeFromSaved : t.result.saveToFavorites}
+                title={favorited ? t.result.saved : t.result.saveToFavorites}
               >
                 <Star size={13} className={favorited ? "fill-amber-400" : ""} />
               </button>
@@ -323,13 +331,13 @@ export default function VideoResult({
                         isProxy: true,
                       },
                       info.platform,
-                      true,
+                      t.download,
                       { title: `${info.title.slice(0, 80)} thumbnail` }
                     )
                   }
                   className="focus-ring flex h-[30px] w-[30px] items-center justify-center rounded-lg border border-veil/[0.08] text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1"
-                  aria-label="Save thumbnail image"
-                  title="Save thumbnail"
+                  aria-label={t.result.saveThumbnailAria}
+                  title={t.result.saveThumbnail}
                 >
                   <ImageDown size={13} />
                 </button>
@@ -337,18 +345,18 @@ export default function VideoResult({
               <button
                 onClick={() => setShowQr(true)}
                 className="focus-ring flex h-[30px] w-[30px] items-center justify-center rounded-lg border border-veil/[0.08] text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1"
-                aria-label="Send to phone with a QR code"
-                title="Send to phone"
+                aria-label={t.result.sendToPhoneAria}
+                title={t.result.sendToPhone}
               >
                 <QrCode size={13} />
               </button>
               <button
                 onClick={onReset}
                 className="focus-ring flex items-center gap-1.5 rounded-lg border border-veil/[0.08] px-2.5 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1"
-                aria-label="Start a new download"
+                aria-label={t.common.newAria}
               >
                 <RotateCcw size={12} />
-                <span className="hidden sm:inline">New</span>
+                <span className="hidden sm:inline">{t.common.new}</span>
               </button>
             </div>
           </div>
@@ -391,7 +399,7 @@ export default function VideoResult({
       <div className="border-t border-veil/[0.06] p-4 sm:p-5">
         <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
           <p className="text-xs font-medium uppercase tracking-wider text-ink-3">
-            Save as
+            {t.result.saveAs}
           </p>
           <ZipAllButton info={info} />
         </div>
@@ -407,9 +415,7 @@ export default function VideoResult({
           ))}
         </div>
         <p className="mt-3 text-xs leading-relaxed text-ink-4">
-          {info.platform === "youtube"
-            ? "YouTube files are converted on the fly, you'll see live progress, and the download starts automatically when it's ready."
-            : "Files are fetched through our server, so nothing is installed and no app is needed."}
+          {info.platform === "youtube" ? t.result.noteYouTube : t.result.noteOther}
         </p>
       </div>
 

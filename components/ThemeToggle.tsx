@@ -8,6 +8,8 @@ import {
   loadThemePref,
   resolveTheme,
 } from "@/lib/theme";
+import { useI18n } from "@/lib/i18n/client";
+import { fmt } from "@/lib/i18n/format";
 
 const ORDER: ThemePref[] = ["system", "light", "dark"];
 
@@ -23,6 +25,7 @@ export function setThemePref(pref: ThemePref) {
 // Cycles system -> light -> dark. The resolved theme is applied before paint
 // by the inline script in layout.tsx; this component only handles changes.
 export default function ThemeToggle() {
+  const { t } = useI18n();
   const [pref, setPref] = useState<ThemePref>("system");
   const [mounted, setMounted] = useState(false);
 
@@ -49,7 +52,9 @@ export default function ThemeToggle() {
 
   const Icon =
     !mounted || pref === "system" ? Monitor : pref === "light" ? Sun : Moon;
-  const label = !mounted ? "Theme" : `Theme: ${pref}, click to change`;
+  const label = !mounted
+    ? t.theme.label
+    : fmt(t.theme.current, { pref: t.theme[pref] });
 
   return (
     <button

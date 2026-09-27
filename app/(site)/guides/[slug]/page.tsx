@@ -17,6 +17,7 @@ import {
   articleSchema,
   faqSchema,
   graph,
+  ogImagePath,
   howToSchema,
   pageMetadata,
 } from "@/lib/seo";
@@ -204,7 +205,9 @@ export default async function GuidePage({ params }: GuideParams) {
             path: `/guides/${guide.slug}`,
             published: guide.published,
             modified: guide.updated,
-            image: firstImage,
+            image:
+              firstImage ??
+              ogImagePath(`/guides/${guide.slug}`, "/(site)/guides/[slug]"),
           }),
           howToSchema({
             name: guide.h1,

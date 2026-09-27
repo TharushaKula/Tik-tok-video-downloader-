@@ -32,6 +32,8 @@ import {
 } from "@/lib/validators";
 import { PLATFORMS, PLATFORM_IDS } from "@/lib/platforms";
 import type { PlatformId } from "@/lib/types";
+import { useI18n } from "@/lib/i18n/client";
+import { fmt } from "@/lib/i18n/format";
 
 const PLATFORM_ICONS: Record<PlatformId, typeof Music2> = {
   tiktok: Music2,
@@ -70,6 +72,7 @@ export default function UrlInput({
   onBatchTextChange,
   onBatchSubmit,
 }: UrlInputProps) {
+  const { t, plural, href } = useI18n();
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -82,19 +85,17 @@ export default function UrlInput({
       const text = await file.text();
       const { urls } = extractSupportedUrls(normalizeLinkFileText(text));
       if (urls.length === 0) {
-        toast.error("No supported links found in that file");
+        toast.error(t.tool.noLinksInFile);
         return;
       }
       const block = urls.join("\n");
       onBatchTextChange(
         batchText.trim() ? `${batchText.trimEnd()}\n${block}` : block
       );
-      toast.success(
-        `Imported ${urls.length} ${urls.length === 1 ? "link" : "links"} from ${file.name}`
-      );
+      toast.success(plural(urls.length, t.url.importedLinks, { file: file.name }));
       textareaRef.current?.focus();
     } catch {
-      toast.error("Couldn't read that file");
+      toast.error(t.tool.fileReadError);
     }
   }
 
@@ -144,7 +145,7 @@ export default function UrlInput({
       onBatchModeChange(true);
       onBatchTextChange(found.urls.join("\n"));
       onBatchSubmit(found.urls);
-      toast.success(`${found.urls.length} links detected, fetching all`);
+      toast.success(plural(found.urls.length, t.tool.linksDetected));
       return true;
     }
     if (found.urls.length === 1 && !loading) {
@@ -159,7 +160,7 @@ export default function UrlInput({
     try {
       const text = (await navigator.clipboard.readText()).trim();
       if (!text) {
-        toast("Your clipboard is empty");
+        toast(t.tool.clipboardEmpty);
         return;
       }
       if (batchMode) {
@@ -173,7 +174,7 @@ export default function UrlInput({
         inputRef.current?.focus();
       }
     } catch {
-      toast.error("Clipboard access was denied by the browser");
+      toast.error(t.tool.clipboardDenied);
       (batchMode ? textareaRef : inputRef).current?.focus();
     }
   }
@@ -208,24 +209,26 @@ export default function UrlInput({
     : "none";
 
   const singleHint = !trimmed
-    ? "Paste a link, or several at once. The platform is detected automatically"
+    ? t.url.hintEmpty
     : isPlaylist
-    ? "YouTube playlist detected, we'll fetch its latest videos as a batch"
+    ? t.url.hintPlaylist
     : isChannel
-    ? "YouTube channel detected, we'll fetch its latest uploads as a batch"
+    ? t.url.hintChannel
     : meta
-    ? `${meta.name} link detected, press Enter to fetch`
+    ? fmt(t.url.hintDetected, { platform: meta.name })
     : trimmed.length > 12
-    ? "This doesn't look like a supported link yet"
+    ? t.url.hintUnsupported
     : " ";
 
   const batchHint = !batchText.trim()
-    ? "One link per line, or paste any text, the links are picked out for you"
+    ? t.url.batchHintEmpty
     : [
-        `${batch.urls.length} valid ${batch.urls.length === 1 ? "link" : "links"}`,
-        batch.unsupported > 0 ? `${batch.unsupported} unsupported` : null,
-        batch.truncated ? `capped at ${MAX_BATCH_SIZE} per batch` : null,
-        batch.urls.length > 0 ? "Ctrl/⌘ + Enter to fetch" : null,
+        plural(batch.urls.length, t.url.batchValid),
+        batch.unsupported > 0
+          ? fmt(t.url.batchUnsupported, { count: batch.unsupported })
+          : null,
+        batch.truncated ? fmt(t.url.batchCapped, { max: MAX_BATCH_SIZE }) : null,
+        batch.urls.length > 0 ? t.url.batchShortcut : null,
       ]
         .filter(Boolean)
         .join(" · ");
@@ -253,14 +256,12 @@ export default function UrlInput({
                   if (batch.urls.length > 0) onBatchSubmit(batch.urls);
                 }
               }}
-              placeholder={
-                "Paste links, one per line…\nhttps://www.tiktok.com/…\nhttps://youtu.be/…"
-              }
+              placeholder={t.url.batchPlaceholder}
               rows={4}
               disabled={loading}
               spellCheck={false}
               className="min-h-[96px] w-full resize-y rounded-xl bg-transparent px-3 py-2.5 text-sm leading-relaxed text-ink-1 placeholder-ink-3 outline-none disabled:opacity-60"
-              aria-label="Video URLs, one per line"
+              aria-label={t.url.batchTextAria}
             />
             <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-1.5 px-1">
@@ -268,10 +269,10 @@ export default function UrlInput({
                   onClick={handlePasteButton}
                   disabled={loading}
                   className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-veil/[0.08] px-2.5 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1 disabled:opacity-50"
-                  aria-label="Paste links from clipboard"
+                  aria-label={t.url.pasteLinksAria}
                 >
                   <Clipboard size={12} />
-                  Paste
+                  {t.common.paste}
                 </button>
                 <input
                   ref={fileRef}
@@ -289,19 +290,19 @@ export default function UrlInput({
                   onClick={() => fileRef.current?.click()}
                   disabled={loading}
                   className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-veil/[0.08] px-2.5 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1 disabled:opacity-50"
-                  aria-label="Import links from a .txt or .csv file"
+                  aria-label={t.url.importFileAria}
                 >
                   <FileUp size={12} />
-                  Import file
+                  {t.url.importFile}
                 </button>
                 <button
                   onClick={exitBatchMode}
                   disabled={loading}
                   className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-veil/[0.08] px-2.5 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1 disabled:opacity-50"
-                  aria-label="Back to single link"
+                  aria-label={t.url.singleLinkAria}
                 >
                   <ListX size={12} />
-                  Single link
+                  {t.url.singleLink}
                 </button>
               </div>
               <button
@@ -312,14 +313,13 @@ export default function UrlInput({
                 {loading ? (
                   <>
                     <Loader2 size={15} className="animate-spin" />
-                    Fetching…
+                    {t.common.fetching}
                   </>
                 ) : (
                   <>
-                    Fetch{" "}
                     {batch.urls.length > 0
-                      ? `${batch.urls.length} ${batch.urls.length === 1 ? "video" : "videos"}`
-                      : "videos"}
+                      ? plural(batch.urls.length, t.url.fetchCount)
+                      : t.url.fetchVideos}
                     <ArrowRight size={15} />
                   </>
                 )}
@@ -352,16 +352,16 @@ export default function UrlInput({
                   if (e.key === "Enter" && !loading) onSubmit();
                   if (e.key === "Escape") handleClear();
                 }}
-                placeholder="Paste a TikTok, YouTube, Instagram, or any video link…"
+                placeholder={t.url.placeholder}
                 disabled={loading}
                 className="h-11 min-w-0 flex-1 bg-transparent text-[15px] text-ink-1 placeholder-ink-3 outline-none disabled:opacity-60"
-                aria-label="Video URL"
+                aria-label={t.url.aria}
               />
               {value && !loading && (
                 <button
                   onClick={handleClear}
                   className="focus-ring shrink-0 rounded-md p-1 text-ink-3 transition-colors hover:text-ink-1"
-                  aria-label="Clear link"
+                  aria-label={t.url.clearLink}
                 >
                   <X size={15} />
                 </button>
@@ -370,20 +370,20 @@ export default function UrlInput({
                 onClick={handlePasteButton}
                 disabled={loading}
                 className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-veil/[0.08] px-2.5 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1 disabled:opacity-50"
-                aria-label="Paste link from clipboard"
+                aria-label={t.url.pasteLinkAria}
               >
                 <Clipboard size={12} />
-                Paste
+                {t.common.paste}
               </button>
               <button
                 onClick={enterBatchMode}
                 disabled={loading}
                 className="focus-ring flex shrink-0 items-center gap-1.5 rounded-lg border border-veil/[0.08] px-2.5 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1 disabled:opacity-50"
-                aria-label="Batch mode, paste several links"
-                title="Batch mode, paste several links"
+                aria-label={t.url.batchAria}
+                title={t.url.batchAria}
               >
                 <ListPlus size={13} />
-                <span className="hidden sm:inline">Batch</span>
+                <span className="hidden sm:inline">{t.url.batch}</span>
               </button>
             </div>
 
@@ -395,11 +395,11 @@ export default function UrlInput({
               {loading ? (
                 <>
                   <Loader2 size={15} className="animate-spin" />
-                  Fetching…
+                  {t.common.fetching}
                 </>
               ) : (
                 <>
-                  Get video
+                  {t.url.getVideo}
                   <ArrowRight size={15} />
                 </>
               )}
@@ -446,8 +446,8 @@ export default function UrlInput({
           {showWarn && (
             <>
               {" · "}
-              <Link href="/answers/link-not-supported" className="underline underline-offset-2 hover:text-ink-1">
-                which links work
+              <Link href={href("/answers/link-not-supported")} className="underline underline-offset-2 hover:text-ink-1">
+                {t.url.whichLinksWork}
               </Link>
             </>
           )}
@@ -456,13 +456,12 @@ export default function UrlInput({
         {/* The boundary, stated at the moment of hesitation rather than in a
             footnote: this is where people decide whether to trust the box. */}
         <p className="text-center text-[11px] leading-relaxed text-ink-4">
-          Public posts only, no account, and nothing is stored on our
-          server.{" "}
+          {t.url.trustLine}{" "}
           <Link
             href="/answers/private-post-error"
             className="focus-ring rounded underline underline-offset-2 transition-colors hover:text-ink-2"
           >
-            Why private posts can&apos;t be fetched
+            {t.url.privateWhy}
           </Link>
         </p>
       </div>

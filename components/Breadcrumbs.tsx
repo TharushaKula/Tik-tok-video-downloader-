@@ -2,14 +2,25 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import JsonLd from "./JsonLd";
 import { breadcrumbSchema, graph, type Crumb } from "@/lib/seo";
+import { getMessages, localePath, type Locale } from "@/lib/i18n";
 
 // Visible breadcrumb trail + matching BreadcrumbList structured data. The
 // first crumb is always Home; the last one is the current page (no link).
-export default function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
-  const all: Crumb[] = [{ name: "Home", path: "/" }, ...crumbs];
+export default function Breadcrumbs({
+  crumbs,
+  locale = "en",
+}: {
+  crumbs: Crumb[];
+  locale?: Locale;
+}) {
+  const { breadcrumbs } = getMessages(locale).site;
+  const all: Crumb[] = [
+    { name: breadcrumbs.home, path: localePath(locale, "/") },
+    ...crumbs,
+  ];
   return (
     <>
-      <nav aria-label="Breadcrumb" className="mb-6">
+      <nav aria-label={breadcrumbs.aria} className="mb-6">
         <ol className="flex flex-wrap items-center gap-1 text-xs text-ink-3">
           {all.map((c, i) => {
             const last = i === all.length - 1;

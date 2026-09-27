@@ -24,7 +24,9 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { PLATFORMS } from "@/lib/platforms";
-import { LANDING_PAGES, LANDING_SLUGS } from "@/lib/landing";
+import { LANDING_FOR_PLATFORM } from "@/lib/landing";
+import { LOCALIZED_LANDING_SLUGS } from "@/lib/i18n/config";
+import { useI18n } from "@/lib/i18n/client";
 import {
   isSoundEnabled,
   playCompletionChime,
@@ -62,6 +64,8 @@ export default function CommandPalette({
   onPasteFetch,
 }: CommandPaletteProps) {
   const router = useRouter();
+  const { t, locale, href: localHref, landingNames } = useI18n();
+  const p = t.palette;
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -70,10 +74,12 @@ export default function CommandPalette({
 
   // Build the full command list from current state
   const items = useMemo<CommandItem[]>(() => {
+    // Pages that exist in this language stay in it; the rest are English.
     const go = (href: string) => () => {
       onClose();
-      router.push(href);
+      router.push(localHref(href));
     };
+    const english = locale === "en";
     const fetchUrl = (url: string) => () => {
       onClose();
       onSelectUrl(url);
@@ -82,9 +88,9 @@ export default function CommandPalette({
     const list: CommandItem[] = [
       {
         id: "paste",
-        label: "Paste a link and fetch",
-        hint: "from clipboard",
-        group: "Actions",
+        label: p.paste,
+        hint: p.pasteHint,
+        group: p.groups.actions,
         keywords: "paste clipboard download fetch",
         icon: ClipboardPaste,
         run: () => {
@@ -94,8 +100,8 @@ export default function CommandPalette({
       },
       {
         id: "theme-system",
-        label: "Use system theme",
-        group: "Theme",
+        label: p.themeSystem,
+        group: p.groups.theme,
         keywords: "theme auto system appearance",
         icon: Monitor,
         run: () => {
@@ -105,8 +111,8 @@ export default function CommandPalette({
       },
       {
         id: "theme-light",
-        label: "Switch to light theme",
-        group: "Theme",
+        label: p.themeLight,
+        group: p.groups.theme,
         keywords: "theme light appearance bright",
         icon: Sun,
         run: () => {
@@ -116,8 +122,8 @@ export default function CommandPalette({
       },
       {
         id: "theme-dark",
-        label: "Switch to dark theme",
-        group: "Theme",
+        label: p.themeDark,
+        group: p.groups.theme,
         keywords: "theme dark appearance night",
         icon: Moon,
         run: () => {
@@ -127,19 +133,15 @@ export default function CommandPalette({
       },
       {
         id: "toggle-sound",
-        label: "Toggle completion sound",
-        group: "Preferences",
+        label: p.toggleSound,
+        group: p.groups.preferences,
         keywords: "sound chime mute audio volume ding notification quiet",
         icon: Volume2,
         run: () => {
           const next = !isSoundEnabled();
           setSoundEnabled(next);
           if (next) playCompletionChime(); // instant preview of the chime
-          toast.success(
-            next
-              ? "Completion sound on, you'll hear a soft chime when conversions finish"
-              : "Completion sound off"
-          );
+          toast.success(next ? p.soundOn : p.soundOff);
           onClose();
         },
       },
@@ -150,7 +152,7 @@ export default function CommandPalette({
         id: `fav-${i}`,
         label: f.title,
         hint: PLATFORMS[f.platform]?.name,
-        group: "Saved",
+        group: p.groups.saved,
         keywords: `saved favorite ${f.title} ${f.platform}`,
         icon: Star,
         run: fetchUrl(f.url),
@@ -162,111 +164,135 @@ export default function CommandPalette({
         id: `recent-${i}`,
         label: r.title,
         hint: PLATFORMS[r.platform]?.name,
-        group: "Recent",
+        group: p.groups.recent,
         keywords: `recent history ${r.title} ${r.platform}`,
         icon: History,
         run: fetchUrl(r.url),
       });
     });
 
+    const goTo = p.groups.goTo;
     list.push(
       {
         id: "go-home",
-        label: "Home",
-        group: "Go to",
+        label: p.home,
+        group: goTo,
         keywords: "home top downloader",
         icon: Home,
         run: go("/"),
       },
       {
         id: "go-platforms",
-        label: "Supported platforms",
-        group: "Go to",
+        label: p.platforms,
+        group: goTo,
         keywords: "platforms supported",
         icon: Layers,
         run: go("/#platforms"),
       },
       {
         id: "go-how",
-        label: "How it works",
-        group: "Go to",
+        label: p.howItWorks,
+        group: goTo,
         keywords: "how it works steps guide",
         icon: ListChecks,
         run: go("/#how-it-works"),
       },
       {
         id: "go-faq",
-        label: "FAQ",
-        group: "Go to",
+        label: p.faq,
+        group: goTo,
         keywords: "faq questions help",
         icon: FileText,
-        run: go("/faq"),
-      },
-      {
-        id: "go-changelog",
-        label: "What's new",
-        group: "Go to",
-        keywords: "changelog updates new whats",
-        icon: Sparkles,
-        run: go("/changelog"),
-      },
-      {
-        id: "go-status",
-        label: "Status: is ClipKoala working?",
-        group: "Go to",
-        keywords: "status up down outage broken working health",
-        icon: Activity,
-        run: go("/status"),
-      },
-      {
-        id: "go-features",
-        label: "Features",
-        group: "Go to",
-        keywords: "features what can it do",
-        icon: Sparkles,
-        run: go("/features"),
-      },
-      {
-        id: "go-extension",
-        label: "Browser extension",
-        group: "Go to",
-        keywords: "extension chrome edge browser addon",
-        icon: Layers,
-        run: go("/extension"),
-      },
-      {
-        id: "go-about",
-        label: "About ClipKoala",
-        group: "Go to",
-        keywords: "about who privacy trust",
-        icon: FileText,
-        run: go("/about"),
-      },
-      {
-        id: "go-guides",
-        label: "How-to guides",
-        group: "Go to",
-        keywords: "guides how to help tutorial blog watermark mp3 batch",
-        icon: BookOpen,
-        run: go("/guides"),
+        // The full FAQ page is English; translated pages have their own
+        // questions section on the home page.
+        run: go(english ? "/faq" : "/#faq"),
       }
     );
+    // English-only pages are offered on English pages only.
+    if (english) {
+      list.push(
+        {
+          id: "go-changelog",
+          label: p.changelog,
+          group: goTo,
+          keywords: "changelog updates new whats",
+          icon: Sparkles,
+          run: go("/changelog"),
+        },
+        {
+          id: "go-status",
+          label: p.status,
+          group: goTo,
+          keywords: "status up down outage broken working health",
+          icon: Activity,
+          run: go("/status"),
+        },
+        {
+          id: "go-features",
+          label: p.features,
+          group: goTo,
+          keywords: "features what can it do",
+          icon: Sparkles,
+          run: go("/features"),
+        },
+        {
+          id: "go-extension",
+          label: p.extension,
+          group: goTo,
+          keywords: "extension chrome edge browser addon",
+          icon: Layers,
+          run: go("/extension"),
+        },
+        {
+          id: "go-about",
+          label: p.about,
+          group: goTo,
+          keywords: "about who privacy trust",
+          icon: FileText,
+          run: go("/about"),
+        },
+        {
+          id: "go-guides",
+          label: p.guides,
+          group: goTo,
+          keywords: "guides how to help tutorial blog watermark mp3 batch",
+          icon: BookOpen,
+          run: go("/guides"),
+        }
+      );
+    }
 
-    LANDING_SLUGS.forEach((slug) => {
-      const page = LANDING_PAGES[slug];
-      const name = page.platform ? PLATFORMS[page.platform].name : page.name;
+    // Platform names are matched too, so "tiktok" finds the TikTok page in
+    // any language.
+    const platformFor = Object.fromEntries(
+      Object.entries(LANDING_FOR_PLATFORM).map(([id, slug]) => [slug, id])
+    ) as Record<string, keyof typeof PLATFORMS>;
+    LOCALIZED_LANDING_SLUGS.forEach((slug) => {
+      const platform = platformFor[slug];
+      const name = landingNames[slug] ?? slug;
       list.push({
         id: `landing-${slug}`,
-        label: page.name,
-        group: "Go to",
-        keywords: `${name} ${slug} downloader page`,
+        label: name,
+        group: goTo,
+        keywords: `${platform ? PLATFORMS[platform].name : ""} ${slug} downloader page`,
         icon: Layers,
         run: go(`/${slug}`),
       });
     });
 
     return list;
-  }, [recent, favorites, onClose, onSelectUrl, onPasteFetch, router]);
+  }, [
+    recent,
+    favorites,
+    onClose,
+    onSelectUrl,
+    onPasteFetch,
+    router,
+    p,
+    locale,
+    localHref,
+    landingNames,
+  ]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -341,7 +367,7 @@ export default function CommandPalette({
       className="fixed inset-0 z-[80] flex items-start justify-center px-4 pt-[12vh]"
       role="dialog"
       aria-modal="true"
-      aria-label="Command palette"
+      aria-label={p.aria}
     >
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -356,7 +382,7 @@ export default function CommandPalette({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder="Search commands, saved videos, pages…"
+            placeholder={p.placeholder}
             className="h-12 w-full bg-transparent text-sm text-ink-1 placeholder-ink-3 outline-none"
             role="combobox"
             aria-expanded="true"
@@ -380,7 +406,7 @@ export default function CommandPalette({
         >
           {filtered.length === 0 ? (
             <p className="px-3 py-8 text-center text-sm text-ink-3">
-              No matching commands
+              {p.noMatch}
             </p>
           ) : (
             groups.map((group) => (

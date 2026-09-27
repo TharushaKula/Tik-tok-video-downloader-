@@ -224,7 +224,9 @@ MP3 option is labeled 320kbps instead)
 
 Fifteen rounds shipped. Next highest-impact candidates:
 
-1. Multi-language UI (i18n)  its own dedicated pass
+1. ~~Multi-language UI (i18n)~~ shipped for the tool and tool pages in
+   Spanish, Brazilian Portuguese, Indonesian, and French (see README,
+   Languages); guides and answers remain English
 2. Trim/clip a section before downloading
 3. Server-side caching of recently resolved links
 4. Publish the extension to the Chrome Web Store (account + listing assets needed)

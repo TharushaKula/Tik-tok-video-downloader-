@@ -1,6 +1,7 @@
 "use client";
 
 import { Lightbulb, X } from "lucide-react";
+import { useI18n } from "@/lib/i18n/client";
 
 const STORAGE_KEY = "clipkoala:onboarded";
 
@@ -29,6 +30,7 @@ export default function OnboardingHint({
   visible: boolean;
   onDismiss: () => void;
 }) {
+  const { t } = useI18n();
   if (!visible) return null;
 
   return (
@@ -40,15 +42,13 @@ export default function OnboardingHint({
         <Lightbulb size={13} className="text-accent" />
       </span>
       <p className="min-w-0 flex-1 text-xs leading-relaxed text-ink-1">
-        <span className="font-semibold">New here?</span> Open any video, tap
-        its Share button, copy the link, and paste it below. The download
-        options appear in seconds, and pasting several links at once starts a
-        batch.
+        <span className="font-semibold">{t.onboarding.newHere}</span>{" "}
+        {t.onboarding.body}
       </p>
       <button
         onClick={onDismiss}
         className="focus-ring shrink-0 rounded-md p-1 text-ink-3 transition-colors hover:text-ink-1"
-        aria-label="Dismiss tip"
+        aria-label={t.onboarding.dismiss}
       >
         <X size={13} />
       </button>

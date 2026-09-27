@@ -16,6 +16,8 @@ import toast from "react-hot-toast";
 import type { PlatformId, VideoInfo } from "@/lib/types";
 import { PLATFORMS } from "@/lib/platforms";
 import DownloadOptionRow, { startOptionDownload } from "./DownloadOptionRow";
+import { useI18n } from "@/lib/i18n/client";
+import { fmt } from "@/lib/i18n/format";
 
 export interface BatchItem {
   id: string;
@@ -70,6 +72,7 @@ export default function BatchResults({
   onRetry,
   onReset,
 }: BatchResultsProps) {
+  const { t, plural } = useI18n();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [savingAll, setSavingAll] = useState(false);
   const reduce = useReducedMotion();
@@ -81,10 +84,9 @@ export default function BatchResults({
   async function handleSaveAll() {
     if (savingAll || ready.length === 0) return;
     setSavingAll(true);
-    toast.success(
-      `Starting ${ready.length} downloads, your browser may ask to allow multiple files`,
-      { duration: 5000 }
-    );
+    toast.success(fmt(t.batch.startingAll, { count: ready.length }), {
+      duration: 5000,
+    });
     // Stagger the triggers so the browser registers each one
     for (const item of ready) {
       startOptionDownload(
@@ -106,10 +108,12 @@ export default function BatchResults({
           {running ? (
             <Loader2 size={14} className="animate-spin text-ink-2" />
           ) : null}
-          <span className="font-medium text-ink-1">Batch download</span>
+          <span className="font-medium text-ink-1">{t.batch.title}</span>
           <span className="text-xs text-ink-3" aria-live="polite">
-            {done} of {items.length} fetched
-            {failed.length > 0 ? ` · ${failed.length} failed` : ""}
+            {fmt(t.batch.progress, { done, total: items.length })}
+            {failed.length > 0
+              ? ` · ${fmt(t.batch.failedCount, { count: failed.length })}`
+              : ""}
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -123,15 +127,15 @@ export default function BatchResults({
             ) : (
               <Download size={12} />
             )}
-            {savingAll ? "Saving…" : `Save all (${ready.length})`}
+            {savingAll ? t.batch.saving : fmt(t.batch.saveAll, { count: ready.length })}
           </button>
           <button
             onClick={onReset}
             className="focus-ring flex h-8 items-center gap-1.5 rounded-lg border border-veil/[0.08] px-3 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1"
-            aria-label="Start a new download"
+            aria-label={t.common.newAria}
           >
             <RotateCcw size={12} />
-            <span className="hidden sm:inline">New</span>
+            <span className="hidden sm:inline">{t.common.new}</span>
           </button>
         </div>
       </div>
@@ -195,12 +199,14 @@ export default function BatchResults({
                         : "text-ink-4"
                     }`}
                   >
-                    {item.status === "queued" && "Waiting…"}
+                    {item.status === "queued" && t.batch.waiting}
                     {item.status === "loading" &&
-                      `Fetching from ${meta.name}…`}
+                      fmt(t.batch.fetchingFrom, { platform: meta.name })}
                     {item.status === "error" && item.error}
                     {item.status === "success" &&
-                      `${meta.name} · ${item.info!.downloads.length} formats`}
+                      plural(item.info!.downloads.length, t.batch.formats, {
+                        platform: meta.name,
+                      })}
                   </span>
                 </span>
 
@@ -224,7 +230,7 @@ export default function BatchResults({
                       className="focus-ring flex h-7 items-center gap-1 rounded-lg border border-veil/[0.08] px-2.5 text-xs font-medium text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-1"
                     >
                       <RotateCcw size={11} />
-                      Retry
+                      {t.common.retry}
                     </button>
                   )}
                   {item.status === "success" && item.info && (
@@ -235,15 +241,15 @@ export default function BatchResults({
                           startOptionDownload(
                             item.info!.downloads[0],
                             item.info!.platform,
-                            true,
+                            t.download,
                             { title: item.info!.title, author: item.info!.author }
                           );
                         }}
                         className="focus-ring flex h-7 items-center gap-1 rounded-lg bg-btn px-2.5 text-xs font-semibold text-btn-ink transition-all hover:opacity-90 active:scale-[0.98]"
-                        aria-label={`Save ${item.info.title}`}
+                        aria-label={fmt(t.batch.saveItemAria, { title: item.info.title })}
                       >
                         <Download size={11} />
-                        Save
+                        {t.common.save}
                       </button>
                       <motion.span
                         animate={{ rotate: expanded ? 180 : 0 }}
@@ -287,8 +293,7 @@ export default function BatchResults({
       </ul>
 
       <p className="border-t border-veil/[0.06] px-4 py-3 text-xs leading-relaxed text-ink-4 sm:px-5">
-        Save all grabs the best quality for each video. Expand a row to pick a
-        different format.
+        {t.batch.footnote}
       </p>
     </div>
   );

@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { Plus, Star, Tag, Trash2, X } from "lucide-react";
 import { PLATFORMS } from "@/lib/platforms";
 import { allTags, type FavoriteEntry } from "@/lib/favorites";
+import { useI18n } from "@/lib/i18n/client";
+import { fmt } from "@/lib/i18n/format";
 
 interface FavoritesProps {
   entries: FavoriteEntry[];
@@ -21,6 +23,7 @@ function TagEditor({
   entry: FavoriteEntry;
   onSetTags: (url: string, tags: string[]) => void;
 }) {
+  const { t: msg } = useI18n();
   const [adding, setAdding] = useState(false);
   const [value, setValue] = useState("");
   const tags = entry.tags ?? [];
@@ -50,7 +53,7 @@ function TagEditor({
               )
             }
             className="focus-ring flex h-3.5 w-3.5 items-center justify-center rounded-full text-ink-4 transition-colors hover:text-ink-1"
-            aria-label={`Remove tag ${t}`}
+            aria-label={fmt(msg.favorites.removeTag, { tag: t })}
           >
             <X size={10} />
           </button>
@@ -71,9 +74,9 @@ function TagEditor({
               setAdding(false);
             }
           }}
-          placeholder="tag name"
+          placeholder={msg.favorites.tagPlaceholder}
           className="h-6 w-24 rounded-full border border-veil/[0.12] bg-transparent px-2 text-[11px] text-ink-1 placeholder-ink-4 outline-none focus-visible:border-accent/60"
-          aria-label="New tag"
+          aria-label={msg.favorites.newTagAria}
         />
       ) : (
         <button
@@ -81,7 +84,7 @@ function TagEditor({
           className="focus-ring inline-flex items-center gap-0.5 rounded-full border border-dashed border-veil/[0.12] py-0.5 pl-1.5 pr-2 text-[11px] text-ink-4 transition-colors hover:border-veil/25 hover:text-ink-2"
         >
           <Plus size={10} />
-          tag
+          {msg.favorites.addTag}
         </button>
       )}
     </div>
@@ -96,6 +99,7 @@ export default function Favorites({
   onSetTags,
   disabled,
 }: FavoritesProps) {
+  const { t } = useI18n();
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [editingUrl, setEditingUrl] = useState<string | null>(null);
 
@@ -110,11 +114,11 @@ export default function Favorites({
   if (entries.length === 0) return null;
 
   return (
-    <section className="w-full" aria-label="Saved videos">
+    <section className="w-full" aria-label={t.favorites.aria}>
       <div className="mb-2 flex items-center justify-between px-1">
         <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-ink-3">
           <Star size={12} className="fill-amber-400 text-amber-400" />
-          Saved
+          {t.favorites.title}
           <span className="text-ink-4">({entries.length})</span>
         </p>
         <button
@@ -122,7 +126,7 @@ export default function Favorites({
           className="focus-ring flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-ink-4 transition-colors hover:text-ink-1"
         >
           <Trash2 size={11} />
-          Clear
+          {t.common.clear}
         </button>
       </div>
 
@@ -138,7 +142,7 @@ export default function Favorites({
                 : "border-veil/[0.08] text-ink-3 hover:text-ink-1"
             }`}
           >
-            All
+            {t.favorites.all}
           </button>
           {tags.map((t) => (
             <button
@@ -183,7 +187,7 @@ export default function Favorites({
                 <button
                   onClick={() => setEditingUrl(editing ? null : entry.url)}
                   aria-pressed={editing}
-                  aria-label={`Edit tags for ${entry.title}`}
+                  aria-label={fmt(t.favorites.editTags, { title: entry.title })}
                   className={`focus-ring ml-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors hover:bg-veil/[0.06] ${
                     editing || (entry.tags?.length ?? 0) > 0
                       ? "text-ink-2"
@@ -195,7 +199,7 @@ export default function Favorites({
                 <button
                   onClick={() => onRemove(entry.url)}
                   className="focus-ring mr-2 flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-ink-4 transition-colors hover:bg-veil/[0.06] hover:text-ink-1"
-                  aria-label={`Remove ${entry.title} from saved`}
+                  aria-label={fmt(t.favorites.remove, { title: entry.title })}
                 >
                   <X size={13} />
                 </button>

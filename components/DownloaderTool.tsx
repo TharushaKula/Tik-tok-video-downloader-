@@ -47,12 +47,16 @@ import {
   setFavoriteTags,
 } from "@/lib/favorites";
 import type { PlatformId, VideoInfo } from "@/lib/types";
+import { useI18n } from "@/lib/i18n/client";
+import type { ClientMessages } from "@/lib/i18n/types";
+import type { Locale } from "@/lib/i18n/config";
+import { fmt } from "@/lib/i18n/format";
 import toast from "react-hot-toast";
 
 type FetchState =
   | { kind: "idle" }
   | { kind: "loading"; platform: PlatformId | null }
-  | { kind: "error"; message: string; url: string }
+  | { kind: "error"; message: string; detail?: string; url: string }
   | { kind: "success"; info: VideoInfo; url: string }
   | { kind: "batch" };
 
@@ -65,6 +69,7 @@ const BATCH_CONCURRENCY = 3;
  */
 async function fetchVideoInfo(
   target: string,
+  t: ClientMessages,
   via = "input"
 ): Promise<VideoInfo> {
   const platform = detectPlatform(target) ?? "unknown";
@@ -84,17 +89,13 @@ async function fetchVideoInfo(
       error: "network",
       latency: latencyBucket(Date.now() - started),
     });
-    throw new Error(
-      "We couldn't reach the server. Check your connection and try again."
-    );
+    throw new Error(t.tool.serverUnreachable);
   }
 
   // The body may not be JSON if the server hits a hard failure.
   const json = await res.json().catch(() => null);
   if (!res.ok || !json?.success) {
-    const message =
-      json?.error ||
-      "The server hit an unexpected problem. Give it a second and try again.";
+    const message = json?.error || t.tool.serverError;
     trackFunnel("resolve_error", {
       platform,
       error: classifyError(message),
@@ -112,10 +113,25 @@ async function fetchVideoInfo(
   return info;
 }
 
+/**
+ * What to show for a failed fetch. Server messages are English; other
+ * languages get a plain explanation of the failure class, with the server's
+ * own words kept underneath as detail.
+ */
+function describeError(
+  raw: string,
+  locale: Locale,
+  t: ClientMessages
+): { message: string; detail?: string } {
+  if (locale === "en") return { message: raw };
+  return { message: t.errors.classes[classifyError(raw)], detail: raw };
+}
+
 // The complete interactive downloader: command bar, fetch states, batch
 // queue, and recent history. Self-contained so the home page and every
 // platform landing page share the exact same tool.
 export default function DownloaderTool() {
+  const { t, locale, plural } = useI18n();
   const [url, setUrl] = useState("");
   const [batchMode, setBatchMode] = useState(false);
   const [batchText, setBatchText] = useState("");
@@ -199,6 +215,12 @@ export default function DownloaderTool() {
   busyRef.current = busy;
   const recentRef = useRef(recent);
   recentRef.current = recent;
+  const tRef = useRef(t);
+  tRef.current = t;
+  const pluralRef = useRef(plural);
+  pluralRef.current = plural;
+  const fallbackFor = (kind: "playlist" | "channel") =>
+    kind === "playlist" ? t.tool.playlistError : t.tool.channelError;
 
   // Route any incoming text (drop, page-level paste, clipboard detection):
   // several links start a batch, one link fetches directly.
@@ -209,7 +231,7 @@ export default function DownloaderTool() {
       setBatchMode(true);
       setBatchText(found.urls.join("\n"));
       void handleBatchSubmit(found.urls, via);
-      toast.success(`${found.urls.length} links detected, fetching all`);
+      toast.success(plural(found.urls.length, t.tool.linksDetected));
       return true;
     }
     if (found.urls.length === 1 && !busyRef.current) {
@@ -229,16 +251,16 @@ export default function DownloaderTool() {
     try {
       text = (await navigator.clipboard.readText()).trim();
     } catch {
-      toast.error("Clipboard access was denied by the browser");
+      toast.error(t.tool.clipboardDenied);
       return;
     }
     if (!text) {
-      toast("Your clipboard is empty");
+      toast(t.tool.clipboardEmpty);
       return;
     }
     if (!routeRef.current(text)) {
       setUrl(text.split(/\s+/)[0].slice(0, 500));
-      toast("That doesn't look like a supported link");
+      toast(t.tool.notSupportedLink);
     }
   }
 
@@ -288,17 +310,17 @@ export default function DownloaderTool() {
       const file = e.dataTransfer?.files?.[0];
       if (file) {
         if (!isLinkFile(file)) {
-          toast("Drop a link, or a .txt/.csv file of links");
+          toast(tRef.current.tool.dropFileHint);
           return;
         }
         void file
           .text()
           .then((content) => {
             if (!routeRef.current(normalizeLinkFileText(content), "file")) {
-              toast("No supported links found in that file");
+              toast(tRef.current.tool.noLinksInFile);
             }
           })
-          .catch(() => toast.error("Couldn't read that file"));
+          .catch(() => toast.error(tRef.current.tool.fileReadError));
         return;
       }
       const text =
@@ -307,7 +329,7 @@ export default function DownloaderTool() {
         "";
       if (text.trim() && !routeRef.current(text.trim(), "drop")) {
         setUrl(text.trim().split(/\s+/)[0]);
-        toast("That doesn't look like a supported link");
+        toast(tRef.current.tool.notSupportedLink);
       }
     }
     window.addEventListener("dragenter", onDragEnter);
@@ -369,22 +391,22 @@ export default function DownloaderTool() {
       ) {
         return;
       }
-      const label =
-        urls.length > 1 ? `${urls.length} links` : "a link";
+      const msgs = tRef.current;
+      const label = pluralRef.current(urls.length, msgs.tool.clipboardLinks);
       toast(
-        (t) => (
+        (toastItem) => (
           <span className="flex items-center gap-3">
             <span className="text-[13px]">
-              We noticed {label} in your clipboard
+              {fmt(msgs.tool.clipboardNoticed, { what: label })}
             </span>
             <button
               onClick={() => {
-                toast.dismiss(t.id);
+                toast.dismiss(toastItem.id);
                 routeRef.current(text, "clipboard");
               }}
               className="shrink-0 rounded-lg bg-btn px-2.5 py-1 text-xs font-semibold text-btn-ink"
             >
-              Fetch
+              {msgs.common.fetch}
             </button>
           </span>
         ),
@@ -416,22 +438,34 @@ export default function DownloaderTool() {
     try {
       const res = await fetch(endpoint);
       const json = await res.json().catch(() => null);
+      const fallback =
+        kind === "playlist" ? t.tool.playlistError : t.tool.channelError;
       if (!res.ok || !json?.success) {
-        throw new Error(json?.error || `Couldn't load that ${kind}`);
+        throw new Error(json?.error || fallback);
       }
       const urls: string[] = json.urls;
-      const label = kind === "playlist" ? "Playlist" : "Channel";
       toast.success(
         json.total > urls.length
-          ? `${label} loaded, fetching the ${urls.length} most recent videos`
-          : `${label} loaded, fetching ${urls.length} ${urls.length === 1 ? "video" : "videos"}`
+          ? fmt(
+              kind === "playlist"
+                ? t.tool.playlistLoadedRecent
+                : t.tool.channelLoadedRecent,
+              { count: urls.length }
+            )
+          : plural(
+              urls.length,
+              kind === "playlist" ? t.tool.playlistLoaded : t.tool.channelLoaded
+            )
       );
       await handleBatchSubmit(urls, kind);
     } catch (err: unknown) {
       setState({
         kind: "error",
-        message:
-          err instanceof Error ? err.message : `Couldn't load that ${kind}`,
+        ...describeError(
+          err instanceof Error ? err.message : fallbackFor(kind),
+          locale,
+          t
+        ),
         url: target,
       });
     }
@@ -477,8 +511,7 @@ export default function DownloaderTool() {
       });
       setState({
         kind: "error",
-        message:
-          "That link isn't from a supported platform. Paste a link from TikTok, Instagram, Facebook, YouTube, X, Reddit, Pinterest, Twitch, or SoundCloud.",
+        message: t.tool.unsupportedPlatform,
         url: target,
       });
       return;
@@ -489,7 +522,7 @@ export default function DownloaderTool() {
     setState({ kind: "loading", platform });
 
     try {
-      const info = await fetchVideoInfo(target, via);
+      const info = await fetchVideoInfo(target, t, via);
       setState({ kind: "success", info, url: target });
       rememberDownload(target, info);
       if (showHint) {
@@ -499,7 +532,11 @@ export default function DownloaderTool() {
     } catch (err: unknown) {
       setState({
         kind: "error",
-        message: err instanceof Error ? err.message : "Unexpected error",
+        ...describeError(
+          err instanceof Error ? err.message : t.tool.unexpected,
+          locale,
+          t
+        ),
         url: target,
       });
     }
@@ -514,13 +551,17 @@ export default function DownloaderTool() {
   async function fetchBatchItem(id: string, target: string) {
     updateBatchItem(id, { status: "loading", error: undefined });
     try {
-      const info = await fetchVideoInfo(target, "batch");
+      const info = await fetchVideoInfo(target, t, "batch");
       updateBatchItem(id, { status: "success", info });
       rememberDownload(target, info);
     } catch (err: unknown) {
       updateBatchItem(id, {
         status: "error",
-        error: err instanceof Error ? err.message : "Unexpected error",
+        error: describeError(
+          err instanceof Error ? err.message : t.tool.unexpected,
+          locale,
+          t
+        ).message,
       });
     }
   }
@@ -598,7 +639,9 @@ export default function DownloaderTool() {
       ts: Date.now(),
     });
     setFavorites(list);
-    toast.success(favorited ? "Saved to favorites" : "Removed from favorites");
+    toast.success(
+      favorited ? t.tool.savedToFavorites : t.tool.removedFromFavorites
+    );
   }
 
   function handleRemoveFavorite(url: string) {
@@ -624,11 +667,9 @@ export default function DownloaderTool() {
         >
           <div className="rounded-2xl border-2 border-dashed border-accent/60 bg-accent/[0.06] px-10 py-8 text-center">
             <p className="text-lg font-semibold text-ink-hi">
-              Drop a link, or a .txt/.csv of links
+              {t.tool.dropTitle}
             </p>
-            <p className="mt-1 text-sm text-ink-2">
-              We&apos;ll detect the platform and fetch everything right away
-            </p>
+            <p className="mt-1 text-sm text-ink-2">{t.tool.dropBody}</p>
           </div>
         </div>
       )}
@@ -692,6 +733,7 @@ export default function DownloaderTool() {
             >
               <ErrorCard
                 message={state.message}
+                detail={state.detail}
                 onRetry={() => handleSubmit(state.url, "retry")}
                 onDismiss={handleReset}
               />
@@ -769,11 +811,11 @@ export default function DownloaderTool() {
 
       {/* Trust row */}
       <p className="flex flex-wrap items-center justify-center gap-x-2 text-xs text-ink-4">
-        <span>Free forever</span>
+        <span>{t.common.freeForever}</span>
         <span aria-hidden>·</span>
-        <span>No sign-up</span>
+        <span>{t.common.noSignUp}</span>
         <span aria-hidden>·</span>
-        <span>Nothing stored</span>
+        <span>{t.common.nothingStored}</span>
         <span aria-hidden className="hidden sm:inline">
           ·
         </span>
@@ -781,7 +823,7 @@ export default function DownloaderTool() {
           <kbd className="rounded border border-veil/10 bg-veil/[0.04] px-1 py-0.5 font-mono text-[10px] text-ink-3">
             /
           </kbd>{" "}
-          link box
+          {t.tool.linkBox}
         </span>
         <span aria-hidden className="hidden sm:inline">
           ·
@@ -793,7 +835,7 @@ export default function DownloaderTool() {
           <kbd className="rounded border border-veil/10 bg-veil/[0.04] px-1 py-0.5 font-mono text-[10px] text-ink-3">
             {"⌘"}K
           </kbd>{" "}
-          commands
+          {t.tool.commands}
         </button>
       </p>
     </div>

@@ -1,33 +1,19 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Activity, EyeOff, Lock, Wallet } from "lucide-react";
+import { getMessages, type Locale } from "@/lib/i18n";
 
+// Icons and links per point, in the same order as site.trust.points.
 const POINTS = [
-  {
-    icon: Wallet,
-    title: "Free, with no catch",
-    body: "No account, no paywall, no download limits, no 'premium' quality tier. Every format is available to everyone.",
-  },
-  {
-    icon: EyeOff,
-    title: "We do not keep your links",
-    body: "Links are resolved and discarded. Files stream through, never stored. History and favorites live only in your browser.",
-    href: "/privacy",
-  },
-  {
-    icon: Lock,
-    title: "Never asks for your passwords",
-    body: "ClipKoala only reads public posts. It cannot access private accounts and never requests platform credentials.",
-  },
-  {
-    icon: Activity,
-    title: "Honest about uptime",
-    body: "A public status page runs live checks against every platform, so you can see for yourself when something is down.",
-    href: "/status",
-  },
+  { icon: Wallet },
+  { icon: EyeOff, href: "/privacy" },
+  { icon: Lock },
+  { icon: Activity, href: "/status" },
 ];
 
-export default function TrustSection() {
+export default function TrustSection({ locale = "en" }: { locale?: Locale }) {
+  const { trust } = getMessages(locale).site;
+  const points = POINTS.map((p, i) => ({ ...p, ...trust.points[i] }));
   return (
     <section
       id="trust"
@@ -37,16 +23,15 @@ export default function TrustSection() {
       <div className="card overflow-hidden">
         <div className="grid gap-10 p-6 sm:p-10 lg:grid-cols-[1.1fr_1fr] lg:items-center">
           <div className="reveal">
-            <p className="eyebrow mb-2">Built on trust</p>
+            <p className="eyebrow mb-2">{trust.eyebrow}</p>
             <h2 id="trust-title" className="text-2xl font-extrabold text-ink-hi sm:text-3xl">
-              A downloader you can recommend to your least technical friend
+              {trust.title}
             </h2>
             <p className="mt-3 max-w-lg text-sm leading-relaxed text-ink-2">
-              Most download sites are a maze of fake buttons and pop-ups. ClipKoala is one
-              box, one result, and a clear list of what you are about to save.
+              {trust.body}
             </p>
             <ul className="mt-8 grid gap-5 sm:grid-cols-2">
-              {POINTS.map(({ icon: Icon, title, body, href }) => (
+              {points.map(({ icon: Icon, title, body, href }) => (
                 <li key={title} className="flex gap-3">
                   <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
                     <Icon size={15} aria-hidden />
@@ -74,7 +59,7 @@ export default function TrustSection() {
             />
             <Image
               src="/brand/mascot.webp"
-              alt="The ClipKoala koala hugging a clapperboard with a play button"
+              alt={trust.mascotAlt}
               width={420}
               height={420}
               sizes="(max-width: 640px) 80vw, 420px"

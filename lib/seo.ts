@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SITE, absoluteUrl } from "./site";
+import { LOCALE_META, LOCALES, type Locale } from "./i18n/config";
 
 // ── Metadata ──────────────────────────────────────────────────────────
 
@@ -19,6 +20,10 @@ interface PageMetaInput {
   /** Override the auto-generated OG image */
   image?: string;
   noindex?: boolean;
+  /** Language of the page (defaults to English) */
+  locale?: Locale;
+  /** hreflang alternates, absolute URLs keyed by hreflang code */
+  languages?: Record<string, string>;
 }
 
 /**
@@ -34,17 +39,28 @@ export function pageMetadata(input: PageMetaInput): Metadata {
   const images = input.image
     ? [{ url: input.image, width: 1200, height: 630, alt: fullTitle }]
     : undefined;
+  const locale = input.locale ?? "en";
 
   return {
     title,
     description: input.description,
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      ...(input.languages ? { languages: input.languages } : {}),
+    },
     openGraph: {
       title: fullTitle,
       description: input.description,
       url,
       siteName: SITE.name,
-      locale: SITE.locale,
+      locale: LOCALE_META[locale].ogLocale,
+      ...(input.languages
+        ? {
+            alternateLocale: LOCALES.filter((l) => l !== locale).map(
+              (l) => LOCALE_META[l].ogLocale
+            ),
+          }
+        : {}),
       type: input.type ?? "website",
       ...(input.type === "article"
         ? {
@@ -176,6 +192,7 @@ export function webPageSchema(input: {
   type?: "WebPage" | "CollectionPage" | "AboutPage" | "FAQPage" | "ContactPage";
   datePublished?: string;
   dateModified?: string;
+  locale?: Locale;
 }) {
   return {
     "@type": input.type ?? "WebPage",
@@ -185,7 +202,7 @@ export function webPageSchema(input: {
     description: input.description,
     isPartOf: { "@id": WEBSITE_ID },
     about: { "@id": APP_ID },
-    inLanguage: "en",
+    inLanguage: LOCALE_META[input.locale ?? "en"].htmlLang,
     ...(input.datePublished ? { datePublished: input.datePublished } : {}),
     ...(input.dateModified ? { dateModified: input.dateModified } : {}),
   };
@@ -225,7 +242,8 @@ export function articleSchema(input: {
   path: string;
   published: string;
   modified?: string;
-  image?: string;
+  /** Absolute or root-relative; see ogImagePath for generated cards */
+  image: string;
 }) {
   return {
     "@type": "Article",
@@ -236,9 +254,35 @@ export function articleSchema(input: {
     dateModified: input.modified ?? input.published,
     author: { "@id": ORGANIZATION_ID },
     publisher: { "@id": ORGANIZATION_ID },
-    image: absoluteUrl(input.image ?? `${input.path}/opengraph-image`),
+    image: absoluteUrl(input.image),
     inLanguage: "en",
   };
+}
+
+function djb2(str: string): number {
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash + str.charCodeAt(i)) & 0xffffffff;
+  }
+  return hash >>> 0;
+}
+
+/**
+ * Public path of a page's generated Open Graph image, for places that need
+ * the URL outside metadata (structured data). Next.js suffixes metadata
+ * routes inside a route group with a short hash of the folder path, and the
+ * English pages live in app/(site), so /answers/x's image is served at
+ * /answers/x/opengraph-image-b235m6. This mirrors getMetadataRouteSuffix in
+ * next/dist/lib/metadata/get-metadata-route.js; the SEO audit fetches every
+ * image URL a page declares, so a change in that scheme fails the gate.
+ *
+ * @param path     the page's public path, e.g. "/answers/link-not-supported"
+ * @param routeDir the page's folder under app/, e.g. "/(site)/answers/[slug]"
+ */
+export function ogImagePath(path: string, routeDir: string): string {
+  const grouped = routeDir.split("/").some((s) => /^\(.+\)$/.test(s));
+  const suffix = grouped ? `-${djb2(routeDir).toString(36).slice(0, 6)}` : "";
+  return `${path === "/" ? "" : path}/opengraph-image${suffix}`;
 }
 
 /** Wrap one or more schema nodes into a single @graph document. */

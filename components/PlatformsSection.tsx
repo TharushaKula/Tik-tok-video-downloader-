@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import { PLATFORMS, PLATFORM_IDS } from "@/lib/platforms";
-import { LANDING_FOR_PLATFORM, LANDING_PAGES } from "@/lib/landing";
+import { LANDING_FOR_PLATFORM } from "@/lib/landing";
+import { getMessages, landingNames, localePath, type Locale } from "@/lib/i18n";
 import PlatformIcon from "./PlatformIcon";
 
 // Grid of every supported platform, each card linking to its dedicated
 // downloader page. Server component: pure HTML, no client bundle.
-export default function PlatformsSection() {
+export default function PlatformsSection({ locale = "en" }: { locale?: Locale }) {
+  const { platforms } = getMessages(locale).site;
+  const names = landingNames(locale);
   return (
     <section
       id="platforms"
@@ -14,13 +17,12 @@ export default function PlatformsSection() {
       aria-labelledby="platforms-title"
     >
       <div className="reveal mb-10 text-center">
-        <p className="eyebrow mb-2">Supported platforms</p>
+        <p className="eyebrow mb-2">{platforms.eyebrow}</p>
         <h2 id="platforms-title" className="text-2xl font-extrabold text-ink-hi sm:text-3xl">
-          One downloader for every feed
+          {platforms.title}
         </h2>
         <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-ink-2">
-          Paste a link from any of these platforms. ClipKoala detects it and
-          fetches the best quality available.
+          {platforms.body}
         </p>
       </div>
 
@@ -28,11 +30,10 @@ export default function PlatformsSection() {
         {PLATFORM_IDS.map((id) => {
           const meta = PLATFORMS[id];
           const slug = LANDING_FOR_PLATFORM[id];
-          const page = LANDING_PAGES[slug];
           return (
             <li key={id} className="reveal">
               <Link
-                href={`/${slug}`}
+                href={localePath(locale, `/${slug}`)}
                 className={`focus-ring card card-hover group flex h-full flex-col p-6 ${meta.hoverBorder}`}
               >
                 <span className="mb-4 flex items-center justify-between">
@@ -46,10 +47,10 @@ export default function PlatformsSection() {
                   />
                 </span>
                 <h3 className="mb-2.5 text-base font-extrabold text-ink-hi">
-                  {page.name}
+                  {names[slug]}
                 </h3>
                 <ul className="space-y-1.5">
-                  {meta.supports.map((line) => (
+                  {platforms.supports[id].map((line) => (
                     <li
                       key={line}
                       className="flex items-start gap-2 text-sm leading-relaxed text-ink-2"

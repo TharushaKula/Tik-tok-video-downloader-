@@ -4,17 +4,31 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { LANDING_PAGES, LANDING_SLUGS } from "@/lib/landing";
+import { useI18n } from "@/lib/i18n/client";
+
+interface NavLink {
+  href: string;
+  label: string;
+}
 
 interface MobileMenuProps {
-  links: { href: string; label: string }[];
+  links: NavLink[];
+  /** Every tool page, already in the page's language */
+  downloaders: NavLink[];
+  /** Smaller links under the downloaders (English pages only) */
+  secondary: NavLink[];
 }
 
 // Full-screen sheet on small screens. Rendered through a portal to <body>:
 // the sticky header's backdrop-filter would otherwise act as the containing
 // block for a fixed element and trap the sheet inside the 64px bar. Closes
 // on Escape and locks body scroll while open.
-export default function MobileMenu({ links }: MobileMenuProps) {
+export default function MobileMenu({
+  links,
+  downloaders,
+  secondary,
+}: MobileMenuProps) {
+  const { t, href: localHref } = useI18n();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -37,7 +51,7 @@ export default function MobileMenu({ links }: MobileMenuProps) {
       <button
         onClick={() => setOpen(true)}
         className="focus-ring flex h-9 w-9 items-center justify-center rounded-lg border border-veil/[0.08] text-ink-2 transition-colors hover:border-veil/20 hover:text-ink-hi"
-        aria-label="Open menu"
+        aria-label={t.menu.open}
         aria-expanded={open}
         aria-controls="mobile-menu"
       >
@@ -49,17 +63,17 @@ export default function MobileMenu({ links }: MobileMenuProps) {
           id="mobile-menu"
           role="dialog"
           aria-modal="true"
-          aria-label="Menu"
+          aria-label={t.menu.title}
           className="fixed inset-0 z-[80] flex flex-col bg-base"
         >
           <div className="flex h-16 items-center justify-between border-b border-veil/[0.06] px-4">
             <span className="font-display text-[17px] font-bold text-ink-hi">
-              Menu
+              {t.menu.title}
             </span>
             <button
               onClick={() => setOpen(false)}
               className="focus-ring flex h-9 w-9 items-center justify-center rounded-lg border border-veil/[0.08] text-ink-2"
-              aria-label="Close menu"
+              aria-label={t.menu.close}
             >
               <X size={16} />
             </button>
@@ -78,47 +92,42 @@ export default function MobileMenu({ links }: MobileMenuProps) {
                 </li>
               ))}
             </ul>
-            <p className="eyebrow mt-8 px-3">Downloaders</p>
+            <p className="eyebrow mt-8 px-3">{t.menu.downloaders}</p>
             <ul className="mt-2 grid grid-cols-2 gap-1">
-              {LANDING_SLUGS.map((slug) => (
-                <li key={slug}>
+              {downloaders.map(({ href, label }) => (
+                <li key={href}>
                   <Link
-                    href={`/${slug}`}
+                    href={href}
                     onClick={() => setOpen(false)}
                     className="focus-ring block rounded-lg px-3 py-2 text-sm text-ink-2 hover:bg-veil/[0.05] hover:text-ink-hi"
                   >
-                    {LANDING_PAGES[slug].name}
+                    {label}
                   </Link>
                 </li>
               ))}
             </ul>
-            <div className="mt-8 grid grid-cols-2 gap-1 border-t border-veil/[0.06] pt-6">
-              {[
-                ["/about", "About"],
-                ["/extension", "Browser extension"],
-                ["/changelog", "What's new"],
-                ["/status", "Status"],
-                ["/glossary", "Glossary"],
-                ["/privacy", "Privacy"],
-              ].map(([href, label]) => (
-                <Link
-                  key={href}
-                  href={href}
-                  onClick={() => setOpen(false)}
-                  className="focus-ring rounded-lg px-3 py-2 text-sm text-ink-3 hover:text-ink-hi"
-                >
-                  {label}
-                </Link>
-              ))}
-            </div>
+            {secondary.length > 0 && (
+              <div className="mt-8 grid grid-cols-2 gap-1 border-t border-veil/[0.06] pt-6">
+                {secondary.map(({ href, label }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setOpen(false)}
+                    className="focus-ring rounded-lg px-3 py-2 text-sm text-ink-3 hover:text-ink-hi"
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </div>
+            )}
           </nav>
           <div className="border-t border-veil/[0.06] p-4">
             <Link
-              href="/"
+              href={localHref("/")}
               onClick={() => setOpen(false)}
               className="btn-primary btn-md w-full"
             >
-              Download a video
+              {t.menu.downloadVideo}
             </Link>
           </div>
         </div>,

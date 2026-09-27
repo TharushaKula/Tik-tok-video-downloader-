@@ -19,6 +19,9 @@ const nextConfig = {
   // Pin the workspace root: a stray lockfile in the home directory would
   // otherwise confuse Turbopack's project-root detection.
   turbopack: { root: import.meta.dirname },
+  // Each language has its own root layout (for a correct <html lang>), so
+  // unmatched URLs need app/global-not-found.tsx rather than a root 404.
+  experimental: { globalNotFound: true },
   poweredByHeader: false,
   compress: true,
   images: {

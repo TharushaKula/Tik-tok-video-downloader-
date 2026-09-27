@@ -1,32 +1,38 @@
 import Image from "next/image";
 import { PLATFORMS, PLATFORM_IDS } from "@/lib/platforms";
 import PlatformIcon from "../PlatformIcon";
+import { getMessages, type Locale } from "@/lib/i18n";
 
 // Home hero: the value proposition, the mascot, and (below, injected by the
 // page) the downloader tool. Text renders on the server so the H1 and copy
 // are in the first HTML byte for crawlers and for LCP.
-export default function Hero({ children }: { children: React.ReactNode }) {
+export default function Hero({
+  children,
+  locale = "en",
+}: {
+  children: React.ReactNode;
+  locale?: Locale;
+}) {
+  const { hero } = getMessages(locale).site;
   return (
     <section className="relative mx-auto w-full max-w-page px-4 pb-8 pt-10 sm:px-6 sm:pt-16">
       <div className="grid items-center gap-8 lg:grid-cols-[1.25fr_0.75fr]">
         <div className="rise text-center lg:text-left">
           <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-veil/[0.08] bg-raised/60 px-3 py-1 text-xs font-medium text-ink-2">
             <span className="h-1.5 w-1.5 rounded-full bg-ok" aria-hidden />
-            Free forever · No sign-up · 9 platforms
+            {hero.badge}
           </p>
           <h1 className="text-balance text-4xl font-black leading-[1.05] text-ink-hi sm:text-5xl lg:text-[3.6rem]">
-            Download any video.
+            {hero.titleLine1}
             <br />
-            <span className="text-brand">Clean, fast, yours.</span>
+            <span className="text-brand">{hero.titleLine2}</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-ink-2 lg:mx-0 sm:text-lg">
-            ClipKoala saves videos from TikTok, YouTube, Instagram, Facebook, X,
-            Reddit, Pinterest, Twitch, and SoundCloud in HD, without watermarks.
-            Paste a link, pick a quality, done. Or grab just the audio as MP3.
+            {hero.body}
           </p>
           <ul
             className="mt-6 flex flex-wrap items-center justify-center gap-2 lg:justify-start"
-            aria-label="Supported platforms"
+            aria-label={hero.platformsAria}
           >
             {PLATFORM_IDS.map((id) => (
               <li
@@ -47,7 +53,7 @@ export default function Hero({ children }: { children: React.ReactNode }) {
           />
           <Image
             src="/brand/mascot.webp"
-            alt="ClipKoala mascot: a koala hugging a clapperboard with a play button"
+            alt={hero.mascotAlt}
             width={380}
             height={380}
             priority

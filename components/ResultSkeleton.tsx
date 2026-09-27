@@ -1,4 +1,8 @@
+"use client";
+
 import { Loader2 } from "lucide-react";
+import { useI18n } from "@/lib/i18n/client";
+import { fmt } from "@/lib/i18n/format";
 import { PLATFORMS } from "@/lib/platforms";
 import type { PlatformId } from "@/lib/types";
 
@@ -9,6 +13,7 @@ export default function ResultSkeleton({
 }: {
   platform: PlatformId | null;
 }) {
+  const { t } = useI18n();
   return (
     <div className="card w-full overflow-hidden" aria-hidden>
       <div className="flex flex-col gap-4 p-4 sm:flex-row sm:p-5">
@@ -20,8 +25,8 @@ export default function ResultSkeleton({
           <div className="mt-auto flex items-center gap-2 text-xs text-ink-3">
             <Loader2 size={12} className="animate-spin" />
             {platform
-              ? `Fetching from ${PLATFORMS[platform].name}…`
-              : "Fetching video…"}
+              ? fmt(t.batch.fetchingFrom, { platform: PLATFORMS[platform].name })
+              : t.batch.fetchingVideo}
           </div>
         </div>
       </div>

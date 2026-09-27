@@ -3,6 +3,9 @@
 import { History, RotateCcw, Trash2 } from "lucide-react";
 import { PLATFORMS } from "@/lib/platforms";
 import type { PlatformId } from "@/lib/types";
+import { useI18n } from "@/lib/i18n/client";
+import { fmt } from "@/lib/i18n/format";
+import type { ClientMessages } from "@/lib/i18n/types";
 
 export interface RecentEntry {
   url: string;
@@ -46,15 +49,15 @@ export function clearRecent(): void {
   }
 }
 
-function timeAgo(ts: number): string {
+function timeAgo(ts: number, t: ClientMessages["recent"]): string {
   const s = Math.max(1, Math.floor((Date.now() - ts) / 1000));
-  if (s < 60) return "just now";
+  if (s < 60) return t.justNow;
   const m = Math.floor(s / 60);
-  if (m < 60) return `${m}m ago`;
+  if (m < 60) return fmt(t.minutesAgo, { count: m });
   const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
+  if (h < 24) return fmt(t.hoursAgo, { count: h });
   const d = Math.floor(h / 24);
-  return `${d}d ago`;
+  return fmt(t.daysAgo, { count: d });
 }
 
 interface RecentDownloadsProps {
@@ -70,21 +73,22 @@ export default function RecentDownloads({
   onClear,
   disabled,
 }: RecentDownloadsProps) {
+  const { t } = useI18n();
   if (entries.length === 0) return null;
 
   return (
-    <section className="w-full" aria-label="Recent downloads">
+    <section className="w-full" aria-label={t.recent.aria}>
       <div className="mb-2 flex items-center justify-between px-1">
         <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-ink-3">
           <History size={12} />
-          Recent
+          {t.recent.title}
         </p>
         <button
           onClick={onClear}
           className="focus-ring flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-ink-4 transition-colors hover:text-ink-1"
         >
           <Trash2 size={11} />
-          Clear
+          {t.common.clear}
         </button>
       </div>
       <ul className="card divide-y divide-veil/[0.05] overflow-hidden">
@@ -106,7 +110,7 @@ export default function RecentDownloads({
                   {entry.title}
                 </span>
                 <span className="shrink-0 text-[11px] text-ink-4">
-                  {timeAgo(entry.ts)}
+                  {timeAgo(entry.ts, t.recent)}
                 </span>
                 <RotateCcw
                   size={12}

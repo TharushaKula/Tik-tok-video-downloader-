@@ -162,7 +162,7 @@ there is no traffic.
 - `[x]` **Comparison pages** — Honest format comparisons (MP3 vs M4A vs FLAC). Competitor-name pages are out unless they are accurate, useful, and respectful of trademarks.
 - `[x]` **Troubleshooting pages** — Resolver down, unsupported URL, private post, expired Story, audio missing.
 - `[x]` **Browser and device guides** — Chrome, Safari, iPhone, Android, only after testing each flow.
-- `[ ]` **Localized landing pages** — Human-reviewed translation and proper `hreflang`. Do not duplicate English pages with keywords swapped.
+- `[~]` **Localized landing pages** — Human-reviewed translation and proper `hreflang`. Do not duplicate English pages with keywords swapped. *Shipped 27 September 2026: home and all 11 tool pages in Spanish, Brazilian Portuguese, Indonesian, and French, localized for search intent (not keyword swaps), with the whole tool UI translated, reciprocal hreflang in metadata and sitemap, and a language offer (never a redirect) on English pages. Remaining: a native-speaker review of each language (the copy was machine-drafted), then read Search Console per language before translating guides or answers.*
 - `[x]` **Topical content clusters** — Hub page plus guides, tools, FAQs, and troubleshooting for one job.
 - `[ ]` **Original benchmark or reliability pages** — Documented resolver tests, quality notes, and what failed. Method must be real.
 - `[~]` **Public changelog as crawlable explanations** — New platforms and fixes linked to the matching tool pages.

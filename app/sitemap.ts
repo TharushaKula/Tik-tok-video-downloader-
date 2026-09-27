@@ -6,20 +6,53 @@ import { LANDING_PAGES, LANDING_SLUGS } from "@/lib/landing";
 import { LEGAL_DOCS, LEGAL_SLUGS } from "@/lib/legal";
 import { CHANGELOG } from "@/lib/changelog";
 import { SITE_URL } from "@/lib/site";
+import {
+  TRANSLATED_LOCALES,
+  TRANSLATIONS_UPDATED,
+  languageAlternates,
+  localePath,
+} from "@/lib/i18n";
 
 // Every indexable page, with real lastModified dates where the content has
-// one. API routes and image routes are deliberately absent.
+// one. API routes and image routes are deliberately absent. Pages that exist
+// in several languages list each version with its hreflang alternates.
 const SITE_UPDATED = new Date("2026-09-09");
+
+/** The translated versions of an English-form path. */
+function translated(
+  path: string,
+  changeFrequency: "weekly" | "monthly",
+  priority: number
+): MetadataRoute.Sitemap {
+  return TRANSLATED_LOCALES.map((locale) => ({
+    url: `${SITE_URL}${localePath(locale, path)}`,
+    lastModified: new Date(TRANSLATIONS_UPDATED),
+    changeFrequency,
+    priority,
+    alternates: { languages: languageAlternates(path) },
+  }));
+}
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
-    { url: SITE_URL, lastModified: SITE_UPDATED, changeFrequency: "weekly", priority: 1 },
-    ...LANDING_SLUGS.map((slug) => ({
-      url: `${SITE_URL}/${slug}`,
-      lastModified: new Date(LANDING_PAGES[slug].updated),
-      changeFrequency: "weekly" as const,
-      priority: 0.9,
-    })),
+    {
+      url: SITE_URL,
+      lastModified: SITE_UPDATED,
+      changeFrequency: "weekly",
+      priority: 1,
+      alternates: { languages: languageAlternates("/") },
+    },
+    ...translated("/", "weekly", 0.9),
+    ...LANDING_SLUGS.flatMap((slug) => [
+      {
+        url: `${SITE_URL}/${slug}`,
+        lastModified: new Date(LANDING_PAGES[slug].updated),
+        changeFrequency: "weekly" as const,
+        priority: 0.9,
+        alternates: { languages: languageAlternates(`/${slug}`) },
+      },
+      ...translated(`/${slug}`, "weekly", 0.8),
+    ]),
     { url: `${SITE_URL}/guides`, lastModified: SITE_UPDATED, changeFrequency: "weekly", priority: 0.7 },
     ...GUIDE_SLUGS.map((slug) => ({
       url: `${SITE_URL}/guides/${slug}`,

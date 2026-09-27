@@ -20,6 +20,9 @@ import { applyTemplate, loadTemplate } from "@/lib/filename-template";
 import { recordDownload } from "@/lib/stats";
 import { vibrate } from "@/lib/sound";
 import { markActivated, trackFunnel } from "@/lib/analytics";
+import { useI18n } from "@/lib/i18n/client";
+import { fmt } from "@/lib/i18n/format";
+import type { ClientMessages } from "@/lib/i18n/types";
 
 // Fired once per started download so the page can refresh its usage tally.
 export const DOWNLOAD_EVENT = "clipkoala:download";
@@ -131,11 +134,34 @@ function proxyDownloadOption(
   }
 }
 
+/**
+ * Option labels come from the resolvers in English ("Download HD",
+ * "Download Audio", "Download Image 2"). Rebuild them in the page language;
+ * quality names like HD, MP3 or 720p stay as they are.
+ */
+export function localizeOptionLabel(
+  label: string,
+  t: ClientMessages["download"]
+): string {
+  const match = label.match(/^Download (.+)$/);
+  if (!match) return label;
+  const what = match[1].replace(/^(Audio|Video|Image)\b/, (word) =>
+    word === "Audio" ? t.audio : word === "Video" ? t.video : t.image
+  );
+  return fmt(t.optionLabel, { what });
+}
+
+/** Toast copy for startOptionDownload, in the page language. */
+export interface DownloadToasts {
+  preparingToast: string;
+  startedToast: string;
+}
+
 /** Kick off a download for one option. Set `notify` for a per-file toast. */
 export function startOptionDownload(
   option: DownloadOption,
   platform: PlatformId,
-  notify = true,
+  notify: DownloadToasts | false,
   nameInfo?: NameInfo
 ) {
   markDownload(platform, option);
@@ -145,16 +171,13 @@ export function startOptionDownload(
       proxyDownloadOption(option, platform, nameInfo)
     );
     if (notify) {
-      toast.success(
-        "Preparing your file, the download starts when it's ready",
-        { duration: 5000 }
-      );
+      toast.success(notify.preparingToast, { duration: 5000 });
     }
     return;
   }
   proxyDownloadOption(option, platform, nameInfo);
   if (notify) {
-    toast.success("Download started, check your browser downloads");
+    toast.success(notify.startedToast);
   }
 }
 
@@ -173,6 +196,7 @@ export default function DownloadOptionRow({
   /** Author/channel, feeds the filename template */
   author?: string;
 }) {
+  const { t, locale } = useI18n();
   const [status, setStatus] = useState<OptionStatus>("idle");
   const [percent, setPercent] = useState<number | null>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -207,7 +231,7 @@ export default function DownloadOptionRow({
       await downloadYouTubeOption(option, (p) => {
         if (mounted.current) setPercent(p);
       });
-      finish("Download started, check your browser downloads");
+      finish(t.download.startedToast);
     } catch (err) {
       if (!mounted.current) return;
       if (err instanceof NotMediaError) {
@@ -215,23 +239,26 @@ export default function DownloadOptionRow({
         // would hand the user the same advertising page. Stop and say so.
         setPercent(null);
         setStatus("idle");
-        toast.error(err.message, { duration: 8000 });
+        toast.error(locale === "en" ? err.message : t.download.failed, {
+          duration: 8000,
+        });
         return;
       }
       if (err instanceof PollBlockedError) {
         // Browser can't reach the resolver (adblock), server flow instead
         proxyDownloadOption(option, platform, nameInfo);
         setPercent(null);
-        toast.success(
-          "Preparing your file, the download starts when it's ready",
-          { duration: 5000 }
-        );
+        toast.success(t.download.preparingToast, { duration: 5000 });
         timers.current.push(setTimeout(() => finish(), 8000));
       } else {
         setPercent(null);
         setStatus("idle");
+        // Conversion errors arrive in English; other languages get the
+        // plain statement instead.
         toast.error(
-          err instanceof Error ? err.message : "Failed to start the download"
+          locale === "en" && err instanceof Error
+            ? err.message
+            : t.download.failed
         );
       }
     }
@@ -247,7 +274,7 @@ export default function DownloadOptionRow({
     try {
       setStatus("working");
       proxyDownloadOption(option, platform, nameInfo);
-      toast.success("Download started, check your browser downloads");
+      toast.success(t.download.startedToast);
       timers.current.push(
         setTimeout(() => {
           setStatus("started");
@@ -256,7 +283,7 @@ export default function DownloadOptionRow({
       );
     } catch {
       setStatus("idle");
-      toast.error("Failed to start the download");
+      toast.error(t.download.failed);
     }
   }
 
@@ -275,7 +302,7 @@ export default function DownloadOptionRow({
       </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm font-medium text-ink-1">
-          {option.label}
+          {localizeOptionLabel(option.label, t.download)}
         </span>
         <span className="block text-[11px] uppercase tracking-wider text-ink-3">
           {option.format}
@@ -294,17 +321,19 @@ export default function DownloadOptionRow({
         {status === "working" ? (
           <>
             <Loader2 size={13} className="animate-spin" />
-            {converting ? `Converting · ${percent}%` : "Preparing…"}
+            {converting
+              ? fmt(t.download.converting, { percent: percent ?? 0 })
+              : t.download.preparing}
           </>
         ) : status === "started" ? (
           <>
             <Check size={13} />
-            {isYouTube ? "In your downloads" : "Started"}
+            {isYouTube ? t.download.inDownloads : t.download.started}
           </>
         ) : (
           <>
             <Download size={13} />
-            Save
+            {t.common.save}
           </>
         )}
       </span>

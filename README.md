@@ -36,8 +36,9 @@ npm run ext:pack   # zip the browser extension for the Chrome Web Store
 
 ```
 app/                    routes (App Router)
-  page.tsx              home: hero + tool + marketing sections
-  [slug]/               tool landing pages (9 platforms + youtube-to-mp3 + batch)
+  (site)/               every English page, with its own root layout
+  (site)/page.tsx       home: hero + tool + marketing sections
+  (site)/[slug]/        tool landing pages (9 platforms + youtube-to-mp3 + batch)
   for/[slug]/           use-case pages (creators, editors, teachers, social managers)
   answers/[slug]/       problem, question, and comparison pages (direct answer first)
   guides/[slug]/        how-to guides with HowTo/Article/FAQ structured data
@@ -45,9 +46,12 @@ app/                    routes (App Router)
   press, accessibility, security, terms, privacy, dmca
   feed.xml/ llms.txt/   RSS feed and the factual summary for answer engines
   opengraph-image.tsx   social card (also per landing page and per guide)
-  sitemap.ts robots.ts manifest.ts not-found.tsx
+  es/ pt-br/ id/ fr/     translated home + tool pages (thin files, see Languages)
+  sitemap.ts robots.ts manifest.ts global-not-found.tsx
   api/                  resolver + proxy endpoints (noindex via robots)
 components/             UI; components/sections/* are the marketing blocks
+components/pages/       home, tool, and 404 pages, rendered in any language
+lib/i18n/               locales, dictionaries, landing translations
 components/brand/       Logo (mascot + wordmark)
 lib/                    data (landing, guides, answers, audiences, faq, glossary,
                         features, legal, changelog, roadmap), SEO helpers
@@ -72,13 +76,50 @@ warrants it. `app/sitemap.ts` lists every indexable URL with real
 variants. See `docs/SEO-STRATEGY.md` for the keyword map and
 `USER_ACQUISITION_AND_TRAFFIC.md` for the growth plan and its progress log.
 
+## Languages
+
+The home page and the 11 tool pages exist in English (at the root, as
+before), Spanish (`/es`), Brazilian Portuguese (`/pt-br`), Indonesian (`/id`)
+and French (`/fr`). Guides, answers, use-case, and legal pages are English
+only; translated pages link to them sparingly and say so.
+
+- **Strings** live in `lib/i18n/messages/`: `en-client.ts` (the tool UI) and
+  `en-site.ts` (page chrome and sections) are the source; `es.ts`, `pt-br.ts`,
+  `id.ts`, `fr.ts` are typed against them, so a key added in English fails
+  the build until every language has it.
+- **Tool-page copy** lives in `lib/i18n/landing/<lang>.ts`. Structure
+  (platform, related pages) always comes from `lib/landing.ts`.
+- **Routing**: each language has its own root layout under `app/<lang>/`
+  so `<html lang>` is right on static pages; English pages sit in
+  `app/(site)/`. Every page that exists in several languages emits hreflang
+  alternates (and x-default) in its metadata and in the sitemap.
+- **No redirects by language.** English pages show a one-line offer to
+  visitors whose browser is set to a supported language; the header and
+  footer carry a language switcher.
+- **Server messages stay English.** The tool translates failures by class
+  (`classifyError`) and shows the server's own words underneath.
+- `lib/__tests__/i18n.test.ts` fails on a missing or extra key, a dropped
+  placeholder, a changed FAQ count, an over-long title, or an em-dash.
+
+**Adding a language:** add it to `LOCALES` and `LOCALE_META` in
+`lib/i18n/config.ts`, write `messages/<lang>.ts` and `landing/<lang>.ts`,
+register them in `lib/i18n/index.ts`, and copy `app/es/` to `app/<lang>/`
+replacing the locale string. `npm test` lists anything missing.
+
+**Changing English copy:** edit the English source, then the same key in each
+language, and bump `TRANSLATIONS_UPDATED` in `lib/i18n/index.ts`. The
+translations were machine-drafted on 27 September 2026; have a native speaker
+review each language before relying on it.
+
 ## The SEO gate
 
 `npm run seo:audit` crawls every URL in the sitemap and fails on anything
 that would quietly cost traffic: a non-200, a canonical on the wrong host or
 pointing at the wrong path, an accidental `noindex`, a missing title or
 description, more than one `H1`, invalid JSON-LD, an orphan page nothing
-links to, or a broken internal link. Length and Open Graph problems are
+links to, a broken internal link, an `og:image` or structured-data image
+that does not load, or hreflang alternates that are not reciprocal or
+disagree with the page's `<html lang>`. Length and Open Graph problems are
 warnings rather than errors.
 
 ```bash

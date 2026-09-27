@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
+import { getMessages, type Locale } from "@/lib/i18n";
 
 interface FaqSectionProps {
   faqs: { q: string; a: string }[];
@@ -8,6 +9,7 @@ interface FaqSectionProps {
   /** Show a link to the full FAQ page */
   moreLink?: boolean;
   id?: string;
+  locale?: Locale;
 }
 
 // Native <details> accordion: works without JavaScript, every answer is in
@@ -15,11 +17,13 @@ interface FaqSectionProps {
 // data is added by the page that owns the questions.
 export default function FaqSection({
   faqs,
-  eyebrow = "FAQ",
-  title = "Questions, answered",
+  eyebrow,
+  title,
   moreLink = false,
   id = "faq",
+  locale = "en",
 }: FaqSectionProps) {
+  const { faq } = getMessages(locale).site;
   return (
     <section
       id={id}
@@ -27,9 +31,9 @@ export default function FaqSection({
       aria-labelledby={`${id}-title`}
     >
       <div className="reveal mb-8 text-center">
-        <p className="eyebrow mb-2">{eyebrow}</p>
+        <p className="eyebrow mb-2">{eyebrow ?? faq.eyebrow}</p>
         <h2 id={`${id}-title`} className="text-2xl font-extrabold text-ink-hi sm:text-3xl">
-          {title}
+          {title ?? faq.title}
         </h2>
       </div>
 
@@ -51,12 +55,12 @@ export default function FaqSection({
 
       {moreLink && (
         <p className="mt-6 text-center text-sm text-ink-3">
-          More questions?{" "}
+          {faq.more}{" "}
           <Link
             href="/faq"
             className="focus-ring rounded font-medium text-ink-1 underline decoration-accent/50 underline-offset-4 hover:text-accent"
           >
-            Read the full FAQ
+            {faq.readFull}
           </Link>
         </p>
       )}

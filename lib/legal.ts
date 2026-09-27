@@ -71,7 +71,7 @@ export const LEGAL_DOCS: Record<string, LegalDoc> = {
     metaTitle: "Privacy Policy",
     metaDescription:
       "How ClipKoala handles your data: links are processed and discarded, nothing is stored server-side, and your history stays in your own browser.",
-    updated: "2026-09-10",
+    updated: "2026-09-27",
     intro:
       "ClipKoala is built to need as little of your data as possible. Here is exactly what happens.",
     sections: [
@@ -84,7 +84,7 @@ export const LEGAL_DOCS: Record<string, LegalDoc> = {
       {
         heading: "What stays on your device",
         body: [
-          "Your recent downloads, saved (starred) videos, theme choice, sound preference, and filename template live only in your browser's local storage. They never leave your device, and you can clear them anytime from the app.",
+          "Your recent downloads, saved (starred) videos, theme choice, language choice, sound preference, and filename template live only in your browser's local storage. They never leave your device, and you can clear them anytime from the app.",
           "Two small records live there as well: a personal tally of how many videos you have saved, and the campaign tag or referring site you first arrived from. Both stay in your browser. Clearing your site data removes everything in this section.",
         ],
       },

@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 
 import { hasActivated, trackFunnel } from "@/lib/analytics";
 import { STORAGE_PREFIX } from "@/lib/site";
+import { useI18n } from "@/lib/i18n/client";
 
 // Two one-question prompts, at most one of which a browser will ever see.
 //
@@ -24,34 +25,11 @@ const ASKED_KEY = `${STORAGE_PREFIX}asked`;
 
 type Mode = "job" | "exit";
 
-const QUESTIONS: Record<
-  Mode,
-  { title: string; note: string; options: { id: string; label: string }[] }
-> = {
-  job: {
-    title: "What were you saving?",
-    note: "One tap. It only tells us which jobs to make better.",
-    options: [
-      { id: "own_post", label: "One of my own posts" },
-      { id: "reference_clip", label: "A reference clip for an edit" },
-      { id: "audio_offline", label: "Audio to listen to offline" },
-      { id: "teaching", label: "Something for a class or lesson" },
-      { id: "archive", label: "Archiving a public post" },
-      { id: "other", label: "Something else" },
-    ],
-  },
-  exit: {
-    title: "What stopped you?",
-    note: "One tap, and it helps more than you would think.",
-    options: [
-      { id: "error", label: "It failed with an error" },
-      { id: "unsupported", label: "My link wasn't supported" },
-      { id: "quality", label: "The quality I wanted wasn't there" },
-      { id: "trust", label: "I wasn't sure it was safe" },
-      { id: "slow", label: "It was taking too long" },
-      { id: "browsing", label: "Nothing, just looking" },
-    ],
-  },
+// Answer ids are what analytics receives; the labels come from the
+// dictionary (feedback.job.options / feedback.exit.options) in this order.
+const OPTION_IDS: Record<Mode, string[]> = {
+  job: ["own_post", "reference_clip", "audio_offline", "teaching", "archive", "other"],
+  exit: ["error", "unsupported", "quality", "trust", "slow", "browsing"],
 };
 
 function alreadyAsked(): boolean {
@@ -84,6 +62,7 @@ export default function FeedbackPrompt({
   attempted,
   busy,
 }: FeedbackPromptProps) {
+  const { t } = useI18n();
   const [mode, setMode] = useState<Mode | null>(null);
   const [answered, setAnswered] = useState(false);
   const settled = useRef(false);
@@ -128,7 +107,11 @@ export default function FeedbackPrompt({
 
   if (!mode) return null;
 
-  const question = QUESTIONS[mode];
+  const copy = t.feedback[mode];
+  const options = OPTION_IDS[mode].map((id) => ({
+    id,
+    label: (copy.options as Record<string, string>)[id],
+  }));
 
   function choose(id: string) {
     trackFunnel(mode === "job" ? "job_done" : "exit_reason", { choice: id });
@@ -139,28 +122,28 @@ export default function FeedbackPrompt({
   return (
     <aside
       className="fixed bottom-4 left-4 right-4 z-[55] mx-auto w-auto max-w-sm rounded-2xl border border-veil/10 bg-raised p-4 shadow-2xl sm:left-auto sm:right-6 sm:w-full"
-      aria-label={question.title}
+      aria-label={copy.title}
     >
       <button
         onClick={() => setMode(null)}
         className="focus-ring absolute right-2.5 top-2.5 flex h-6 w-6 items-center justify-center rounded-full text-ink-4 transition-colors hover:bg-veil/[0.06] hover:text-ink-1"
-        aria-label="Dismiss"
+        aria-label={t.common.dismiss}
       >
         <X size={12} />
       </button>
 
       {answered ? (
         <p className="py-2 text-sm font-medium text-ink-1">
-          Thank you, that genuinely helps.
+          {t.feedback.thanks}
         </p>
       ) : (
         <>
           <p className="pr-6 text-sm font-semibold text-ink-hi">
-            {question.title}
+            {copy.title}
           </p>
-          <p className="mt-0.5 text-xs text-ink-3">{question.note}</p>
+          <p className="mt-0.5 text-xs text-ink-3">{copy.note}</p>
           <div className="mt-3 flex flex-wrap gap-1.5">
-            {question.options.map((o) => (
+            {options.map((o) => (
               <button
                 key={o.id}
                 onClick={() => choose(o.id)}

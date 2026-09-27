@@ -17,6 +17,7 @@ import {
   articleSchema,
   faqSchema,
   graph,
+  ogImagePath,
   pageMetadata,
   webPageSchema,
 } from "@/lib/seo";
@@ -294,6 +295,7 @@ export default async function AnswerPage({ params }: AnswerParams) {
             path: `/answers/${copy.slug}`,
             published: copy.published,
             modified: copy.updated,
+            image: ogImagePath(`/answers/${copy.slug}`, "/(site)/answers/[slug]"),
           }),
           faqSchema(copy.faqs)
         )}

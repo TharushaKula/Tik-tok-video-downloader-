@@ -5,8 +5,9 @@
  * if anything that would quietly cost traffic has slipped in: a 404 or 500 on
  * a landing page, a canonical pointing at the wrong host, an accidental
  * noindex, a missing or badly sized title or description, a broken heading
- * structure, invalid JSON-LD, a page in the sitemap that nothing links to, or
- * an internal link that goes nowhere.
+ * structure, invalid JSON-LD, a page in the sitemap that nothing links to,
+ * an internal link that goes nowhere, a social or structured-data image that
+ * does not load, or hreflang alternates that do not point back at each other.
  *
  * Every one of these has shipped silently on some site at some point. The
  * point of a gate is that it cannot ship silently here.
@@ -150,6 +151,47 @@ function internalLinks(html: string): string[] {
   return [...out];
 }
 
+/** A same-site absolute URL as a path, or null for anything external. */
+function sitePath(raw: string): string | null {
+  try {
+    const url = new URL(raw, SITE_URL);
+    if (url.host !== CANONICAL_HOST && url.host !== new URL(BASE).host) {
+      return null;
+    }
+    return url.pathname + url.search;
+  } catch {
+    return null;
+  }
+}
+
+/** Every "image" value in parsed JSON-LD, as strings. */
+function jsonLdImages(value: unknown, out: string[] = []): string[] {
+  if (Array.isArray(value)) {
+    value.forEach((v) => jsonLdImages(v, out));
+  } else if (value && typeof value === "object") {
+    for (const [key, v] of Object.entries(value)) {
+      if (key === "image" && typeof v === "string") out.push(v);
+      else if (key === "image" && v && typeof v === "object" && "url" in v) {
+        out.push(String((v as { url: unknown }).url));
+      } else jsonLdImages(v, out);
+    }
+  }
+  return out;
+}
+
+/** hreflang alternates declared in the head, as { code: path }. */
+function hreflangs(html: string): Map<string, string> {
+  const out = new Map<string, string>();
+  for (const tag of html.match(/<link\b[^>]*rel=["']alternate["'][^>]*>/gi) ?? []) {
+    const code = tag.match(/hreflang=["']([^"']+)["']/i)?.[1];
+    const href = tag.match(/href=["']([^"']+)["']/i)?.[1];
+    if (!code || !href) continue;
+    const path = sitePath(decode(href));
+    if (path) out.set(code, path.replace(/(.)\/+$/, "$1") || "/");
+  }
+  return out;
+}
+
 function isNonIndexable(path: string): boolean {
   return NON_INDEXABLE.some((re) => re.test(path));
 }
@@ -160,6 +202,12 @@ interface PageResult {
   path: string;
   status: number;
   links: string[];
+  /** Same-site og:image and JSON-LD image paths */
+  images?: string[];
+  /** hreflang code to path */
+  alternates?: Map<string, string>;
+  /** The <html lang> value */
+  lang?: string;
 }
 
 async function auditPage(path: string): Promise<PageResult> {
@@ -248,7 +296,11 @@ async function auditPage(path: string): Promise<PageResult> {
   if (!attr(html, /<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']*)["']/i)) {
     warn(path, "no og:title");
   }
-  if (!attr(html, /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']*)["']/i)) {
+  const ogImage = attr(
+    html,
+    /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']*)["']/i
+  );
+  if (!ogImage) {
     warn(path, "no og:image");
   }
 
@@ -279,7 +331,19 @@ async function auditPage(path: string): Promise<PageResult> {
     error(path, `${broken} JSON-LD block(s) are not valid JSON`);
   }
 
-  return { path, status: 200, links: internalLinks(html) };
+  const images = [ogImage, ...blocks.flatMap((b) => jsonLdImages(b.data))]
+    .filter((i): i is string => !!i)
+    .map(sitePath)
+    .filter((i): i is string => !!i);
+
+  return {
+    path,
+    status: 200,
+    links: internalLinks(html),
+    images,
+    alternates: hreflangs(html),
+    lang: attr(html, /<html[^>]*\blang=["']([^"']+)["']/i) ?? undefined,
+  };
 }
 
 /** Read the sitemap and return its paths, checking the host while we are here. */
@@ -355,6 +419,49 @@ async function main() {
       warn(link, `internal link redirects (${status}); link the destination directly`);
     } else {
       error(link, `internal link is broken (${status || "unreachable"})`);
+    }
+  }
+
+  // Images: an og:image or structured-data image that 404s shares as a blank
+  // card and drops the rich result. Each distinct URL is fetched once.
+  const imageStatus = new Map<string, number>();
+  for (const r of results) {
+    for (const image of r.images ?? []) {
+      if (!imageStatus.has(image)) {
+        const res = await fetch(`${BASE}${image}`).catch(() => null);
+        imageStatus.set(image, res?.status ?? 0);
+      }
+      const status = imageStatus.get(image)!;
+      if (status !== 200) {
+        error(r.path, `image ${image} returned ${status || "no response"}`);
+      }
+    }
+  }
+
+  // hreflang: every alternate set must include the page itself and x-default,
+  // match the page's own <html lang>, and be returned by every page it names.
+  // One-way alternates are ignored by search engines.
+  const byPath = new Map(results.map((r) => [r.path, r]));
+  for (const r of results) {
+    const alt = r.alternates;
+    if (!alt || alt.size === 0) continue;
+    const own = [...alt].find(([code, p]) => code !== "x-default" && p === r.path);
+    if (!own) {
+      error(r.path, "hreflang alternates do not include the page itself");
+      continue;
+    }
+    if (!alt.has("x-default")) error(r.path, "hreflang alternates have no x-default");
+    if (r.lang && r.lang.toLowerCase() !== own[0].toLowerCase()) {
+      error(r.path, `<html lang="${r.lang}"> but listed as hreflang "${own[0]}"`);
+    }
+    for (const [code, target] of alt) {
+      if (code === "x-default" || target === r.path) continue;
+      const other = byPath.get(target);
+      if (!other) {
+        error(r.path, `hreflang "${code}" points at ${target}, which is not in the sitemap`);
+      } else if (other.alternates?.get(own[0]) !== r.path) {
+        error(r.path, `hreflang "${code}" (${target}) does not point back to this page`);
+      }
     }
   }
 
