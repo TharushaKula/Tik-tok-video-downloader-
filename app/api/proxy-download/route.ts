@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 import { isValidYouTubeUrl } from "@/lib/validators";
-import { resolveYouTubeDownload, type YouTubeFormat } from "@/lib/youtube";
+import {
+  assertResolvedMedia,
+  resolveYouTubeDownload,
+  ResolverNotMediaError,
+  type YouTubeFormat,
+} from "@/lib/youtube";
 import {
   TIKTOK_HOSTS,
   MEDIA_HOSTS,
@@ -52,10 +57,20 @@ export async function GET(req: NextRequest) {
         : "360";
     try {
       const downloadUrl = await resolveYouTubeDownload(videoUrl, ytFormat);
+      // Never redirect the browser to whatever the resolver handed back
+      // without checking it is a file. See assertResolvedMedia.
+      await assertResolvedMedia(downloadUrl);
       return NextResponse.redirect(downloadUrl, 302);
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Failed to resolve YouTube video";
+      if (err instanceof ResolverNotMediaError) {
+        console.error(
+          "[/api/proxy-download][youtube] resolver returned non-media:",
+          err.detail
+        );
+        return NextResponse.json({ error: message }, { status: 502 });
+      }
       console.error("[/api/proxy-download][youtube] Error:", message);
       return NextResponse.json({ error: message }, { status: 502 });
     }

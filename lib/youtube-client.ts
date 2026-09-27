@@ -14,6 +14,51 @@ export class PollBlockedError extends Error {
   }
 }
 
+/**
+ * Thrown when the resolver finished but handed back something that is not a
+ * file. Distinct from PollBlockedError because the server-side flow would hit
+ * exactly the same page, so there is nothing to fall back to.
+ */
+export class NotMediaError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "NotMediaError";
+  }
+}
+
+/**
+ * Ask our server whether a resolved download URL really is a file.
+ *
+ * Cross-origin JavaScript cannot read the content-type of the resolver's
+ * response, so the page cannot tell a real download from the advertising
+ * interstitial the resolver sometimes returns. Navigating to that page takes
+ * the user off ClipKoala and breaks their back button, so the check happens
+ * before the download is triggered rather than after.
+ */
+async function verifyDownloadUrl(url: string): Promise<void> {
+  let payload: { ok?: boolean; error?: string } | null = null;
+  try {
+    const res = await fetch("/api/youtube/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url }),
+    });
+    payload = await res.json().catch(() => null);
+  } catch {
+    // Our own endpoint is unreachable. Fail closed: a bad navigation is
+    // worse than an error message the user can retry.
+    throw new NotMediaError(
+      "We could not confirm the download was ready. Please try again."
+    );
+  }
+  if (!payload?.ok) {
+    throw new NotMediaError(
+      payload?.error ||
+        "The resolver did not return a file. Please try again shortly."
+    );
+  }
+}
+
 export function youtubeFormatFor(option: DownloadOption): string {
   // Audio: the option's format is already the loader.to format (mp3/m4a/wav/flac)
   if (option.isAudio) return option.format;
@@ -127,6 +172,7 @@ export async function downloadYouTubeOption(
     youtubeFormatFor(option)
   );
   const downloadUrl = await pollYouTubeJob(progressUrl, onProgress);
+  await verifyDownloadUrl(downloadUrl);
   triggerBrowserDownload(downloadUrl);
   playCompletionChime();
   vibrate(35);

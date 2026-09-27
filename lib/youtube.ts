@@ -324,3 +324,82 @@ export async function resolveYouTubeDownload(
     "YouTube conversion timed out. Try a lower quality or a shorter video."
   );
 }
+
+// ── Guarding the resolved download URL ────────────────────────────────
+//
+// The loader does not always return a file. It has been observed returning a
+// 200 response with `text/html` whose body is a redirect page that fires an
+// ad-network beacon, pushes three history entries (breaking the back button),
+// and sends the visitor to an unrelated site.
+//
+// Handing that URL to the browser is worse than failing: an <a> click or a
+// 302 navigates the user off ClipKoala and into an ad flow, from a button
+// labelled "Download MP3". So every resolved URL is checked before it is used.
+//
+// The check has to read the body. A HEAD on the same URL answers
+// `application/octet-stream` with `content-length: 0` even when GET returns
+// the HTML page, so HEAD cannot be trusted here. Resolved URLs are not
+// single-use (repeated GETs return the same thing), which is what makes a
+// small ranged probe safe.
+
+/** Thrown when the resolver hands back something that is not a media file. */
+export class ResolverNotMediaError extends Error {
+  constructor(readonly detail: string) {
+    super(
+      "The YouTube resolver returned an advertising page instead of your file. " +
+        "This is a fault on their side, not with your link."
+    );
+    this.name = "ResolverNotMediaError";
+  }
+}
+
+/** Container signatures for the formats this site offers. */
+function sniffMedia(head: Buffer): string | null {
+  if (head.length < 4) return null;
+  // ISO base media (MP4 / M4A): "ftyp" at byte 4
+  if (head.subarray(4, 8).toString("latin1") === "ftyp") return "mp4/m4a";
+  if (head.subarray(0, 4).toString("latin1") === "fLaC") return "flac";
+  if (head.subarray(0, 4).toString("latin1") === "RIFF") return "wav";
+  if (head.subarray(0, 3).toString("latin1") === "ID3") return "mp3";
+  // Bare MPEG audio frame sync
+  if (head[0] === 0xff && (head[1] & 0xe0) === 0xe0) return "mp3";
+  if (head.subarray(0, 4).toString("latin1") === "\x1aE\xdf\xa3") return "webm";
+  return null;
+}
+
+/**
+ * Confirm a resolved download URL actually serves media.
+ * Throws ResolverNotMediaError when it serves anything else.
+ */
+export async function assertResolvedMedia(downloadUrl: string): Promise<void> {
+  let res: Response;
+  let head: Buffer;
+  try {
+    res = await fetch(downloadUrl, {
+      headers: { "User-Agent": UA, Range: "bytes=0-1023" },
+      redirect: "follow",
+      signal: AbortSignal.timeout(15000),
+    });
+    head = Buffer.from(await res.arrayBuffer());
+  } catch (err) {
+    throw new ResolverNotMediaError(
+      err instanceof Error ? err.message : "probe failed"
+    );
+  }
+
+  const contentType = (res.headers.get("content-type") ?? "").toLowerCase();
+  if (contentType.startsWith("text/") || contentType.includes("html")) {
+    throw new ResolverNotMediaError(`content-type ${contentType}`);
+  }
+
+  // A correct media response is either explicitly typed, or octet-stream
+  // whose first bytes carry a container signature we recognise.
+  const typedMedia =
+    contentType.startsWith("video/") || contentType.startsWith("audio/");
+  const sniffed = sniffMedia(head);
+  if (!typedMedia && !sniffed) {
+    throw new ResolverNotMediaError(
+      `content-type ${contentType || "(none)"}, no media signature`
+    );
+  }
+}

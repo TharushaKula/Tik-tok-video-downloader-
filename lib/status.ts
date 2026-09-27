@@ -1,7 +1,7 @@
 import { fetchTikTokData } from "./tikwm";
 import { fetchInstagramData } from "./instagram";
 import { fetchFacebookData } from "./facebook";
-import { startLoaderJob } from "./youtube";
+import { assertResolvedMedia, resolveYouTubeDownload } from "./youtube";
 import { fetchTwitterData } from "./twitter";
 import { fetchRedditData } from "./reddit";
 import { fetchPinterestData } from "./pinterest";
@@ -114,8 +114,19 @@ export async function probeAllPlatforms(): Promise<StatusReport> {
     probeOne("tiktok", () => fetchTikTokData(SAMPLES.tiktok!)),
     probeOne("instagram", () => fetchInstagramData(SAMPLES.instagram!)),
     probeOne("facebook", () => fetchFacebookData(SAMPLES.facebook!)),
-    // The converter is what actually breaks, so start (but don't poll) a job.
-    probeOne("youtube", () => startLoaderJob(SAMPLES.youtube!, "mp3")),
+    // Starting a job is not enough to call YouTube healthy: the resolver has
+    // been seen accepting a job, reporting "Finished", and then serving an
+    // advertising page in place of the file. The probe therefore runs the
+    // whole path and checks that what comes back is really media.
+    probeOne("youtube", async () => {
+      const downloadUrl = await resolveYouTubeDownload(
+        SAMPLES.youtube!,
+        "mp3",
+        PROBE_TIMEOUT_MS
+      );
+      await assertResolvedMedia(downloadUrl);
+      return downloadUrl;
+    }),
     probeOne("twitter", () => fetchTwitterData(SAMPLES.twitter!)),
     probeOne("reddit", () => fetchRedditData(SAMPLES.reddit!)),
     probeOne("pinterest", () => fetchPinterestData(SAMPLES.pinterest!)),

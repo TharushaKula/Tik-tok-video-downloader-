@@ -11,7 +11,11 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import type { DownloadOption, PlatformId } from "@/lib/types";
-import { downloadYouTubeOption, PollBlockedError } from "@/lib/youtube-client";
+import {
+  downloadYouTubeOption,
+  NotMediaError,
+  PollBlockedError,
+} from "@/lib/youtube-client";
 import { applyTemplate, loadTemplate } from "@/lib/filename-template";
 import { recordDownload } from "@/lib/stats";
 import { vibrate } from "@/lib/sound";
@@ -206,6 +210,14 @@ export default function DownloadOptionRow({
       finish("Download started, check your browser downloads");
     } catch (err) {
       if (!mounted.current) return;
+      if (err instanceof NotMediaError) {
+        // The server flow resolves through the same service, so retrying it
+        // would hand the user the same advertising page. Stop and say so.
+        setPercent(null);
+        setStatus("idle");
+        toast.error(err.message, { duration: 8000 });
+        return;
+      }
       if (err instanceof PollBlockedError) {
         // Browser can't reach the resolver (adblock), server flow instead
         proxyDownloadOption(option, platform, nameInfo);
